@@ -1,12 +1,12 @@
-import React from 'react'
-import { Button } from './components/ui/button'
-
+import { BrowserRouter as Router } from 'react-router-dom';
+import { SigninForm } from './components/core/auth/login/components/SigninForm';
 function App() {
   return (
-    <div>
-      <Button>Welcome</Button>
-    </div>
-  )
+    <Router>
+      <SigninForm />
+      {/* Other components */}
+    </Router>
+  );
 }
 
-export default App
+export default App;
