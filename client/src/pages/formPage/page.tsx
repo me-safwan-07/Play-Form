@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/core/common/PageHeader"
 import { Button } from "@/components/ui/button"
 import { PlusIcon } from "lucide-react"
 import { FormList } from "./components/FormList";
+import { SurveyFilters } from "./components/FormFilters";
 
 const Page = () => {
     const createFormButton = (
@@ -18,6 +19,7 @@ const Page = () => {
     return (
         <>
             <PageHeader pageTitle="Match Form" cta={createFormButton} />
+            <SurveyFilters />
             <FormList />
         </>
     )
