@@ -1,6 +1,10 @@
-import { Label } from "@radix-ui/react-dropdown-menu"
+// import { Label } from "@radix-ui/react-dropdown-menu"
+
+import { FileInput } from "../FileInput";
+import { Label } from "../Label";
 
 interface QuestionFormInputProps {
+    id: string;
     label: string;
     isInvalid: boolean;
     maxLength?: number;
@@ -9,6 +13,7 @@ interface QuestionFormInputProps {
 }
 
 export const QuestionFormInput = ({
+    id,
     label,
     isInvalid,
     maxLength,
@@ -21,11 +26,26 @@ export const QuestionFormInput = ({
         <div className="">
             <div className="">
                 <div className="">
-                    <Label>{label}</Label>
+                    {/* <Label>{label}</Label> */}
+                    <Label htmlFor={id}>{label}</Label>
                 </div>
 
                 <div className="">
-                    
+                    {id === "headline" && (
+                        <FileInput 
+                            // id="question-image"
+
+                        />
+                    )}
+                    <div className="">
+                        <div className="">
+                            <div className="">
+                                <div className="">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

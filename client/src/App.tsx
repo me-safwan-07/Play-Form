@@ -4,6 +4,7 @@ import Page from './pages/formPage/page';
 import { TemplateContainer } from './pages/templates/components/TemplateContainer';
 import { Edit } from './pages/edit';
 import { EditWelcomeCard } from './pages/edit/components/EditWelcomeCard';
+import { AddQuestionButton } from './pages/edit/components/AddQuestionButton';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<Page />} />
         <Route path="/a" element={<TemplateContainer />} />
         <Route path="/edit" element={<EditWelcomeCard activeQuestionId="start"/>} />
+        <Route path="/add" element={<AddQuestionButton />} />
       </Routes>
     </Router>
   );
