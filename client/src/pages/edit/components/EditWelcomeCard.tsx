@@ -1,6 +1,8 @@
+import { FileInput } from "@/components/ui/FileInput";
+import { cn } from "@/lib/utils";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { FileInput } from "lucide-react";
+// import { FileInput } from "lucide-react";
 import { useState } from "react"
 import { useLocation } from "react-router-dom";
 
@@ -28,22 +30,26 @@ export const EditWelcomeCard = ({
     
 
     return (
-        <div className="">
-            <div className="">
+        <div className={cn(
+            "scale-97 shadow-md group flex flex-row rounded-lg bg-white transition-transform duration-300 ease-in-out"
+        )}>
+            <div className={cn(
+                "flex w-10 items-center justify-center rounded-l-lg border-b border-l border-t group-aria-expanded:rounded-bl-none bg-white group-hover:bg-slate-50"
+            )}>
                 <p className="">✋</p>
             </div>
             <Collapsible.Root
                 open={open}
-                className=""
+                className="flex-1 rounded-r-lg border border-slate-200 transition-all duration-300 ease-in-out"
             >
                 <Collapsible.CollapsibleTrigger
                     asChild
-                    className=""
+                    className="flex cursor-pointer justify-between p-4 hover:bg-slate-50"
                 >
                     <div className="">
-                        <div className="">
+                        <div className="inline-flex">
                             <div className="">
-                                <p className="Welcome Card"></p>
+                                <p className="text-sm font-semibold">Welcome Card</p>
                                 {!open && (
                                     <p className="">Shown</p>
                                 )}
@@ -57,9 +63,7 @@ export const EditWelcomeCard = ({
                         <Label>Company Logo</Label>
                     </div>
                     <div className="">
-                        <FileInput 
-                            id="welcome-card-image"
-                        />
+                        <FileInput />
                     </div>
                     <div className="">
                         {/* QuestionFormInput */}
@@ -82,9 +86,9 @@ export const EditWelcomeCard = ({
                             {/* Switch */}
                             
                         </div>
-                        <div className="">
+                        <div className="flex-column">
                             <Label>Time to Finish</Label>
-                            <div className="">
+                            <div className="ext-sm text-slate-500 dark:text-slate-400">
                                 Display an estimate of completion time for survey
                             </div>
                         </div>
@@ -92,9 +96,9 @@ export const EditWelcomeCard = ({
                             <div className="">
                                 {/* Switch */}
                             </div>
-                            <div className="">
+                            <div className="flex-column">
                                 <Label>Show Response Count</Label>
-                                <div className="">
+                                <div className="text-sm text-slate-500 dark:text-slate-400">
                                     Display number of responses for survey
                                 </div>
                             </div>
