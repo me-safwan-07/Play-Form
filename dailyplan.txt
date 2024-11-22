@@ -1,0 +1,8 @@
+completed the ui  in the november and after the november or december we will created the functionality in website
+
+22-11-2024
+    - created the uploader the company log of desing
+    - complete the welcome card page
+
+23-11-2024
+    - created the thank you card page

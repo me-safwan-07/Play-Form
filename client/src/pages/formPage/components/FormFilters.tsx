@@ -1,7 +1,7 @@
 import { SearchBar } from "@/components/ui/SearchBar";
 import { useState } from "react";
 import { SurveyFilterDropdown } from "./FormFilterDropdown";
-import { TFilterOptions, TSortOption } from "@/types/forms/types";
+import { TFilterOptions, TSortOption } from "@/types/forms";
 
 const creatorOptions: TFilterOptions[] = [
     { label: "you", value: "you" },
