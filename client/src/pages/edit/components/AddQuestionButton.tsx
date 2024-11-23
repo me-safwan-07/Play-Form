@@ -22,7 +22,7 @@ export const AddQuestionButton = () => {
             
             <Collapsible.CollapsibleTrigger asChild className="group h-full w-full">
                 <div className="inline-flex">
-                    <div className="bg-brand-dark flex w-10 items-center justify-center rounded-l-lg group-aria-expanded:rounded-bl-none group-aria-expanded:rounded-br">
+                    <div className="bg-cyan-400 flex w-10 items-center justify-center rounded-l-lg group-aria-expanded:rounded-bl-none group-aria-expanded:rounded-br">
                         <PlusIcon className="h-6 w-6 text-white" />
                     </div>
                     <div className="px-4 py-3">
