@@ -12,7 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Page />} />
         <Route path="/a" element={<TemplateContainer />} />
-        <Route path="/edit" element={<EditWelcomeCard activeQuestionId="start"/>} />
+        <Route path="/edit" element={<Edit />} />
         <Route path="/add" element={<AddQuestionButton />} />
       </Routes>
     </Router>

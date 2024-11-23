@@ -2,7 +2,7 @@
 import {
     TSurveyQuestionTypeEnum as QuestionId,
 } from "@/types/forms";
-import { MessageSquareTextIcon, Rows3Icon } from "lucide-react";
+import { ImageIcon, ListIcon, MessageSquareTextIcon, Rows3Icon } from "lucide-react";
 
 export type TQuestion = {
     id: string;
@@ -29,6 +29,24 @@ export const questionTypes: TQuestion[] = [
         icon: Rows3Icon,
         preset: {
             headline: { default: "What's your favorite color?"},
+        }
+    },
+    {
+        id: QuestionId.MultipleChoiceMulti,
+        label: "Multi-select",
+        description: "Number of choices from a list of options (checkboxes)",
+        icon: ListIcon,
+        preset: {
+            headline: { default: "What's your favorite color?"},
+        }
+    },
+    {
+        id: QuestionId.PictureSelection,
+        label: "Picture selection",
+        description: "Ask respondents to select one or more picture",
+        icon: ImageIcon,
+        preset: {
+            
         }
     }
 ];
