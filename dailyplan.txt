@@ -6,3 +6,8 @@ completed the ui  in the november and after the november or december we will cre
 
 23-11-2024
     - created the thank you card page
+
+
+24-11-2024 created the half menu 
+
+25-11-2024 completed the question menu and question ui

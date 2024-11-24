@@ -1,4 +1,4 @@
-import { type ZodIssue, z } from "zod";
+import z from "zod";
 
 
 export const ZI18nString = z.record(z.string()).refine((obj) => "default" in obj, {
@@ -115,3 +115,4 @@ export const ZSurvey = z.object({
 export const ZSurveyOpenTextQuestionInputType = z.enum(["text", "email", "url", "number", "phone"]);
 export type TSurveyOpenTextQuestionInputType = z.infer<typeof ZSurveyOpenTextQuestionInputType>;
 
+export type TSurvey = z.infer<typeof ZSurvey>;
