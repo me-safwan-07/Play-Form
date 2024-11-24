@@ -21,12 +21,12 @@ export const EditWelcomeCard = ({
 
     let open = activeQuestionId == "start";
 
-    // const setOpen = (e) => {
-    //     if (e) {
-    //         setActiveQuestionId("start");
-    //         setFirstReander(true);
-    //     }
-    // }
+    const setOpen = (e: any) => {
+        if (e) {
+            // setActiveQuestionId("start");
+            setFirstReander(true);
+        }
+    }
     
 
     return (
@@ -40,6 +40,7 @@ export const EditWelcomeCard = ({
             </div>
             <Collapsible.Root
                 open={open}
+                onOpenChange={setOpen}
                 className="flex-1 rounded-r-lg border border-slate-200 transition-all duration-300 ease-in-out"
             >
                 <Collapsible.CollapsibleTrigger
