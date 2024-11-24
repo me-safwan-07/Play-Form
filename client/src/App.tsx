@@ -5,6 +5,7 @@ import { TemplateContainer } from './pages/templates/components/TemplateContaine
 import { Edit } from './pages/edit';
 import { EditWelcomeCard } from './pages/edit/components/EditWelcomeCard';
 import { AddQuestionButton } from './pages/edit/components/AddQuestionButton';
+import { QuestionCard } from './pages/edit/components/QuestionCard';
 
 function App() {
   return (
@@ -14,6 +15,9 @@ function App() {
         <Route path="/a" element={<TemplateContainer />} />
         <Route path="/edit" element={<Edit />} />
         <Route path="/add" element={<AddQuestionButton />} />
+        <Route path="/add" element={<AddQuestionButton />} />
+        <Route path="/test" element={<QuestionCard />} />
+
       </Routes>
     </Router>
   );

@@ -85,3 +85,19 @@ export const questionTypes: TQuestion[] = [
         }
     },
 ];
+
+export const QUESTIONS_ICON_MAP = questionTypes.reduce(
+  (prev, curr) => ({
+    ...prev,
+    [curr.id]: <curr.icon className="h-5 w-5" />,
+  }),
+  {}
+);
+
+export const QUESTIONS_NAME_MAP = questionTypes.reduce(
+  (prev, curr) => ({
+    ...prev,
+    [curr.id]: curr.label,
+  }),
+  {}
+);
