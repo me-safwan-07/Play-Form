@@ -2,7 +2,15 @@
 import {
     TSurveyQuestionTypeEnum as QuestionId,
 } from "@/types/forms";
-import { ImageIcon, ListIcon, MessageSquareTextIcon, Rows3Icon } from "lucide-react";
+import { 
+    ArrowUpFromLineIcon, 
+    CalendarDaysIcon, 
+    HomeIcon, 
+    ImageIcon, 
+    ListIcon, 
+    MessageSquareTextIcon, 
+    Rows3Icon 
+} from "lucide-react";
 
 export type TQuestion = {
     id: string;
@@ -48,5 +56,32 @@ export const questionTypes: TQuestion[] = [
         preset: {
             
         }
-    }
+    },
+    {
+        id: QuestionId.Date,
+        label: "Date",
+        description: "Ask your users to select a date",
+        icon: CalendarDaysIcon,
+        preset: {
+            
+        }
+    },
+    {
+        id: QuestionId.FileUpload,
+        label: "File Upload",
+        description: "Allow respondents to upload a file",
+        icon: ArrowUpFromLineIcon,
+        preset: {
+            
+        }
+    },
+    {
+        id: QuestionId.Address,
+        label: "Address",
+        description: "Allow respondents to provide their address",
+        icon: HomeIcon,
+        preset: {
+            
+        }
+    },
 ];
