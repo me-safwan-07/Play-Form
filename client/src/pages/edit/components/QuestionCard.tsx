@@ -2,6 +2,8 @@ import { cn } from "@/lib/utils"
 import * as Collapsible  from "@radix-ui/react-collapsible"
 import { GripIcon, Scale } from "lucide-react"
 import { QuestionMenu } from "./QuestionMenu"
+import { QUESTIONS_ICON_MAP } from "@/lib/questions"
+import { OpenQuestionForm } from "./OpenQuestionForm"
 
 export const QuestionCard = () => {
     return (
@@ -20,12 +22,12 @@ export const QuestionCard = () => {
             <Collapsible.Root>
                 <Collapsible.CollapsibleTrigger
                     asChild
-                    className=""
+                    className={cn("flex cursor-pointer justify-between gap-4 p-4 hover:bg-slate-50")}
                 >
                     <div>
-                        <div className="">
-                            <div className="">
-                                {/* {QUESTIONS_ICON_MAP[question.type]} */}
+                        <div className="flex grow">
+                            <div className="-ml-0.5 mr-3 h-6 min-w-[1.5rem] text-slate-400">
+                                {/* {QUESTIONS_ICON_MAP[question.type]}: */}
                             </div>
                             <div className="">
                                 <p className="">
@@ -34,12 +36,16 @@ export const QuestionCard = () => {
                             </div>
                         </div>
 
-                        <div className="">
+                        <div className="flex items-center space-x-2">
                             {/* Question menu */}
                             <QuestionMenu />
                         </div>
                     </div>
                 </Collapsible.CollapsibleTrigger>
+                <Collapsible.CollapsibleContent className="px-4 pb-4">
+                    {/* Question content */}
+                    <OpenQuestionForm />
+                </Collapsible.CollapsibleContent>
             </Collapsible.Root>
         </div>
     )
