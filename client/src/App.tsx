@@ -6,6 +6,7 @@ import { Edit } from './pages/edit';
 import { EditWelcomeCard } from './pages/edit/components/EditWelcomeCard';
 import { AddQuestionButton } from './pages/edit/components/AddQuestionButton';
 import { QuestionCard } from './pages/edit/components/QuestionCard';
+import { SelectQuestionChoice } from './pages/edit/components/SelectQuestionChoice';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/add" element={<AddQuestionButton />} />
         <Route path="/add" element={<AddQuestionButton />} />
         <Route path="/test" element={<QuestionCard />} />
+        <Route path="/test1" element={<SelectQuestionChoice />} />
 
       </Routes>
     </Router>

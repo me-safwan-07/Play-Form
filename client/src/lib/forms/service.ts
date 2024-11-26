@@ -4,7 +4,7 @@
 import { TSurvey } from "@/types/forms";
 
 export const selectForms ={
-    d: true,
+  id: true,
   createdAt: true,
   updatedAt: true,
   name: true,
