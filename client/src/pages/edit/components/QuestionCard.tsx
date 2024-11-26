@@ -4,8 +4,11 @@ import { GripIcon, Scale } from "lucide-react"
 import { QuestionMenu } from "./QuestionMenu"
 import { QUESTIONS_ICON_MAP } from "@/lib/questions"
 import { OpenQuestionForm } from "./OpenQuestionForm"
+import { MultipleChoiceQuestionForm } from "./MultipleChoiceQuestionForm"
+import { useState } from "react"
 
 export const QuestionCard = () => {
+    const [type, setType] = useState("MultipleChoiceQuestionForm");
     return (
         <div className="scale-100 shadow-lg flex w-full flex-row rounded-lg bg-white transition-all duration-300 ease-in-out">
             <div className={cn(
@@ -44,7 +47,11 @@ export const QuestionCard = () => {
                 </Collapsible.CollapsibleTrigger>
                 <Collapsible.CollapsibleContent className="px-4 pb-4">
                     {/* Question content */}
-                    <OpenQuestionForm />
+                    { type === 'OpenQuestionForm' ? (
+                        <OpenQuestionForm />
+                    ) : type === 'MultipleChoiceQuestionForm' ? (
+                        <MultipleChoiceQuestionForm />
+                    ): null}
                 </Collapsible.CollapsibleContent>
             </Collapsible.Root>
         </div>
