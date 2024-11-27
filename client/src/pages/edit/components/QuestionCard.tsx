@@ -7,9 +7,10 @@ import { OpenQuestionForm } from "./OpenQuestionForm"
 import { MultipleChoiceQuestionForm } from "./MultipleChoiceQuestionForm"
 import { useState } from "react"
 import { DateQuestionForm } from "./DateQuestionForm"
+import { AddressQuestionForm } from "./AddressQuestionForm"
 
 export const QuestionCard = () => {
-    const [type, setType] = useState("date");
+    const [type, setType] = useState("address");
     return (
         <div className="scale-100 shadow-lg flex w-full flex-row rounded-lg bg-white transition-all duration-300 ease-in-out">
             <div className={cn(
@@ -53,7 +54,7 @@ export const QuestionCard = () => {
                     ) : type === 'MultipleChoiceQuestionForm' ? (
                         <MultipleChoiceQuestionForm />
                     ): type === 'date' ? <DateQuestionForm /> 
-                    : null
+                    : type === 'address' ? <AddressQuestionForm /> : null
                     }
                 
                 </Collapsible.CollapsibleContent>
