@@ -6,9 +6,10 @@ import { QUESTIONS_ICON_MAP } from "@/lib/questions"
 import { OpenQuestionForm } from "./OpenQuestionForm"
 import { MultipleChoiceQuestionForm } from "./MultipleChoiceQuestionForm"
 import { useState } from "react"
+import { DateQuestionForm } from "./DateQuestionForm"
 
 export const QuestionCard = () => {
-    const [type, setType] = useState("MultipleChoiceQuestionForm");
+    const [type, setType] = useState("date");
     return (
         <div className="scale-100 shadow-lg flex w-full flex-row rounded-lg bg-white transition-all duration-300 ease-in-out">
             <div className={cn(
@@ -51,7 +52,10 @@ export const QuestionCard = () => {
                         <OpenQuestionForm />
                     ) : type === 'MultipleChoiceQuestionForm' ? (
                         <MultipleChoiceQuestionForm />
-                    ): null}
+                    ): type === 'date' ? <DateQuestionForm /> 
+                    : null
+                    }
+                
                 </Collapsible.CollapsibleContent>
             </Collapsible.Root>
         </div>
