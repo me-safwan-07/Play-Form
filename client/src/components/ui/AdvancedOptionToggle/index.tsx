@@ -4,7 +4,7 @@ import { Switch } from "../Switch";
 
 interface AdvancedOptionToggleProps {
   isChecked: boolean;
-  onToggle: (checked: boolean) => void;
+  onToggle?: (checked: boolean) => void;
   htmlId: string;
   title: string;
   description: any;
