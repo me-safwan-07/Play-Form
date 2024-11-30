@@ -15,35 +15,18 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Post {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
-  slug     String    @unique
-  title    String
-  body     String
-  author   User      @relation(fields: [authorId], references: [id])
-  authorId String    @db.ObjectId
-  comments Comment[]
-}
+model Person {
+  id            String      @id @default("_id") @map("_id")
+  userId        String
+  createdAt     DateTime    @default(now()) @map(name: "created_at")
+  updatedAt     DateTime    @updatedAt @map(name: "updated_at")
+  // environment   Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  // environmentId String
+  // responses     Response[]
+  // attributes    Attribute[]
+  // displays      Display[]
+  // actions       Action[]
 
-model User {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  email   String   @unique
-  name    String?
-  address Address?
-  posts   Post[]
-}
-
-model Comment {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  comment String
-  post    Post   @relation(fields: [postId], references: [id])
-  postId  String @db.ObjectId
-}
-
-// Address is an embedded document
-type Address {
-  street String
-  city   String
-  state  String
-  zip    String
-}
+  // @@unique([environmentId, userId])
+  // @@index([environmentId])
+} 
