@@ -13,6 +13,7 @@ dotenv_1.default.config();
 app.use(express_1.default.json()); // Alternatively, bodyParser.json() works too
 app.get('/:id', personController_1.getPerson);
 app.post('/user', personController_1.createPerson);
+app.delete('/duser/:id', personController_1.deletePerson);
 const port = process.env.PORT || 3000;
 if (require.main === module) {
     app.listen(port, () => {

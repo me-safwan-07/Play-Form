@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import { createPerson, getPerson } from "./controllers/personController";
+import { createPerson, deletePerson, getPerson } from "./controllers/personController";
 
 const app: Express = express();
 dotenv.config();
@@ -8,6 +8,7 @@ app.use(express.json()); // Alternatively, bodyParser.json() works too
 
 app.get('/:id', getPerson);
 app.post('/user', createPerson);
+app.delete('/duser/:id', deletePerson);
 
 const port = process.env.PORT || 3000;
 if (require.main === module) {
