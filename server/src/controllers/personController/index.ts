@@ -62,7 +62,7 @@ export const createPerson = async (req: Request, res: Response, next: NextFuncti
         // Case 3: Create a new person in the database
         const person = await prisma.person.create({
             data: { userId },
-            select: { id: true, userId: true, createdAt: true, updatedAt: true },
+            select: selectPerson,
         });
 
         res.status(201).json(person);
@@ -85,6 +85,69 @@ export const createPerson = async (req: Request, res: Response, next: NextFuncti
         next(error);
     }
 };
+
+export const deletePerson = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    const userId: string = req.params.id;
+
+    // Validate the presence of the `userId` parameter
+    if (!userId) {
+        res.status(400).json({ error: "Missing required parameter: userId" });
+        return;
+    }
+
+    try {
+        // Check if the person exists before attempting to delete
+        const existingPerson = await prisma.person.findUnique({
+            where: { id: userId },
+        });
+
+        if (!existingPerson) {
+            res.status(404).json({ error: "Person not found" });
+            return;
+        }
+
+        // Delete the person record
+        const deletedPerson = await prisma.person.delete({
+            where: { id: userId },
+            select: selectPerson,
+        });
+
+        res.status(200).json({
+            message: "Person deleted successfully",
+            data: deletedPerson,
+        });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            // Handle specific Prisma errors
+            switch (error.code) {
+                case "P2025": // Record not found error
+                    res.status(404).json({ error: "Person not found" });
+                    break;
+                default:
+                    res.status(500).json({
+                        error: `Database error: ${error.message}`,
+                    });
+            }
+            return;
+        }
+
+        if (error instanceof Prisma.PrismaClientValidationError) {
+            // Handle validation errors
+            res.status(400).json({
+                error: `Validation error: ${error.message}`,
+            });
+            return;
+        }
+
+        // Handle other unexpected errors
+        next(error);
+    }
+}
+
 
 
 // getPerson
