@@ -6,14 +6,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.app = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const personController_1 = require("./controllers/personController");
+const routes_1 = __importDefault(require("./routes"));
+dotenv_1.default.config();
 const app = (0, express_1.default)();
 exports.app = app;
-dotenv_1.default.config();
 app.use(express_1.default.json()); // Alternatively, bodyParser.json() works too
-app.get('/:id', personController_1.getPerson);
-app.post('/user', personController_1.createPerson);
-app.delete('/duser/:id', personController_1.deletePerson);
+const BASE_URL = process.env.BASE_URL || ""; // Default to "/api" if BASE_URL is not set
+// Ensure BASE_URL starts with a "/"
+const routePrefix = BASE_URL.startsWith("/") ? BASE_URL : `/${BASE_URL}`;
+app.use(routePrefix, routes_1.default);
 const port = process.env.PORT || 3000;
 if (require.main === module) {
     app.listen(port, () => {
