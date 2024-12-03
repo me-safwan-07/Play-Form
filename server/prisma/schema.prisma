@@ -16,8 +16,62 @@ generator client {
 }
 
 model Person {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String            @unique
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  // displays          Display[]
+}
+
+model Response {
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt        DateTime          @default(now()) @map(name: "created_at")
+  updatedAt        DateTime          @updatedAt @map(name: "updated_at")
+  finished         Boolean           @default(false)
+  // survey           Survey            @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  surveyId         String
+  // person           Person?           @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId         String?
+  // notes            ResponseNote[]
+  /// @zod.custom(imports.ZResponseData)
+  /// [ResponseData]
+  // data             Json              @default("{}")
+  /// @zod.custom(imports.ZResponseTtc)
+  /// [ResponseTtc]
+  // ttc              Json              @default("{}")
+  /// @zod.custom(imports.ZResponseMeta)
+  /// [ResponseMeta]
+  // meta             Json              @default("{}")
+  // tags             TagsOnResponses[]
+  /// @zod.custom(imports.ZResponsePersonAttributes)
+  /// [ResponsePersonAttributes]
+  // personAttributes Json?
+  // singleUseId, used to prevent multiple responses
+  singleUseId      String?
+  // language         String?
+
+  @@unique([surveyId, singleUseId])
+  @@index([surveyId, createdAt]) // to determine monthly response count
+  @@index([personId, createdAt]) // to determine monthly identified users (persons)
+  @@index([surveyId])
+}
+
+enum DisplayStatus {
+  seen
+  responded
+}
+
+model Display {
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt  DateTime       @default(now()) @map(name: "created_at")
+  updatedAt  DateTime       @updatedAt @map(name: "updated_at")
+  // survey     Survey         @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  surveyId   String
+  // person     Person?        @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId   String?
+  responseId String?        @unique
+  status     DisplayStatus?
+
+  @@index([surveyId])
+  @@index([id, createdAt])
 }
