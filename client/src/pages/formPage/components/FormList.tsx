@@ -11,7 +11,7 @@ export const FormList: React.FC = (): JSX.Element => {
                     <div className="col-span-2 place-self-start">Name</div>
                     <div className="col-span-1">Status</div>
                     <div className="col-span-1">Responses</div>
-                    <div className="col-span-1">Type</div>
+                    {/* <div className="col-span-1">Type</div> */}
                     <div className="col-span-1">Created at</div>
                     <div className="col-span-1">Updated at</div>
                     <div className="col-span-1">Created by</div>
