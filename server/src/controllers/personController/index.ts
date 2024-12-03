@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import express, { Express, Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import { prisma } from "../../database";
 import { DatabaseError } from "../../types/errors";
 import { TPerson } from "../../types/people";
@@ -146,14 +146,8 @@ export const deletePerson = async (
         // Handle other unexpected errors
         next(error);
     }
-}
+};
 
 
-
-// getPerson
-// getPeople
-// getPeopleCount
-// createPerson
-// deletePerson
 // getPersonByUserId
 // getIsPersonMonthlyActive

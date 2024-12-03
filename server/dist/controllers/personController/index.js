@@ -136,10 +136,5 @@ const deletePerson = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.deletePerson = deletePerson;
-// getPerson
-// getPeople
-// getPeopleCount
-// createPerson
-// deletePerson
 // getPersonByUserId
 // getIsPersonMonthlyActive
