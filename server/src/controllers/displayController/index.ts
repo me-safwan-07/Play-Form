@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { DatabaseError } from "../../types/errors";
 import { getPerson } from "../personController";
 import { connect } from "http2";
+import { TPerson } from "../../types/people";
 
 export const selectDisplay = {
   id: true,
@@ -34,6 +35,36 @@ const createPerson = async (userId: string) => {
 };
 
 
+export const getDisplay = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { displayId } = req.params;
+  try {
+    const display = await prisma.display.findUnique({
+      where: {
+        id: displayId,
+      },
+      select: selectDisplay,
+    });
+
+    if (!display) {
+      res.status(404).json({ error: "Display not found" });
+      return;
+    }
+
+    res.status(200).json(display);
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientInitializationError) {
+      return next(new DatabaseError(error.message));
+    } else {
+      res.status(500).json({ error: "An unexpected error occurred." });
+    }
+  }
+};
+
+export const updateDisplay = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  let person: TPerson | null = null;
+  
+
+}
 
 export const createDisplay = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { userId, surveyId } = req.body;
@@ -101,8 +132,35 @@ export const getDisplayByPersonId = async(req: Request, res: Response, next: Nex
         }
     }
 };
+export const getDisplayCountBySurveyId = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { surveyId } = req.params;
+    const { filters } = req.body;
 
-// export const deleteDisplayByResponseId = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
-//     const responseId = req.params
-//     const surve
-// };
+    try {
+        const display = await prisma.display.count({ // if get any issue in database chage into findUnique
+            where: {
+              surveyId: surveyId,
+              ...(filters && 
+                filters.createdAt && {
+                  createdAt: {
+                    gte: filters.createdAt.min,
+                    lte: filters.createdAt.max,
+                  },
+                }
+              )
+            },
+        });
+
+        if (!display) {
+            res.status(404).send({ error: "Display not found"});
+        }
+
+        res.status(201).json(display);
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            res.status(500).send({ error: "Database error: " + error.message });
+        } else {
+            res.status(500).json({ error: "An unexpected error occurred." });
+        }
+    }
+};
