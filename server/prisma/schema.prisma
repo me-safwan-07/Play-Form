@@ -76,7 +76,7 @@ model Display {
   @@index([id, createdAt])
 }
 
-model Survey {
+model Form {
   id                  String                  @id @default(auto()) @map("_id") @db.ObjectId
   createdAt           DateTime                @default(now()) @map(name: "created_at")
   updatedAt           DateTime                @updatedAt @map(name: "updated_at")
