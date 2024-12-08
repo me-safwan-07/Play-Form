@@ -7,7 +7,8 @@ import { EditWelcomeCard } from './pages/edit/components/EditWelcomeCard';
 import { AddQuestionButton } from './pages/edit/components/AddQuestionButton';
 import { QuestionCard } from './pages/edit/components/QuestionCard';
 import { SelectQuestionChoice } from './pages/edit/components/SelectQuestionChoice';
-import { FormMenuBar } from './pages/formPage/components/FormMenuBar';
+import { FormMenuBar } from './pages/edit/components/FormMenuBar';
+import { FormEditor } from './pages/edit/components/FormEditor';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/test" element={<QuestionCard />} />
         <Route path="/test1" element={<SelectQuestionChoice />} />
         <Route path="/menu" element={<FormMenuBar />} />
+        <Route path="/editor" element={<FormEditor />} />
       </Routes>
     </Router>
   );
