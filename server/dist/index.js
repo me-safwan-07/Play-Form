@@ -7,14 +7,23 @@ exports.app = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const routes_1 = __importDefault(require("./routes"));
+const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 exports.app = app;
-app.use(express_1.default.json()); // Alternatively, bodyParser.json() works too
-const BASE_URL = process.env.BASE_URL || ""; // Default to "/api" if BASE_URL is not set
-// Ensure BASE_URL starts with a "/"
+// Enable CORS with default settings or custom configuration
+app.use((0, cors_1.default)({
+    origin: process.env.CLIENT_ORIGIN || "*", // Replace "*" with your client URL in production
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allow specific HTTP methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allow custom headers
+}));
+// Enable JSON body parsing
+app.use(express_1.default.json());
+// Base URL configuration
+const BASE_URL = process.env.BASE_URL || ""; // Default to empty if not set
 const routePrefix = BASE_URL.startsWith("/") ? BASE_URL : `/${BASE_URL}`;
 app.use(routePrefix, routes_1.default);
+// Server listening on a specified port
 const port = process.env.PORT || 3000;
 if (require.main === module) {
     app.listen(port, () => {
