@@ -3,7 +3,6 @@ import { prisma } from "../../database";
 import { Prisma } from "@prisma/client";
 import { DatabaseError } from "../../types/errors";
 import { getPerson } from "../personController";
-import { connect } from "http2";
 import { TPerson } from "../../types/people";
 
 export const selectDisplay = {
