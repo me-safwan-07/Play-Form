@@ -1,6 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DatabaseError = exports.ValidationError = exports.InvalidInputError = void 0;
+exports.DatabaseError = exports.ValidationError = exports.InvalidInputError = exports.ResourceNotFoundError = void 0;
+class ResourceNotFoundError extends Error {
+    constructor(resource, id) {
+        super(`${resource} with ID ${id} not found`);
+        this.statusCode = 404;
+        this.name = "ResourceNotFoundError";
+    }
+}
+exports.ResourceNotFoundError = ResourceNotFoundError;
 class InvalidInputError extends Error {
     constructor(message) {
         super(message);

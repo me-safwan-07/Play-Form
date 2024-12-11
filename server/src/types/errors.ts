@@ -1,3 +1,11 @@
+class ResourceNotFoundError extends Error {
+  statusCode = 404;
+  constructor(resource: string, id: string) {
+    super(`${resource} with ID ${id} not found`);
+    this.name = "ResourceNotFoundError";
+  }
+}
+
 class InvalidInputError extends Error {
   statusCode = 400;
   constructor(message: string) {
@@ -23,6 +31,7 @@ class DatabaseError extends Error {
 }
 
 export {
+    ResourceNotFoundError,
     InvalidInputError,
     ValidationError,
     DatabaseError,
