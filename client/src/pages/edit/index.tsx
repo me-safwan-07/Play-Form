@@ -1,13 +1,21 @@
-import React from 'react'
-import { EditWelcomeCard } from './components/EditWelcomeCard'
-import { AddQuestionButton } from './components/AddQuestionButton';
-import { EditThankYouCard } from './components/EditThankYouCard';
-import { QuestionsView } from './components/QuestionsView';
+import { FormEditor } from './components/FormEditor';
 
 export const Edit = () => {
   return (
-    <div>
-      <QuestionsView />
-    </div>
+    <FormEditor 
+      // survey={survey}
+      // product={product}
+      // environment={environment}
+      // actionClasses={actionClasses}
+      // attributeClasses={attributeClasses}
+      // responseCount={responseCount}
+      // membershipRole={currentUserMembership?.role}
+      // colors={SURVEY_BG_COLORS}
+      // segments={segments}
+      // isUserTargetingAllowed={isUserTargetingAllowed}
+      // isMultiLanguageAllowed={isMultiLanguageAllowed}
+      // isFormbricksCloud={IS_FORMBRICKS_CLOUD}
+      // isUnsplashConfigured={UNSPLASH_ACCESS_KEY ? true : false}
+    />
   );
 };
