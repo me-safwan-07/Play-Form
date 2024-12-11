@@ -5,6 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 // npx prisma db push
+// npx prisma generate
 
 datasource db {
   provider = "mongodb"
@@ -116,17 +117,37 @@ enum IdentityProvider {
 }
 
 model User {
-  id                        String            @id @default(auto()) @map("_id") @db.ObjectId
+  id                        String           @id @default(auto()) @map("_id") @db.ObjectId
   createdAt                 DateTime         @default(now()) @map(name: "created_at")
   updatedAt                 DateTime         @updatedAt @map(name: "updated_at")
   name                      String
   email                     String           @unique
   emailVerified             DateTime?        @map(name: "email_verified")
   imageUrl                  String?
-  twoFactorSecret           String?
-  twoFactorEnabled          Boolean          @default(false)
-  backupCodes               String?
   password                  String?
   identityProvider          IdentityProvider @default(email)
   identityProviderAccountId String?
+  // accounts                 Account[]
 }
+
+// model Account {
+//   id                String           @id @default(auto()) @map("_id") @db.ObjectId
+//   createdAt         DateTime         @default(now()) @map(name: "created_at")
+//   updatedAt         DateTime         @updatedAt @map(name: "updated_at")
+//   user              User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   userId            String
+//   type              String
+//   provider          String
+//   providerAccountId String
+//   access_token      String?  @db.Text
+//   refresh_token     String?  @db.Text
+//   expires_at        Int?
+//   ext_expires_in    Int?
+//   token_type        String?
+//   scope             String?
+//   id_token          String?  @db.Text
+//   session_state     String?
+
+//   @@unique([provider, providerAccountId])
+//   @@index([userId])
+// }
