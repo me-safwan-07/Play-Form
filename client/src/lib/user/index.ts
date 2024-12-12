@@ -1,5 +1,5 @@
 import { signInWithPopup } from "firebase/auth";
-import { hashPassword } from "../auth";
+// import { hashPassword } from "../auth";
 import { auth, googleProvider } from "@/lib/firebase-config";
 
 export const createUser = async (
@@ -8,7 +8,7 @@ export const createUser = async (
   password: string,
   inviteToken?: string | null
 ): Promise<void> => {
-  const hashedPassword = await hashPassword(password);
+  // const hashedPassword = await hashPassword(password);
   try {
     const res = await fetch(`/api/v1/users`, {
       method: "POST",
@@ -16,7 +16,7 @@ export const createUser = async (
       body: JSON.stringify({
         name,
         email,
-        password: hashedPassword,
+        password,
         inviteToken,
       }),
     });
