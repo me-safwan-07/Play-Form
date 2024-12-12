@@ -9,12 +9,13 @@ import { FormMenuBar } from './pages/edit/components/FormMenuBar';
 import { FormEditor } from './pages/edit/components/FormEditor';
 import Auth from './pages/auth';
 import NotFound from './components/ui/NotFound';
+import UserTable from './pages/apitest/getUserById';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Page />} />
+        <Route path="/:id/forms/" element={<Page />} />
         <Route path="/a" element={<TemplateContainer />} />
         <Route path="/edit" element={<Edit />} />
         <Route path="/add" element={<AddQuestionButton />} />
@@ -24,6 +25,7 @@ function App() {
         <Route path="/menu" element={<FormMenuBar />} />
         <Route path="/editor" element={<FormEditor />} />
         <Route path="/auth/*" element={<Auth />} />
+        <Route path="/getuser" element={<UserTable />} />
         <Route path="/not-found" element={<NotFound />} />
       </Routes>
     </Router>
