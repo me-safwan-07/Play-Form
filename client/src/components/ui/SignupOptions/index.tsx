@@ -2,7 +2,7 @@ import { createUser } from "@/lib/user";
 import { useRef, useState } from "react";
 import { PasswordInput } from "../PasswordInput";
 import { Link, useNavigate } from "react-router-dom";
-import { IsPasswordValid } from "./components/IsPasswordValid";
+// import { IsPasswordValid } from "./components/IsPasswordValid";
 import Button from "../Button/index";
 import { GoogleButton } from "./components/GoogleButton";
 import toast from "react-hot-toast";
@@ -144,7 +144,7 @@ export const SignupOptions = ({
                   </Link>
                 </div>
               )}
-              <IsPasswordValid password={password} setIsValid={setIsValid} />
+              {/* <IsPasswordValid password={password} setIsValid={setIsValid} /> */}
             </div>
           )}
           {showLogin && (
