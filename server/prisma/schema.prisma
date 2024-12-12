@@ -127,7 +127,6 @@ model User {
   password                  String?
   identityProvider          IdentityProvider @default(email)
   identityProviderAccountId String?
-  // accounts                 Account[]
 }
 
 // model Account {
