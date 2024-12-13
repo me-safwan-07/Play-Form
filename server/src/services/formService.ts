@@ -1,63 +1,65 @@
-import { Prisma } from "@prisma/client";
-import { DatabaseError } from '../types/errors'; // Custom error class
-import { transformPrismaSurvey } from '../utils/formsUtils'; // Utility functions
+import { Form } from "@prisma/client";
+import { FormInput, FormUpdateInput } from "../types/forms";
 import { prisma } from "../database";
-import { TForm, TFormInput } from "../types/forms";
-import { validateInputs } from "../utils/validate";
-import { ZId } from "../types/environment";
+import { NotFoundError } from "../utils/errors";
 
-export const selectSurvey = {
-    id: true,
-    createdAt: true,
-    updatedAt: true,
-    name: true,
-    createdBy: true,
-};
-
-export const getSurvey = async (surveyId: string): Promise<TForm | null> => {
-  validateInputs([surveyId, ZId]);
-
-  let surveyPrisma;
-  try {
-    surveyPrisma = await prisma.form.findUnique({
-      where: {
-        id: surveyId,
+export class FormService {
+  static async createdForm(data: FormInput): Promise<Form> {
+    return prisma.form.create({
+      data: {
+        name: data.name,
+        createdBy: data.createdBy,
+        status: data.status || 'draft',
       },
-      select: selectSurvey,
     });
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      throw new DatabaseError(error.message);
+  }
+
+  static async getAllForms(): Promise<Form[]> {
+    return prisma.form.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  static async getFormById(id: string): Promise<Form> {
+    const form = await prisma.form.findUnique({
+      where: { id },
+    });
+
+    if (!form) {
+      throw new NotFoundError('Form not found');
     }
-    throw error;
+
+    return form;
   }
 
-  if (!surveyPrisma) {
-    return null;
+  static async updateForm(id: string, data: FormUpdateInput): Promise<Form> {
+    const form = await prisma.form.findUnique({
+      where: { id },
+    });
+
+    if (!form) {
+      throw new NotFoundError('Form not found');
+    }
+
+    return prisma.form.update({
+      where: { id },
+      data,
+    });
   }
 
-  return transformPrismaSurvey(surveyPrisma);
-};
+  static async deleteForm(id: string): Promise<Form> {
+    const form = await prisma.form.findUnique({
+      where: { id },
+    });
 
-// export const createForm = async (environmentId: string, formBody: TFormInput): Promise<TForm> => {
-//   validateInputs([environmentId, ZId]);
+    if (!form) {
+      throw new NotFoundError('Form not found');
+    }
 
-//   try {
-//     const createdBy = formBody.createdBy;
-//     // delete createdBy;
-
-//     const survey = await prisma.form.create({
-//       data: {
-//         ...formBody.data,
-//         environment: {
-//           connect: {
-//             id: environmentId,
-//           },
-//         },
-//       },
-//       select: selectSurvey,
-//     });
-
-//     return transformPrismaSurvey(survey);
-//   }
-// }
+    return prisma.form.delete({
+      where: { id },
+    });
+  }
+}

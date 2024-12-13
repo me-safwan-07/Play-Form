@@ -9,59 +9,67 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSurvey = exports.selectSurvey = void 0;
-const client_1 = require("@prisma/client");
-const errors_1 = require("../types/errors"); // Custom error class
-const formsUtils_1 = require("../utils/formsUtils"); // Utility functions
+exports.FormService = void 0;
 const database_1 = require("../database");
-const validate_1 = require("../utils/validate");
-const environment_1 = require("../types/environment");
-exports.selectSurvey = {
-    id: true,
-    createdAt: true,
-    updatedAt: true,
-    name: true,
-    createdBy: true,
-};
-const getSurvey = (surveyId) => __awaiter(void 0, void 0, void 0, function* () {
-    (0, validate_1.validateInputs)([surveyId, environment_1.ZId]);
-    let surveyPrisma;
-    try {
-        surveyPrisma = yield database_1.prisma.form.findUnique({
-            where: {
-                id: surveyId,
-            },
-            select: exports.selectSurvey,
+const errors_1 = require("../utils/errors");
+class FormService {
+    static createdForm(data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return database_1.prisma.form.create({
+                data: {
+                    name: data.name,
+                    createdBy: data.createdBy,
+                    status: data.status || 'draft',
+                },
+            });
         });
     }
-    catch (error) {
-        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
-            throw new errors_1.DatabaseError(error.message);
-        }
-        throw error;
+    static getAllForms() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return database_1.prisma.form.findMany({
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            });
+        });
     }
-    if (!surveyPrisma) {
-        return null;
+    static getFormById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const form = yield database_1.prisma.form.findUnique({
+                where: { id },
+            });
+            if (!form) {
+                throw new errors_1.NotFoundError('Form not found');
+            }
+            return form;
+        });
     }
-    return (0, formsUtils_1.transformPrismaSurvey)(surveyPrisma);
-});
-exports.getSurvey = getSurvey;
-// export const createForm = async (environmentId: string, formBody: TFormInput): Promise<TForm> => {
-//   validateInputs([environmentId, ZId]);
-//   try {
-//     const createdBy = formBody.createdBy;
-//     // delete createdBy;
-//     const survey = await prisma.form.create({
-//       data: {
-//         ...formBody.data,
-//         environment: {
-//           connect: {
-//             id: environmentId,
-//           },
-//         },
-//       },
-//       select: selectSurvey,
-//     });
-//     return transformPrismaSurvey(survey);
-//   }
-// }
+    static updateForm(id, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const form = yield database_1.prisma.form.findUnique({
+                where: { id },
+            });
+            if (!form) {
+                throw new errors_1.NotFoundError('Form not found');
+            }
+            return database_1.prisma.form.update({
+                where: { id },
+                data,
+            });
+        });
+    }
+    static deleteForm(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const form = yield database_1.prisma.form.findUnique({
+                where: { id },
+            });
+            if (!form) {
+                throw new errors_1.NotFoundError('Form not found');
+            }
+            return database_1.prisma.form.delete({
+                where: { id },
+            });
+        });
+    }
+}
+exports.FormService = FormService;
