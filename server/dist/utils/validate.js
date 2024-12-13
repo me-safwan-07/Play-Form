@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateInputs = void 0;
-const errors_1 = require("../types/errors");
+const errors_1 = require("./errors");
 const validateInputs = (...pairs) => {
     for (const [value, schema] of pairs) {
         const inputValidation = schema.safeParse(value);
