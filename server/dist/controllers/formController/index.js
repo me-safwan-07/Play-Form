@@ -9,26 +9,76 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetchSurvey = void 0;
-const formService_1 = require("../../services/formService"); // Service that handles database logic
-const errors_1 = require("../../types/errors");
-// Controller to handle survey fetching
-const fetchSurvey = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { surveyId } = req.params;
-    try {
-        const survey = yield (0, formService_1.getSurvey)(surveyId);
-        if (!survey) {
-            res.status(404).json({ message: 'Survey not found' });
-            return;
-        }
-        res.json(survey);
+exports.FormController = void 0;
+const error_handler_1 = require("../../utils/error-handler");
+const form_validator_1 = require("../../validators/form.validator");
+const formService_1 = require("../../services/formService");
+class FormController {
+    static createForm(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const formData = req.body;
+                // Validate form input
+                const validationError = (0, form_validator_1.validateFormInput)(formData);
+                if (validationError) {
+                    return res.status(400).json({ error: validationError });
+                }
+                // Add user ID from authenticated request
+                const form = yield formService_1.FormService.createdForm(formData);
+                res.status(200).json(form);
+            }
+            catch (error) {
+                (0, error_handler_1.handleError)(error, res);
+            }
+        });
     }
-    catch (error) {
-        if (error instanceof errors_1.DatabaseError) {
-            res.status(500).json({ message: error.message });
-            return;
-        }
-        res.status(500).json({ message: 'Internal server error' });
+    static getAllForms(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const forms = yield formService_1.FormService.getAllForms();
+                res.json(forms);
+            }
+            catch (error) {
+                (0, error_handler_1.handleError)(error, res);
+            }
+        });
     }
-});
-exports.fetchSurvey = fetchSurvey;
+    static getFormById(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = req.params;
+                const form = yield formService_1.FormService.getFormById(id);
+                res.json(form);
+            }
+            catch (error) {
+                (0, error_handler_1.handleError)(error, res);
+            }
+        });
+    }
+    static updateForm(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = req.params;
+                const formData = req.body;
+                const form = yield formService_1.FormService.updateForm(id, formData);
+                res.json(form);
+            }
+            catch (error) {
+                (0, error_handler_1.handleError)(error, res);
+            }
+        });
+    }
+    static deleteForm(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = req.params;
+                const form = yield formService_1.FormService.deleteForm(id);
+                res.json(form);
+            }
+            catch (error) {
+                (0, error_handler_1.handleError)(error, res);
+            }
+        });
+    }
+}
+exports.FormController = FormController;

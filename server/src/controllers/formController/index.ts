@@ -1,26 +1,70 @@
-import { Request, Response } from 'express';
-import { getSurvey } from '../../services/formService'; // Service that handles database logic
-import { DatabaseError } from '../../types/errors';
+import { Request, Response } from "express";
+import { error } from "console";
+import { ValidationError } from "../../utils/errors";
+import { FormInput, FormUpdateInput, TFormInput } from "../../types/forms";
+import { validateInputs } from "../../utils/validate";
+import { handleError } from "../../utils/error-handler";
+import { validateFormInput } from "../../validators/form.validator";
+import { FormService } from "../../services/formService";
 
-// Controller to handle survey fetching
-export const fetchSurvey = async (req: Request, res: Response): Promise<void> => {
-  const { surveyId } = req.params;
+export class FormController {
+  static async createForm(req: Request, res: Response) {
+    try {
+      const formData: FormInput = req.body;
 
-  try {
-    const survey = await getSurvey(surveyId);
+      // Validate form input
+      const validationError = validateFormInput(formData);
+      if (validationError) {
+        return res.status(400).json({ error: validationError});
+      }
 
-    if (!survey) {
-      res.status(404).json({ message: 'Survey not found' });
-      return;
+      // Add user ID from authenticated request
+      
+      const form = await FormService.createdForm(formData);
+      res.status(200).json(form);
+    } catch (error) {
+      handleError(error, res);
     }
-
-    res.json(survey);
-  } catch (error) {
-    if (error instanceof DatabaseError) {
-      res.status(500).json({ message: error.message });
-      return;
-    }
-
-    res.status(500).json({ message: 'Internal server error' });
   }
-};
+
+  static async getAllForms(req: Request, res: Response) {
+    try {
+      const forms = await FormService.getAllForms();
+      res.json(forms);
+    } catch (error) {
+      handleError(error, res);
+    }
+  }
+
+  static async getFormById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const form = await FormService.getFormById(id);
+      res.json(form);
+    } catch (error) {
+      handleError(error, res);
+    }
+  }
+
+  static async updateForm(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const formData: FormUpdateInput = req.body;
+      
+      const form = await FormService.updateForm(id, formData);
+      res.json(form);
+    } catch (error) {
+      handleError(error, res);
+    }
+  }
+
+  static async deleteForm(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const form = await FormService.deleteForm(id);
+      res.json(form);
+    } catch (error) {
+      handleError(error, res);
+    }
+  }
+}
