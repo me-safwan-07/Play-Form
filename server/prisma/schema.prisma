@@ -100,12 +100,21 @@ model Display {
   @@index([id, createdAt])
 }
 
+enum SurveyStatus {
+  draft
+  scheduled
+  inProgress
+  paused
+  completed
+}
+
 model Form {
   id                  String                  @id @default(auto()) @map("_id") @db.ObjectId
   createdAt           DateTime                @default(now()) @map(name: "created_at")
   updatedAt           DateTime                @updatedAt @map(name: "updated_at")
   name                String
   createdBy           String?
+  status              SurveyStatus            @default(draft)
 }
 
 enum IdentityProvider {
