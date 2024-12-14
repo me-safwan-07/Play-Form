@@ -51,7 +51,7 @@ export const ZSurveyHiddenFields = z.object({
    fieldIds: z.optional(z.array(z.string())),
 });
 
-const ZFilterOptions = z.object({
+export const ZFilterOptions = z.object({
     label: z.string(),
     value: z.string(),
 });
@@ -59,14 +59,14 @@ const ZFilterOptions = z.object({
 
 export type TFilterOptions = z.infer<typeof ZFilterOptions>;
 
-const ZSortOption = z.object({
+export const ZSortOption = z.object({
   label: z.string(),
   value: z.enum(["createdAt", "updatedAt", "name", "relevance"]),
 });
 export type TSortOption = z.infer<typeof ZSortOption>;
 
-export const ZSurveyStatus = z.enum(["draft", "scheduled", "inProgress", "paused", "completed"]);
-export type TSurveyStatus = z.infer<typeof ZSurveyStatus>;
+export const ZFormStatus = z.enum(["draft", "scheduled", "inProgress", "paused", "completed"]);
+export type TSurveyStatus = z.infer<typeof ZFormStatus>;
 
 export const ZSurveyDisplayOption = z.enum([
   "displayOnce",
@@ -92,27 +92,36 @@ export type TSurveyDisplayOption = z.infer<typeof ZSurveyDisplayOption>;
 //         triggers: z.array(z.object({ actionClass: }))
 //     })
 
-export const ZSurvey = z.object({
+export const ZForm = z.object({
   id: z.string().cuid2(),
   createdAt: z.date(),
   updatedAt: z.date(),
   name: z.string(),
   // type: website app or link
-  environmentId: z.string(),
+  // environmentId: z.string(),
   createdBy: z.string(),
-  status: ZSurveyStatus,
-  displayOption: ZSurveyDisplayOption,
-  autoClose: z.number().nullable(),
-  triggers: z.array(z.object({ actionClass: z.string() })),
-  redirectUrl: z.string().url().nullable(),
-  recontactDays: z.number().nullable(),
-  displayLimit: z.number().nullable(),
-  welcomeCard: ZSurveyWelcomeCard,
-  hiddenFields: ZSurveyHiddenFields,
-  thankYouCard: ZSurveyThankYouCard.optional(),
+  status: ZFormStatus,
+  // displayOption: ZSurveyDisplayOption,
+  // autoClose: z.number().nullable(),
+  // triggers: z.array(z.object({ actionClass: z.string() })),
+  // redirectUrl: z.string().url().nullable(),
+  // recontactDays: z.number().nullable(),
+  // displayLimit: z.number().nullable(),
+  // welcomeCard: ZSurveyWelcomeCard,
+  // hiddenFields: ZSurveyHiddenFields,
+  // thankYouCard: ZSurveyThankYouCard.optional(),
 });
 
 export const ZSurveyOpenTextQuestionInputType = z.enum(["text", "email", "url", "number", "phone"]);
 export type TSurveyOpenTextQuestionInputType = z.infer<typeof ZSurveyOpenTextQuestionInputType>;
 
-export type TSurvey = z.infer<typeof ZSurvey>;
+export type TForm = z.infer<typeof ZForm>;
+
+export const ZFormFilters = z.object({
+  name: z.string(),
+  // createdBy: z.string(z.enum(["you"]))
+  status: z.array(ZFormStatus),
+  sortBy: z.enum(["createdAt", "updatedAt", "name"]),
+});
+
+export type TFormFilters = z.infer<typeof ZFormFilters>;
