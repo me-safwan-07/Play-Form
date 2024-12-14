@@ -1,11 +1,25 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
+const express_1 = require("express");
 const formController_1 = require("../../controllers/formController");
-// import { createPerson, deletePerson, getPerson } from "../../controllers/personController";
-const app = (0, express_1.default)();
-app.get('/:surveyId', formController_1.fetchSurvey);
-exports.default = app;
+const router = (0, express_1.Router)();
+router.post('/', (req, res) => {
+    formController_1.FormController.createForm(req, res);
+});
+// router.get('/', FormController.getAllForms());
+router.get('/', (req, res) => {
+    formController_1.FormController.getAllForms(req, res);
+});
+router.get('/:id', (req, res) => {
+    formController_1.FormController.getFormById(req, res);
+});
+router.put('/:id', (req, res) => {
+    formController_1.FormController.updateForm(req, res);
+});
+router.delete('/:id', (req, res) => {
+    formController_1.FormController.deleteForm(req, res);
+});
+// router.get('/', (req, res) => {
+//     FormController.getUserForm(req, res)
+// });
+exports.default = router;
