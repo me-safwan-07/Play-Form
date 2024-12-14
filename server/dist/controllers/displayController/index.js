@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getDisplayCountBySurveyId = exports.getDisplayByPersonId = exports.createDisplay = exports.updateDisplay = exports.getDisplay = exports.selectDisplay = void 0;
 const database_1 = require("../../database");
 const client_1 = require("@prisma/client");
-const errors_1 = require("../../types/errors");
+const errors_1 = require("../../utils/errors");
 exports.selectDisplay = {
     id: true,
     createdAt: true,

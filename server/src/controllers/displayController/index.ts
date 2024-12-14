@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "../../database";
 import { Prisma } from "@prisma/client";
-import { DatabaseError } from "../../types/errors";
+import { DatabaseError } from "../../utils/errors";
 import { getPerson } from "../personController";
 import { TPerson } from "../../types/people";
 

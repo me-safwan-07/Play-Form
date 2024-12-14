@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../../database";
-import { DatabaseError } from "../../types/errors";
+import { DatabaseError } from "../../utils/errors";
 import { TPerson } from "../../types/people";
 
 export const selectPerson = {

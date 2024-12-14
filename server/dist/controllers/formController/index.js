@@ -80,5 +80,20 @@ class FormController {
             }
         });
     }
+    static getUserForm(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { userId } = req.params;
+                if (!userId) {
+                    return res.status(400).json({ error: "User not authenticated" });
+                }
+                const forms = yield formService_1.FormService.getFormsByUser(userId);
+                res.json(forms);
+            }
+            catch (error) {
+                (0, error_handler_1.handleError)(error, res);
+            }
+        });
+    }
 }
 exports.FormController = FormController;

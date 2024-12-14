@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletePerson = exports.createPerson = exports.getPerson = exports.selectPerson = void 0;
 const client_1 = require("@prisma/client");
 const database_1 = require("../../database");
-const errors_1 = require("../../types/errors");
+const errors_1 = require("../../utils/errors");
 exports.selectPerson = {
     id: true,
     userId: true,
