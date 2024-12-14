@@ -62,4 +62,13 @@ export class FormService {
       where: { id },
     });
   }
+
+  static async getFormsByUser(userId: string): Promise<Form[]> {
+    return prisma.form.findMany({
+      where: { createdBy: userId },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
 }

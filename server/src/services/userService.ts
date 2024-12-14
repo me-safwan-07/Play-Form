@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "../database";
 import { TUser, TUserCreateInput, TUserUpdateInput } from "../types/user";
 import { validateInputs } from "../utils/validate";
-import { DatabaseError, ResourceNotFoundError, ValidationError } from "../types/errors";
+import { DatabaseError, ResourceNotFoundError, ValidationError } from "../utils/errors";
 import z from 'zod'
 const responseSelection = {
   id: true,

@@ -71,5 +71,15 @@ class FormService {
             });
         });
     }
+    static getFormsByUser(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return database_1.prisma.form.findMany({
+                where: { createdBy: userId },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+            });
+        });
+    }
 }
 exports.FormService = FormService;

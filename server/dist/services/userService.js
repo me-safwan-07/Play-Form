@@ -16,7 +16,7 @@ exports.updateUser = exports.getUserByEmail = exports.CreateUser = void 0;
 const client_1 = require("@prisma/client");
 const database_1 = require("../database");
 const validate_1 = require("../utils/validate");
-const errors_1 = require("../types/errors");
+const errors_1 = require("../utils/errors");
 const zod_1 = __importDefault(require("zod"));
 const responseSelection = {
     id: true,
