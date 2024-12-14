@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Page from './pages/formPage/page';
 import { TemplateContainer } from './pages/templates/components/TemplateContainer';
 import { Edit } from './pages/edit';
@@ -9,26 +10,31 @@ import { FormMenuBar } from './pages/edit/components/FormMenuBar';
 import { FormEditor } from './pages/edit/components/FormEditor';
 import Auth from './pages/auth';
 import NotFound from './components/ui/NotFound';
-import UserTable from './pages/apitest/getUserById';
+import UserTable from './pages/apitest/GetUserById';
+// import { FormFilters } from './components/core/FormsList/components/FormFilters';
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/:id/forms/" element={<Page />} />
-        <Route path="/a" element={<TemplateContainer />} />
-        <Route path="/edit" element={<Edit />} />
-        <Route path="/add" element={<AddQuestionButton />} />
-        <Route path="/add" element={<AddQuestionButton />} />
-        <Route path="/test" element={<QuestionCard />} />
-        <Route path="/test1" element={<SelectQuestionChoice />} />
-        <Route path="/menu" element={<FormMenuBar />} />
-        <Route path="/editor" element={<FormEditor />} />
-        <Route path="/auth/*" element={<Auth />} />
-        <Route path="/getuser" element={<UserTable />} />
-        <Route path="/not-found" element={<NotFound />} />
-      </Routes>
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Routes>
+          <Route path="/forms/" element={<Page />} />
+          <Route path="/forms/templates" element={<TemplateContainer />} />
+          <Route path="/edit" element={<Edit />} />
+          <Route path="/add" element={<AddQuestionButton />} />
+          <Route path="/add" element={<AddQuestionButton />} />
+          <Route path="/test" element={<QuestionCard />} />
+          <Route path="/test1" element={<SelectQuestionChoice />} />
+          <Route path="/menu" element={<FormMenuBar />} />
+          <Route path="/editor" element={<FormEditor />} />
+          <Route path="/auth/*" element={<Auth />} />
+          <Route path="/getuser" element={<UserTable />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+    </QueryClientProvider>
   );
 }
 
