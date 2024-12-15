@@ -11,6 +11,8 @@ import { FormEditor } from './pages/edit/components/FormEditor';
 import Auth from './pages/auth';
 import NotFound from './components/ui/NotFound';
 import UserTable from './pages/apitest/GetUserById';
+import Summary from './pages/summary/summary';
+import Analysis from './pages/analysis';
 // import { FormFilters } from './components/core/FormsList/components/FormFilters';
 
 const queryClient = new QueryClient();
@@ -31,6 +33,7 @@ function App() {
           <Route path="/editor" element={<FormEditor />} />
           <Route path="/auth/*" element={<Auth />} />
           <Route path="/getuser" element={<UserTable />} />
+          <Route path="/analysis/*" element={<Analysis />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
