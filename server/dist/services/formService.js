@@ -18,8 +18,10 @@ class FormService {
             return database_1.prisma.form.create({
                 data: {
                     name: data.name,
-                    createdBy: data.createdBy,
+                    // createdBy: data.createdBy,
                     status: data.status || 'draft',
+                    welcomeCard: data.welcomeCard,
+                    thankYouCard: data.thankYouCard,
                 },
             });
         });
@@ -71,10 +73,10 @@ class FormService {
             });
         });
     }
-    static getFormsByUser(userId) {
+    static getFormsByUser(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return database_1.prisma.form.findMany({
-                where: { createdBy: userId },
+                where: { id },
                 orderBy: {
                     createdAt: 'desc',
                 },

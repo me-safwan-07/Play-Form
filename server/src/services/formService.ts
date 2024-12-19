@@ -8,8 +8,10 @@ export class FormService {
     return prisma.form.create({
       data: {
         name: data.name,
-        createdBy: data.createdBy,
+        // createdBy: data.createdBy,
         status: data.status || 'draft',
+        welcomeCard: data.welcomeCard,
+        thankYouCard: data.thankYouCard,
       },
     });
   }
@@ -63,9 +65,9 @@ export class FormService {
     });
   }
 
-  static async getFormsByUser(userId: string): Promise<Form[]> {
+  static async getFormsByUser(id: string): Promise<Form[]> {
     return prisma.form.findMany({
-      where: { createdBy: userId },
+      where: { id },
       orderBy: {
         createdAt: 'desc',
       },
