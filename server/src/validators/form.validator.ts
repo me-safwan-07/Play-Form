@@ -1,27 +1,17 @@
-import z, { Schema } from 'zod';
-import { FormInput } from '../types/forms';
+import z from 'zod';
+import { ValidationError } from '../utils/errors';
 
-const formSchema = z.object({
-    name: z.string().min(1, 'Name is required').max(255),
-    // createdBy: z.string().optional(),
-    status: z.enum(['draft', 'scheduled', 'inProgress', 'paused', 'completed']).optional(),
-    welcomeCard: z.object({
-        enabled: z.boolean(),
-        headline: z.string().optional(),
-        fileurl: z.string().optional(),
-        buttonLabel: z.string().optional(),
-        showResponseCount: z.boolean().optional(),
-    }).refine((schema) => !(schema.enabled && !schema.headline), {
-        message: 'Welcome card must have a headline',
-    })
-});
+type validationPair = [any, z.ZodSchema<any>];
 
-export const validateFormInput = (data: FormInput): string | null => {
-    const result = formSchema.safeParse(data);
+export const validateInputs = (...pairs: validationPair[]): void => {
+    for (const [value, schema] of pairs) {
+        const inputValidation = schema.safeParse(value);
 
-    if(!result.success) {
-        return result.error.message;
+        if (!inputValidation.success) {
+            console.error(
+                `Validation failed for ${JSON.stringify(value).substring(0, 100)} and ${JSON.stringify(schema)}: ${inputValidation.error.message}`
+            );
+            throw new ValidationError('Validation failed');
+        }
     }
-
-    return null;
-};
+}

@@ -1,22 +1,22 @@
 import { Request, Response } from "express";
 import { error } from "console";
 import { ValidationError } from "../../utils/errors";
-import { FormInput, FormUpdateInput, TFormInput } from "../../types/forms";
+import { TFormInput, TFormUpdateInput } from "../../types/forms";
 import { validateInputs } from "../../utils/validate";
 import { handleError } from "../../utils/error-handler";
-import { validateFormInput } from "../../validators/form.validator";
+// import { validateFormInput } from "../../validators/form.validator";
 import { FormService } from "../../services/formService";
 
 export class FormController {
   static async createForm(req: Request, res: Response) {
     try {
-      const formData: FormInput = req.body;
+      const formData: TFormInput = req.body;
 
       // Validate form input
-      const validationError = validateFormInput(formData);
-      if (validationError) {
-        return res.status(400).json({ error: validationError});
-      }
+      // const validationError = validateFormInput(formData);
+      // if (validationError) {
+      //   return res.status(400).json({ error: validationError});
+      // }
 
       // Add user ID from authenticated request
       
@@ -49,7 +49,7 @@ export class FormController {
   static async updateForm(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const formData: FormUpdateInput = req.body;
+      const formData: TFormUpdateInput = req.body;
       
       const form = await FormService.updateForm(id, formData);
       res.json(form);

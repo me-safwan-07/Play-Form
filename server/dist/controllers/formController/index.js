@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FormController = void 0;
 const error_handler_1 = require("../../utils/error-handler");
-const form_validator_1 = require("../../validators/form.validator");
+// import { validateFormInput } from "../../validators/form.validator";
 const formService_1 = require("../../services/formService");
 class FormController {
     static createForm(req, res) {
@@ -19,10 +19,10 @@ class FormController {
             try {
                 const formData = req.body;
                 // Validate form input
-                const validationError = (0, form_validator_1.validateFormInput)(formData);
-                if (validationError) {
-                    return res.status(400).json({ error: validationError });
-                }
+                // const validationError = validateFormInput(formData);
+                // if (validationError) {
+                //   return res.status(400).json({ error: validationError});
+                // }
                 // Add user ID from authenticated request
                 const form = yield formService_1.FormService.createdForm(formData);
                 res.status(200).json(form);

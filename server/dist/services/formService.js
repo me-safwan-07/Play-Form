@@ -21,6 +21,7 @@ class FormService {
                     // createdBy: data.createdBy,
                     status: data.status || 'draft',
                     welcomeCard: data.welcomeCard,
+                    questions: data.questions,
                     thankYouCard: data.thankYouCard,
                 },
             });

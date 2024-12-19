@@ -1,16 +1,18 @@
 import { Form } from "@prisma/client";
-import { FormInput, FormUpdateInput } from "../types/forms";
+import { TFormInput, TFormUpdateInput } from "../types/forms";
 import { prisma } from "../database";
 import { NotFoundError } from "../utils/errors";
 
 export class FormService {
-  static async createdForm(data: FormInput): Promise<Form> {
+  static async createdForm(data: TFormInput): Promise<Form> {
     return prisma.form.create({
+
       data: {
         name: data.name,
         // createdBy: data.createdBy,
         status: data.status || 'draft',
         welcomeCard: data.welcomeCard,
+        questions: data.questions, 
         thankYouCard: data.thankYouCard,
       },
     });
@@ -36,7 +38,7 @@ export class FormService {
     return form;
   }
 
-  static async updateForm(id: string, data: FormUpdateInput): Promise<Form> {
+  static async updateForm(id: string, data: TFormUpdateInput): Promise<Form> {
     const form = await prisma.form.findUnique({
       where: { id },
     });
