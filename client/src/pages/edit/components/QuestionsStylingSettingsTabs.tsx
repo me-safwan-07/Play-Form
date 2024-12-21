@@ -1,9 +1,10 @@
 import { cn } from "@/lib/utils";
+import { TFormEditorTabs } from "@/types/forms";
 import { PaintbrushIcon, Rows3Icon, SettingsIcon } from "lucide-react";
 import { useMemo } from "react";
 
 interface Tab {
-  id: string;
+  id: TFormEditorTabs;
   label: string;
   icon: JSX.Element;
 }
@@ -27,11 +28,13 @@ const tabs: Tab[] = [
 ];
 
 interface QuestionsAudienceTabsProps {
-    activeId: string;
+    activeId: TFormEditorTabs;
+    setActiveId: React.Dispatch<React.SetStateAction<TFormEditorTabs>>;
     isStylingTabVisible: boolean; // Add this prop to your component and pass it down to its child components. This will help determine which tab should be visible.  // Add this prop to your component and pass it down to its child components. This will help determine which tab should be visible.  // Add this prop to your component and pass it down to its child components. This will help determine which tab should be visible.  // Add this prop to your component and pass it down to its child components. This will help determine which tab should be visible.  // Add this prop to your component and pass it down to its child components. This will help determine which tab should be visible.  // Add this prop to your component and pass it down to its child components. This will help determine which tab should be visible.  // Add this prop to your component and pass it down to its child components. This will help determine which tab should be visible.  // Add
 }
 export const QuestionsAudienceTabs = ({
     activeId,
+    setActiveId,
     isStylingTabVisible
 }: QuestionsAudienceTabsProps) => {
     const tabsComputed = useMemo(() => {
@@ -46,7 +49,8 @@ export const QuestionsAudienceTabs = ({
                 {tabsComputed.map((tab) => (
                     <button
                         type="button" 
-                        key={tab.id} 
+                        key={tab.id}
+                        onClick={() => setActiveId(tab.id)}
                         className={cn(
                             tab.id === activeId 
                                 ? "border-brand-dark border-b-2 font-semibold text-slate-900"

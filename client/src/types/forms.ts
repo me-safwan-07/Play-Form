@@ -1,127 +1,158 @@
-import z from "zod";
+import z from 'zod';
+// import { ZAllowedFileExtension } from './common';
+
+// Form Schema
 
 
-export const ZI18nString = z.record(z.string()).refine((obj) => "default" in obj, {
-  message: "Object must have a 'default' key",
-});
+export type TFormEditorTabs = "questions" | "settings" | "styling";
 
-export const ZSurveyThankYouCard = z.object({
+// Thank You Card Schema
+export const ZFormThankYouCard = z.object({
   enabled: z.boolean(),
-  headline: ZI18nString.optional(),
-  subheader: ZI18nString.optional(),
-  buttonLabel: ZI18nString.optional(),
-  buttonLink: z.optional(z.string()),
+  headline: z.string().optional(),
+  subheader: z.string().optional(),
+  buttonLabel: z.string().optional(),
+  buttonLink: z.string().optional(),
   imageUrl: z.string().optional(),
-  videoUrl: z.string().optional(),
 });
 
-export enum TSurveyQuestionTypeEnum {
-  FileUpload = "fileUpload",
-  OpenText = "openText",
-  MultipleChoiceSingle = "multipleChoiceSingle",
-  MultipleChoiceMulti = "multipleChoiceMulti",
-  NPS = "nps",
-  CTA = "cta",
-  Rating = "rating",
-  Consent = "consent",
-  PictureSelection = "pictureSelection",
-  Cal = "cal",
-  Date = "date",
-  Matrix = "matrix",
-  Address = "address",
-}
+export type TFormThankYouCard = z.infer<typeof ZFormThankYouCard>;
 
-export const ZSurveyWelcomeCard = z
-  .object({
-    enabled: z.boolean(),
-    headline: ZI18nString.optional(),
-    html: ZI18nString.optional(),
-    fileUrl: z.string().optional(),
-    buttonLabel: ZI18nString.optional(),
-    timeToFinish: z.boolean().default(true),
-    showResponseCount: z.boolean().default(false),
-    videoUrl: z.string().optional(),
-  })
-  .refine((schema) => !(schema.enabled && !schema.headline), {
-    message: "Welcome card must have a headline",
-  }); 
-
-export const ZSurveyHiddenFields = z.object({
-   enabled: z.boolean(),
-   fieldIds: z.optional(z.array(z.string())),
+// Welcome Card Schema
+export const ZFormWelcomeCard = z
+.object({
+  enabled: z.boolean(),
+  headline: z.string().optional(),
+  fileUrl: z.string().optional(),
+  buttonLabel: z.string().optional(),
+  showResponseCount: z.boolean().default(false),
+})
+.refine((schema) => !(schema.enabled && !schema.headline), {
+  message: 'Welcome card must have a headline',
 });
 
-export const ZFilterOptions = z.object({
-    label: z.string(),
-    value: z.string(),
-});
+export type TFormWelcomeCard = z.infer<typeof ZFormWelcomeCard>;
 
+// Form Status Enum
+export const ZFormStatus = z.enum(['draft', 'scheduled', 'inProgress', 'paused', 'completed']);
 
-export type TFilterOptions = z.infer<typeof ZFilterOptions>;
+// Form Response Interface
+export interface FormResponse {
+  id: string;
+  name: string;
+    createdBy: string;
+    status?: string;
+    createdAt: Date;
+    updatedAt: Date;
+    welcomeCard: object;
+    thankYouCard: object;
+  }
+  
+  export enum TFormQuestionTypeEnum {
+    FileUpload = "fileUpload",
+    OpenText = "openText",
+    MultipleChoiceSingle = "multipleChoiceSingle",
+    MultipleChoiceMulti = "multipleChoiceMulti",
+    NPS = "nps",
+    CTA = "cta",
+    Rating = "rating",
+    Consent = "consent",
+    PictureSelection = "pictureSelection",
+    Cal = "cal",
+    Date = "date",
+    Matrix = "matrix",
+    Address = "address",
+  }
+  // Form Update Input
+  
+  export type TFormUpdateInput = z.infer<typeof ZFormUpdateInput>;
+  
+  // Question Types Enum
+  export enum TFormQuestionTypeEnum {
+    FileUpload = 'fileUpload',
+    OpenText = 'openText',
+    MultipleChoiceSingle = 'multipleChoiceSingle',
+    MultipleChoiceMulti = 'multipleChoiceMulti',
+    Date = 'date',
+    Address = 'address',
+  }
+  
+  // Base Question Schema
+  export const ZFormQuestionBase = z.object({
+    id: z.string(),
+    type: z.string(),
+    headline: z.string(),
+    subheader: z.string().optional(),
+    imageUrl: z.string().optional(),
+    required: z.boolean(),
+    buttonLabel: z.string().optional(),
+    backButtonLabel: z.string().optional(),
+    scale: z.enum(['number', 'smiley', 'star']).optional(),
+    range: z.union([z.literal(5), z.literal(3), z.literal(4), z.literal(7), z.literal(10)]).optional(),
+    isDraft: z.boolean().optional(),
+  });
+  
+  // Open Text Question Schema
+  export const ZFormOpenTextQuestionInputType = z.enum(['text', 'email', 'url', 'number', 'phone']);
+  export type TFormOpenTextQuestionInputType = z.infer<typeof ZFormOpenTextQuestionInputType>;
+  
+  export const ZFormOpenTextQuestion = ZFormQuestionBase.extend({
+    type: z.literal(TFormQuestionTypeEnum.OpenText),
+    Placeholder: z.string().optional(),
+    longAnswer: z.boolean().optional(),
+    inputType: ZFormOpenTextQuestionInputType.optional().default('text'),
+  });
+  
+  export type TFormOpenTextQuestion = z.infer<typeof ZFormOpenTextQuestion>;
+  
+  // File Upload Question Schema
+  export const ZFormFileUploadQuestion = ZFormQuestionBase.extend({
+    type: z.literal(TFormQuestionTypeEnum.FileUpload),
+    allowMultiPleFiles: z.boolean(),
+    maxSizeInMB: z.number().optional(),
+    // allowedFileExtensions: z.array(ZAllowedFileExtension).optional(),
+  });
+  
+  // Union of Question Types
+  export const ZFormQuestion = z.union([ZFormOpenTextQuestion, ZFormFileUploadQuestion]);
+  
+  export type TFormQuestion = z.infer<typeof ZFormQuestion>;
+  export type TFormQuestions = z.infer<typeof ZFormQuestions>;
 
-export const ZSortOption = z.object({
-  label: z.string(),
-  value: z.enum(["createdAt", "updatedAt", "name", "relevance"]),
-});
-export type TSortOption = z.infer<typeof ZSortOption>;
-
-export const ZFormStatus = z.enum(["draft", "scheduled", "inProgress", "paused", "completed"]);
-export type TSurveyStatus = z.infer<typeof ZFormStatus>;
-
-export const ZSurveyDisplayOption = z.enum([
-  "displayOnce",
-  "displayMultiple",
-  "respondMultiple",
-  "displaySome",
+// Question Type Enum
+export const ZFormQuestionType = z.enum([
+  TFormQuestionTypeEnum.FileUpload,
+  TFormQuestionTypeEnum.OpenText,
 ]);
-export type TSurveyDisplayOption = z.infer<typeof ZSurveyDisplayOption>;
 
+export const ZFormQuestions = z.array(ZFormQuestion);
 
+// Form Input Schema
+export const ZFormInput = z.object({
+  name: z.string(),
+  status: ZFormStatus.optional(),
+  welcomeCard: ZFormWelcomeCard,
+  thankYouCard: ZFormThankYouCard,
+  questions: ZFormQuestions,
+});
 
-// export const ZForm = z
-//     .object({
-//         id: z.string().cuid2(),
-//         createdAt: z.date(),
-//         updatedAt: z.date(),
-//         name: z.string(),
-//         environmentId: z.string(),
-//         createdBy: z.string(),
-//         status: z.string(),
-//         displayOption: ZSurveyDisplayOption,
-//         autoClose: z.number().nullable(),
-//         triggers: z.array(z.object({ actionClass: }))
-//     })
+export type TFormInput = z.infer<typeof ZFormInput>;
 
-export const ZForm = z.object({
+const ZForms = z.object({
   id: z.string().cuid2(),
   createdAt: z.date(),
   updatedAt: z.date(),
   name: z.string(),
-  // type: website app or link
-  // environmentId: z.string(),
-  createdBy: z.string(),
   status: ZFormStatus,
-  // displayOption: ZSurveyDisplayOption,
-  // autoClose: z.number().nullable(),
-  // triggers: z.array(z.object({ actionClass: z.string() })),
-  // redirectUrl: z.string().url().nullable(),
-  // recontactDays: z.number().nullable(),
-  // displayLimit: z.number().nullable(),
-  // welcomeCard: ZSurveyWelcomeCard,
-  // hiddenFields: ZSurveyHiddenFields,
-  // thankYouCard: ZSurveyThankYouCard.optional(),
+  welcomeCard: ZFormWelcomeCard,
+  questions: ZFormQuestions,
+  thankYouCard: ZFormThankYouCard,
 });
+export type TForm = z.infer<typeof ZForms>;
 
-export const ZSurveyOpenTextQuestionInputType = z.enum(["text", "email", "url", "number", "phone"]);
-export type TSurveyOpenTextQuestionInputType = z.infer<typeof ZSurveyOpenTextQuestionInputType>;
-
-export type TForm = z.infer<typeof ZForm>;
-
-export const ZFormFilters = z.object({
-  name: z.string(),
-  // createdBy: z.string(z.enum(["you"]))
-  status: z.array(ZFormStatus),
-  sortBy: z.enum(["createdAt", "updatedAt", "name"]),
-});
-
-export type TFormFilters = z.infer<typeof ZFormFilters>;
+export const ZFormUpdateInput = ZForms.omit({ createdAt: true, updatedAt: true }).and(
+  z.object({
+    createdAt: z.coerce.date(),
+    updatedAt: z.coerce.date(),
+  })
+);

@@ -1,37 +1,46 @@
 import { FileInput } from "@/components/ui/FileInput";
+import { Label } from "@/components/ui/Label";
+import { QuestionFormInput } from "@/components/ui/QuestionFormInput";
+import { Switch } from "@/components/ui/Switch";
 import { cn } from "@/lib/utils";
+import { TForm } from "@/types/forms";
 import * as Collapsible from "@radix-ui/react-collapsible";
-import { Label } from "@radix-ui/react-dropdown-menu";
 // import { FileInput } from "lucide-react";
 import { useState } from "react"
 import { useLocation } from "react-router-dom";
 
 interface EditWelcomeCardProps {
-    // setActiveQuestionId: 
+    form: TForm;
+    setActiveQuestionId: (id: string | null) => void;
     activeQuestionId: string | null;
 
 }
 
 export const EditWelcomeCard = ({
+    form,
+    setActiveQuestionId,
     activeQuestionId,
 }: EditWelcomeCardProps) => {
     const [firstReander, setFirstReander] = useState(true);
     const path = useLocation().pathname;
-    const evvironmentId = path?.split("/environments/")[1]?.split('/')[0];
+    // const evvironmentId = path?.split("/environments/")[1]?.split('/')[0];
 
     let open = activeQuestionId == "start";
 
     const setOpen = (e: any) => {
         if (e) {
-            // setActiveQuestionId("start");
+            setActiveQuestionId("start");
             setFirstReander(true);
+        } else {
+            setActiveQuestionId(null);
         }
-    }
+    };
     
 
     return (
         <div className={cn(
-            "scale-97 shadow-md group flex flex-row rounded-lg bg-white transition-transform duration-300 ease-in-out"
+            open ? "scale-100 shadow-lg" : "scale-97 shadow-md",
+            "group flex flex-row rounded-lg bg-white transition-transform duration-300 ease-in-out"
         )}>
             <div className={cn(
                 "flex w-10 items-center justify-center rounded-l-lg border-b border-l border-t group-aria-expanded:rounded-bl-none bg-white group-hover:bg-slate-50"
@@ -47,14 +56,25 @@ export const EditWelcomeCard = ({
                     asChild
                     className="flex cursor-pointer justify-between p-4 hover:bg-slate-50"
                 >
-                    <div className="">
+                    <div>
                         <div className="inline-flex">
                             <div className="">
                                 <p className="text-sm font-semibold">Welcome Card</p>
                                 {!open && (
-                                    <p className="">Shown</p>
+                                    <p className="mt-1 truncate text-xs text-slate-500">
+                                        {form?.welcomeCard?.enabled ? "Shown": "Hidden"}
+                                    </p>
                                 )}
                             </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                            <Label htmlFor="welcome-toggle">{form?.welcomeCard?.enabled  ? "On" : "Off"}</Label>
+                            <Switch
+                                id="welcome-toggle"
+                                checked={form?.welcomeCard?.enabled}
+                                // create the onClick
+                            />
                         </div>
                     </div>
                 </Collapsible.CollapsibleTrigger>
@@ -64,15 +84,24 @@ export const EditWelcomeCard = ({
                         <Label>Company Logo</Label>
                     </div>
                     <div className="">
-                        <FileInput />
+                        <FileInput 
+                        />
                     </div>
                     <div className="">
                         {/* QuestionFormInput */}
+                        <QuestionFormInput 
+                            id="headline"
+                            value={form.welcomeCard.headline}
+                            localSurvey={form}
+                            label="Note*"
+                            questionIdx={-1}
+                        />
                     </div>
                     <div className="">
                         <Label>Welcome Message</Label>
                         <div className="">
                             {/* LocalizedEditor */}
+                            
                         </div>
                     </div>
                     <div className="">

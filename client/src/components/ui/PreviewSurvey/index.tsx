@@ -1,24 +1,62 @@
 import { Variants, motion } from "framer-motion";
 import { ResetProgressButton } from "../ResetProgressButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ExpandIcon, MonitorIcon, ShrinkIcon, SmartphoneIcon } from "lucide-react";
 import { TabOption } from "./components/TabOption";
 import { Modal } from "../Modal";
 import { Model } from "./components/Model";
+import { TForm } from "@/types/forms";
+import { MediaBackground } from "../MediaBackground";
 
 type TPreviewType = "modal" | "fullwidth" | "email";
 
 interface PreviewFormProps {
-//   surveyId: string;
-  previewType?: TPreviewType;
+    form: TForm;
+    previewType?: TPreviewType;
 }
 
+let surveyNameTemp: string;
+
+// const previewParentContainerVariant: Variants = {
+//   expanded: {
+//     position: "fixed",
+//     height: "100%",
+//     width: "100%",
+//     backgroundColor: "rgba(0, 0, 0, 0.4)",
+//     backdropFilter: "blur(15px)",
+//     left: 0,
+//     top: 0,
+//     zIndex: 1040,
+//     transition: {
+//       ease: "easeIn",
+//       duration: 0.001,
+//     },
+//   },
+//   shrink: {
+//     display: "none",
+//     position: "fixed",
+//     backgroundColor: "rgba(0, 0, 0, 0.0)",
+//     backdropFilter: "blur(0px)",
+//     transition: {
+//       duration: 0,
+//     },
+//     zIndex: -1,
+//   },
+// };
+
+const setQuestionId = () => {};
+
 export const PreviewForm = ({
+    form,
     previewType
 }: PreviewFormProps) => {
+    const [isModalOpen, setIsModalOpen] = useState(true);
     const [isFullScreenPreview, setIsFullScreenPreview] = useState(true);
 
     const [previewMode, setPreviewMode] = useState("desktop");
+    const [previewPosition, setPreviewPosition] = useState("relative");
+    const [shrink, setShrink] = useState(false);
+
     const previewScreenVariants: Variants = {
         expanded: {
           right: "5%",
@@ -31,7 +69,7 @@ export const PreviewForm = ({
           boxShadow: "0px 4px 5px 4px rgba(169, 169, 169, 0.25)",
           transition: {
             ease: "easeInOut",
-            // duration: shrink ? 0.3 : 0,
+            duration: shrink ? 0.3 : 0,
           },
         },
         expanded_with_fixed_positioning: {
@@ -80,26 +118,53 @@ export const PreviewForm = ({
           zIndex: -1,
         },
       };
+        
+    // this useEffect is for refreshing the form preview only if user is switching between templates on form templates page and hence we are checking for form.id === "someUniqeId1" which is a common Id for all templates
+      useEffect(() => {
+        if (form.name !== surveyNameTemp && form.id === "someUniqeId1") {
+            resetQuestionProgress();
+          surveyNameTemp = form.name;
+        }
+      }, [form]);
 
       const resetQuestionProgress = () => {
-        // let storePreviewMode = previewMode;
+        const storePreviewMode = previewMode;
         setPreviewMode("null");
         setTimeout(() => {
-            setPreviewMode(previewMode);
-            resetQuestionProgress(); // recursively reset progress after 1 second to simulate a loading state
+            setPreviewMode(storePreviewMode);
         }, 10);
-      }
+
+        setQuestionId(form.welcomeCard.enabled ? "start" : form.questions[0].id);
+      };
+
+      const handlePreviewModalClose = () => {
+        setIsModalOpen(false);
+        setTimeout(() => {
+            setQuestionId(form.welcomeCard.enabled ? "start" : form.questions[0].id);
+            setIsModalOpen(true);
+        }, 1000);
+      };
+
+
     return (
         <div className="flex h-full w-full flex-col items-center justify-items-center  ">
             <motion.div 
                 variants={previewParentContainerVariant}
                 className="fixed hidden h-[95%] w-5/6"
-                animate={"expanded"}
+                animate={isFullScreenPreview ? "expanded" : "shrink"}
             />
             <motion.div
                 layout
                 variants={previewScreenVariants}
+                animate={
+                    isFullScreenPreview
+                        ? previewPosition === 'relative'
+                            ? "expanded"
+                            : "expanded_with_fixed_positioning"
+                        : "shrink"
+                }
                 className="relative flex h-[95%] max-h-[95%] w-5/6 items-center justify-center rounded-lg border border-slate-300 bg-slate-200"
+
             >
                 {previewMode === "mobile" && (
                     <>
@@ -109,6 +174,21 @@ export const PreviewForm = ({
                         <div className="absolute right-0 top-0 m-2">
                             <ResetProgressButton onClick={resetQuestionProgress} />
                         </div>
+                        <MediaBackground isMobilePreview>
+                          {previewType === "modal" ? (
+                              <Modal
+                                  isOpen={isModalOpen}
+                                  placement="bottomLeft"
+                                  
+                                  previewMode={previewMode}
+                                  handlePreviewModalClose={handlePreviewModalClose}
+                              ></Modal>
+                          ) : (
+                              <div className="">
+                                
+                              </div>
+                          )}
+                        </MediaBackground>
                     </>
                 )}
                 {previewMode === "desktop" && (
@@ -127,6 +207,8 @@ export const PreviewForm = ({
                                         <ShrinkIcon 
                                             className="mr-2 h-4 w-4 cursor-pointer"
                                             onClick={() => {
+                                                setShrink(true);
+                                                setPreviewMode("relative")
                                                 setTimeout(() => setIsFullScreenPreview(false), 300);
                                             }}
                                         />
@@ -134,8 +216,10 @@ export const PreviewForm = ({
                                         <ExpandIcon 
                                             className="mr-2 h-4 w-4 cursor-pointer"
                                             onClick={() => {
+                                                setShrink(false);
                                                 setIsFullScreenPreview(true);
-                                                // setTimeout(() => setIsFullScreenPreview(
+                                                setTimeout(() => setPreviewPosition("fixed"), 300);
+
                                             }}
                                         />
                                     )}

@@ -2,15 +2,16 @@ import { cn } from "@/lib/utils"
 import * as Collapsible  from "@radix-ui/react-collapsible"
 import { GripIcon, Scale } from "lucide-react"
 import { QuestionMenu } from "./QuestionMenu"
-import { QUESTIONS_ICON_MAP } from "@/lib/questions"
+// import { QUESTIONS_ICON_MAP } from "@/lib/questions"
 import { OpenQuestionForm } from "./OpenQuestionForm"
 import { MultipleChoiceQuestionForm } from "./MultipleChoiceQuestionForm"
 import { useState } from "react"
 import { DateQuestionForm } from "./DateQuestionForm"
 import { AddressQuestionForm } from "./AddressQuestionForm"
+import { questionTypes } from "@/lib/questions"
 
 export const QuestionCard = () => {
-    const [type, setType] = useState("address");
+    const [type, setType] = useState("MultipleChoiceQuestionForm");
     return (
         <div className="scale-100 shadow-lg flex w-full flex-row rounded-lg bg-white transition-all duration-300 ease-in-out">
             <div className={cn(
@@ -24,7 +25,10 @@ export const QuestionCard = () => {
                     <GripIcon className="h-4 w-4"/>
                 </button>
             </div>
-            <Collapsible.Root>
+            <Collapsible.Root
+                open={true}
+                className="w-[95%] flex-1 rounded-r-lg border border-slate-200"
+            >
                 <Collapsible.CollapsibleTrigger
                     asChild
                     className={cn("flex cursor-pointer justify-between gap-4 p-4 hover:bg-slate-50")}
@@ -34,15 +38,15 @@ export const QuestionCard = () => {
                             <div className="-ml-0.5 mr-3 h-6 min-w-[1.5rem] text-slate-400">
                                 {/* {QUESTIONS_ICON_MAP[question.type]}: */}
                             </div>
-                            <div className="">
-                                <p className="">
-
+                            <div className="grow" dir="auto">
+                                <p className="text-sm font-semibold">
+                                    {questionTypes[0].preset.headline.default}
                                 </p>
+                                <p className="mt-1 truncate text-xs text-slate-500">Required</p>
                             </div>
                         </div>
 
                         <div className="flex items-center space-x-2">
-                            {/* Question menu */}
                             <QuestionMenu />
                         </div>
                     </div>

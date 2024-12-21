@@ -1,6 +1,6 @@
 
 import {
-    TSurveyQuestionTypeEnum as QuestionId,
+    TFormQuestionTypeEnum as QuestionId,
 } from "@/types/forms";
 import { 
     ArrowUpFromLineIcon, 

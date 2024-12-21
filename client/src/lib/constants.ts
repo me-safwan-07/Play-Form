@@ -5,3 +5,30 @@ export const PASSWORD_RESET_DISABLED = import.meta.env.VITE_PASSWORD_RESET_DISAB
 
 
 export const SURVEYS_PER_PAGE = 12;
+
+export const FORM_BG_COLORS = [
+  "#FFF2D8",
+  "#EAD7BB",
+  "#BCA37F",
+  "#113946",
+  "#04364A",
+  "#176B87",
+  "#64CCC5",
+  "#DAFFFB",
+  "#132043",
+  "#1F4172",
+  "#F1B4BB",
+  "#FDF0F0",
+  "#001524",
+  "#445D48",
+  "#D6CC99",
+  "#FDE5D4",
+  "#BEADFA",
+  "#D0BFFF",
+  "#DFCCFB",
+  "#FFF8C9",
+  "#FF8080",
+  "#FFCF96",
+  "#F6FDC3",
+  "#CDFAD5",
+];
