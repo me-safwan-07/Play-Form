@@ -4,7 +4,7 @@ import { ResponseController } from "../controllers/responseController";
 const router = Router();
 
 router.post('/', (req, res) => {
-    ResponseController.createForm(req, res)
+    ResponseController.createResponse(req, res)
 });
 // router.get('/', FormController.getAllForms());
 router.get('/', (req, res) => {

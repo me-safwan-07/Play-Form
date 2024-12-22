@@ -1,4 +1,4 @@
-import { Response } from "@prisma/client";
+import { Prisma, Response } from "@prisma/client";
 import { prisma } from "../database";
 import { NotFoundError } from "../utils/errors";
 import { TResponseInput } from "../types/responses";
@@ -7,30 +7,48 @@ const responseSelection = {
     id: true,
     createdAt: true,
     updatedAt: true,
-    finished: true
+    finished: true,
+    formId: true,
 }
 
 export class ResponseService {
   static async createdResponse(data: TResponseInput): Promise<Response> {
-    return prisma.response.create({
-      data: {
-        ...data,
-        finished: data.finished ?? false,
+    try {
+      const prismaData: Prisma.ResponseCreateInput = {
+        form: {
+          connect: {
+            id: data.formId,
+          },
+        },
+        finished: data.finished,
+      };
+
+      return await prisma.response.create({
+        data: prismaData,
+        select: responseSelection
+      });
+
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        throw new Error('A response with the same surveyId and singleUseId already exists.');
       }
-    }); 
-  }
+      throw error;
+    } 
+  };
 
   static async getAllResponse(): Promise<Response[]> {
     return prisma.response.findMany({
       orderBy: {
         createdAt: 'desc',
       },
+      select: responseSelection
     });
   }
 
   static async getResponseById(id: string): Promise<Response> {
     const response = await prisma.response.findUnique({
       where: { id },
+      select: responseSelection
     });
 
     if (!response) {

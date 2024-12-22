@@ -91,7 +91,7 @@ model Form {
   /// @zod.custom(imports.ZSurveyThankYouCard)
   /// [SurveyThankYouCard]
   thankYouCard        Json                    @default("{\"enabled\": false}")
-  // responses           Response[]
+  responses           Response[]
 
 }
 
@@ -144,4 +144,6 @@ model Response {
   createdAt        DateTime          @default(now()) @map(name: "created_at")
   updatedAt        DateTime          @updatedAt @map(name: "updated_at")
   finished         Boolean           @default(false)
+  form             Form              @relation(fields: [formId], references: [id], onDelete: Cascade)
+  formId           String            @db.ObjectId
 }

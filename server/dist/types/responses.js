@@ -11,10 +11,10 @@ exports.ZResponseDataValue = zod_1.z.union([
 exports.ZResponseData = zod_1.z.record(exports.ZResponseDataValue);
 exports.ZResponseTtc = zod_1.z.record(zod_1.z.number());
 exports.ZResponseInput = zod_1.z.object({
-    // createdAt: z.coerce.date().optional(),
-    // updatedAt: z.coerce.date().optional(),
+    createdAt: zod_1.z.coerce.date().optional(),
+    updatedAt: zod_1.z.coerce.date().optional(),
     finished: zod_1.z.boolean(),
-    // formId: z.string().cuid2(),
+    formId: zod_1.z.string().cuid2(),
     // data: ZResponseData,
     // ttc: ZResponseTtc.optional(),
     // meta: z

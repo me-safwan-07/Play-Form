@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { ResponseService } from "../services/responseService";
-import { TResponseInput } from "../types/responses";
+import { TResponseInput, ZResponseInput } from "../types/responses";
 import { handleError } from "../utils/error-handler";
+import { prisma } from "../database";
 
 export class ResponseController {
-  static async createForm(req: Request, res: Response) {
+  static async createResponse(req: Request, res: Response) {
     try {
       const responseData: TResponseInput = req.body;
 
@@ -14,7 +15,21 @@ export class ResponseController {
       //   return res.status(400).json({ error: validationError});
       // }
 
+      const validationError = ZResponseInput.safeParse(responseData);
+      if (validationError.error) {
+        return res.status(400).json({ error: validationError.error.message });
+      }
+
       // Add user ID from authenticated request
+      const formExists = await prisma.form.findUnique({
+        where: {
+          id: responseData.formId,
+        },
+      });
+
+      if(!formExists) {
+        return res.status(400).json({ error: 'Form does not exist' });
+      }
       
       const response = await ResponseService.createdResponse(responseData);
       res.status(200).json(response);

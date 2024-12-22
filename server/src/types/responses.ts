@@ -14,10 +14,10 @@ export const ZResponseData = z.record(ZResponseDataValue);
 export const ZResponseTtc = z.record(z.number());
 
 export const ZResponseInput = z.object({
-    // createdAt: z.coerce.date().optional(),
-    // updatedAt: z.coerce.date().optional(),
+    createdAt: z.coerce.date().optional(),
+    updatedAt: z.coerce.date().optional(),
     finished: z.boolean(),
-    // formId: z.string().cuid2(),
+    formId: z.string().cuid2(),
     // data: ZResponseData,
     // ttc: ZResponseTtc.optional(),
     // meta: z

@@ -4,7 +4,7 @@ const express_1 = require("express");
 const responseController_1 = require("../controllers/responseController");
 const router = (0, express_1.Router)();
 router.post('/', (req, res) => {
-    responseController_1.ResponseController.createForm(req, res);
+    responseController_1.ResponseController.createResponse(req, res);
 });
 // router.get('/', FormController.getAllForms());
 router.get('/', (req, res) => {

@@ -16,23 +16,42 @@ const responseSelection = {
     id: true,
     createdAt: true,
     updatedAt: true,
-    finished: true
+    finished: true,
+    formId: true,
 };
 class ResponseService {
     static createdResponse(data) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            return database_1.prisma.response.create({
-                data: Object.assign(Object.assign({}, data), { finished: (_a = data.finished) !== null && _a !== void 0 ? _a : false })
-            });
+            try {
+                const prismaData = {
+                    form: {
+                        connect: {
+                            id: data.formId,
+                        },
+                    },
+                    finished: data.finished,
+                };
+                return yield database_1.prisma.response.create({
+                    data: prismaData,
+                    select: responseSelection
+                });
+            }
+            catch (error) {
+                if (error.code === 'P2002') {
+                    throw new Error('A response with the same surveyId and singleUseId already exists.');
+                }
+                throw error;
+            }
         });
     }
+    ;
     static getAllResponse() {
         return __awaiter(this, void 0, void 0, function* () {
             return database_1.prisma.response.findMany({
                 orderBy: {
                     createdAt: 'desc',
                 },
+                select: responseSelection
             });
         });
     }
@@ -40,6 +59,7 @@ class ResponseService {
         return __awaiter(this, void 0, void 0, function* () {
             const response = yield database_1.prisma.response.findUnique({
                 where: { id },
+                select: responseSelection
             });
             if (!response) {
                 throw new errors_1.NotFoundError('Response not found');
