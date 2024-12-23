@@ -13,7 +13,6 @@ exports.ResponseController = void 0;
 const responseService_1 = require("../services/responseService");
 const responses_1 = require("../types/responses");
 const error_handler_1 = require("../utils/error-handler");
-const database_1 = require("../database");
 class ResponseController {
     static createResponse(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -29,14 +28,14 @@ class ResponseController {
                     return res.status(400).json({ error: validationError.error.message });
                 }
                 // Add user ID from authenticated request
-                const formExists = yield database_1.prisma.form.findUnique({
-                    where: {
-                        id: responseData.formId,
-                    },
-                });
-                if (!formExists) {
-                    return res.status(400).json({ error: 'Form does not exist' });
-                }
+                // const formExists = await prisma.form.findUnique({
+                //   where: {
+                //     id: responseData.formId,
+                //   },
+                // });
+                // if(!formExists) {
+                //   return res.status(400).json({ error: 'Form does not exist' });
+                // }
                 const response = yield responseService_1.ResponseService.createdResponse(responseData);
                 res.status(200).json(response);
             }

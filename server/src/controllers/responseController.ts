@@ -21,15 +21,15 @@ export class ResponseController {
       }
 
       // Add user ID from authenticated request
-      const formExists = await prisma.form.findUnique({
-        where: {
-          id: responseData.formId,
-        },
-      });
+      // const formExists = await prisma.form.findUnique({
+      //   where: {
+      //     id: responseData.formId,
+      //   },
+      // });
 
-      if(!formExists) {
-        return res.status(400).json({ error: 'Form does not exist' });
-      }
+      // if(!formExists) {
+      //   return res.status(400).json({ error: 'Form does not exist' });
+      // }
       
       const response = await ResponseService.createdResponse(responseData);
       res.status(200).json(response);

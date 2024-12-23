@@ -17,29 +17,30 @@ const responseSelection = {
     createdAt: true,
     updatedAt: true,
     finished: true,
-    formId: true,
+    // formId: true,
 };
 class ResponseService {
     static createdResponse(data) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const prismaData = {
-                    form: {
-                        connect: {
-                            id: data.formId,
-                        },
-                    },
-                    finished: data.finished,
-                };
+                // const prismaData: Prisma.ResponseCreateInput = {
+                //   form: {
+                //     connect: {
+                //       id: data.formId,
+                //     },
+                //   },
+                //   finished: data.finished,
+                // };
                 return yield database_1.prisma.response.create({
-                    data: prismaData,
+                    data: data.finished,
                     select: responseSelection
                 });
             }
             catch (error) {
-                if (error.code === 'P2002') {
-                    throw new Error('A response with the same surveyId and singleUseId already exists.');
-                }
+                // if (error.code === 'P2002') {
+                //   throw new Error('A response with the same surveyId and singleUseId already exists.');
+                // }
+                console.error(error);
                 throw error;
             }
         });

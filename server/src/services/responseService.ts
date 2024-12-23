@@ -8,30 +8,31 @@ const responseSelection = {
     createdAt: true,
     updatedAt: true,
     finished: true,
-    formId: true,
+    // formId: true,
 }
 
 export class ResponseService {
   static async createdResponse(data: TResponseInput): Promise<Response> {
     try {
-      const prismaData: Prisma.ResponseCreateInput = {
-        form: {
-          connect: {
-            id: data.formId,
-          },
-        },
-        finished: data.finished,
-      };
+      // const prismaData: Prisma.ResponseCreateInput = {
+      //   form: {
+      //     connect: {
+      //       id: data.formId,
+      //     },
+      //   },
+      //   finished: data.finished,
+      // };
 
       return await prisma.response.create({
-        data: prismaData,
+        data: data.finished,
         select: responseSelection
       });
 
     } catch (error: any) {
-      if (error.code === 'P2002') {
-        throw new Error('A response with the same surveyId and singleUseId already exists.');
-      }
+      // if (error.code === 'P2002') {
+      //   throw new Error('A response with the same surveyId and singleUseId already exists.');
+      // }
+      console.error(error)
       throw error;
     } 
   };
