@@ -20,6 +20,8 @@ export const ZResponse = z.object({
   finished: z.boolean(),
 });
 
+export type TResponse = z.infer<typeof ZResponse>;
+
 export const ZResponseInput = z.object({
     // createdAt: z.coerce.date().optional(),
     // updatedAt: z.coerce.date().optional(),
