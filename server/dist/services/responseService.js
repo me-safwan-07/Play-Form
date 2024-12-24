@@ -23,16 +23,16 @@ class ResponseService {
     static createdResponse(data) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // const prismaData: Prisma.ResponseCreateInput = {
-                //   form: {
-                //     connect: {
-                //       id: data.formId,
-                //     },
-                //   },
-                //   finished: data.finished,
-                // };
+                const prismaData = {
+                    // form: {
+                    //   connect: {
+                    //     id: data.formId,
+                    //   },
+                    // },
+                    finished: data.finished,
+                };
                 return yield database_1.prisma.response.create({
-                    data: data.finished,
+                    data: prismaData,
                     select: responseSelection
                 });
             }
