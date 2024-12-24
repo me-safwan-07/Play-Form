@@ -1,7 +1,7 @@
 import { Prisma, Response } from "@prisma/client";
 import { prisma } from "../database";
 import { NotFoundError } from "../utils/errors";
-import { TResponseInput } from "../types/responses";
+import { TResponse, TResponseInput } from "../types/responses";
 
 const responseSelection = {
     id: true,
@@ -12,19 +12,19 @@ const responseSelection = {
 }
 
 export class ResponseService {
-  static async createdResponse(data: TResponseInput): Promise<Response> {
+  static async createdResponse(data: TResponseInput): Promise<TResponse> {
     try {
-      // const prismaData: Prisma.ResponseCreateInput = {
-      //   form: {
-      //     connect: {
-      //       id: data.formId,
-      //     },
-      //   },
-      //   finished: data.finished,
-      // };
+      const prismaData: Prisma.ResponseCreateInput = {
+        // form: {
+        //   connect: {
+        //     id: data.formId,
+        //   },
+        // },
+        finished: data.finished,
+      };
 
       return await prisma.response.create({
-        data: data.finished,
+        data: prismaData,
         select: responseSelection
       });
 
@@ -37,7 +37,7 @@ export class ResponseService {
     } 
   };
 
-  static async getAllResponse(): Promise<Response[]> {
+  static async getAllResponse(): Promise<TResponse[]> {
     return prisma.response.findMany({
       orderBy: {
         createdAt: 'desc',
@@ -46,7 +46,7 @@ export class ResponseService {
     });
   }
 
-  static async getResponseById(id: string): Promise<Response> {
+  static async getResponseById(id: string): Promise<TResponse> {
     const response = await prisma.response.findUnique({
       where: { id },
       select: responseSelection
