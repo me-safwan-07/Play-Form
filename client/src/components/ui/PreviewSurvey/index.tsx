@@ -134,13 +134,13 @@ export const PreviewForm = ({
             setPreviewMode(storePreviewMode);
         }, 10);
 
-        setQuestionId(form.welcomeCard.enabled ? "start" : form.questions[0].id);
+        setQuestionId(form.welcomeCard.enabled ? "start" : form.questions.id);
       };
 
       const handlePreviewModalClose = () => {
         setIsModalOpen(false);
         setTimeout(() => {
-            setQuestionId(form.welcomeCard.enabled ? "start" : form.questions[0].id);
+            setQuestionId(form.welcomeCard.enabled ? "start" : form.questions.id);
             setIsModalOpen(true);
         }, 1000);
       };
