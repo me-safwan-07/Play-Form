@@ -67,8 +67,8 @@ const updateDisplay = (req, res, next) => __awaiter(void 0, void 0, void 0, func
 });
 exports.updateDisplay = updateDisplay;
 const createDisplay = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userId, surveyId } = req.body;
-    if (!surveyId) {
+    const { userId, formId } = req.body;
+    if (!formId) {
         res.status(400).json({ error: "Survey ID is required" });
         return;
     }
@@ -81,7 +81,7 @@ const createDisplay = (req, res, next) => __awaiter(void 0, void 0, void 0, func
             }
         }
         const display = yield database_1.prisma.display.create({
-            data: Object.assign({ surveyId }, (person && {
+            data: Object.assign({ formId }, (person && {
                 personId: person.id,
             })),
             select: exports.selectDisplay
