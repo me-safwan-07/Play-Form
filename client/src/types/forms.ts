@@ -48,21 +48,6 @@ export interface FormResponse {
     thankYouCard: object;
   }
   
-  export enum TFormQuestionTypeEnum {
-    FileUpload = "fileUpload",
-    OpenText = "openText",
-    MultipleChoiceSingle = "multipleChoiceSingle",
-    MultipleChoiceMulti = "multipleChoiceMulti",
-    NPS = "nps",
-    CTA = "cta",
-    Rating = "rating",
-    Consent = "consent",
-    PictureSelection = "pictureSelection",
-    Cal = "cal",
-    Date = "date",
-    Matrix = "matrix",
-    Address = "address",
-  }
   // Form Update Input
   
   export type TFormUpdateInput = z.infer<typeof ZFormUpdateInput>;
@@ -156,3 +141,12 @@ export const ZFormUpdateInput = ZForms.omit({ createdAt: true, updatedAt: true }
     updatedAt: z.coerce.date(),
   })
 );
+
+export const ZFormFilters = z.object({
+  name: z.string(),
+  // createdAt: z.date(),
+  status: z.array(ZFormStatus),
+  sortBy: z.enum(['createdAt', 'updatedAt', 'name']),
+});
+
+export type TFormFilters = z.infer<typeof ZFormFilters>;
