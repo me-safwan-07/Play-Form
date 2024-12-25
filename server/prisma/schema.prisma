@@ -26,7 +26,7 @@ model Environment {
   widgetSetupCompleted  Boolean          @default(false)
   appSetupCompleted     Boolean          @default(false)
   websiteSetupCompleted Boolean          @default(false)
-  // surveys               Survey[]
+  // Forms               Form[]
   // people                Person[]
   // actionClasses         ActionClass[]
   // attributeClasses      AttributeClass[]
@@ -52,7 +52,7 @@ enum DisplayStatus {
   responded
 }
 
-enum SurveyStatus {
+enum FormStatus {
   draft
   scheduled
   inProgress
@@ -66,15 +66,15 @@ model Form {
   updatedAt           DateTime                @updatedAt @map(name: "updated_at")
   name                String
   // createdBy           String?
-  status              SurveyStatus            @default(draft)
+  status              FormStatus            @default(draft)
   /// @zod.custom(imports.ZFormWelcomeCard)
-  /// [SurveyWelcomeCard]
+  /// [FormWelcomeCard]
   welcomeCard         Json                    @default("{\"enabled\": false}")
-  /// @zod.custom(imports.ZSurveyQuestions)
-  /// [SurveyQuestions]
+  /// @zod.custom(imports.ZFormQuestions)
+  /// [FormQuestions]
   questions           Json                   @default("[]")
-  /// @zod.custom(imports.ZSurveyThankYouCard)
-  /// [SurveyThankYouCard]
+  /// @zod.custom(imports.ZFormThankYouCard)
+  /// [FormThankYouCard]
   thankYouCard        Json                    @default("{\"enabled\": false}")
   // responses           Response[]
   displays            Display[]
@@ -171,5 +171,4 @@ model Product {
   logoUrl              Json?
 
   @@unique([name])
-
 }
