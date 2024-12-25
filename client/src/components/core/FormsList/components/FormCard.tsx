@@ -22,10 +22,16 @@ export const FormCard = ({
         else if (form.status === "paused") return "Paused";
     }, [form]);
 
+    const linkHref = useMemo(() => {
+        return form.status === 'draft'
+            ? `/forms/${form.id}/edit`
+            : `/forms/${form.id}/analysis/summary`
+    }, [form.status, form.id]); 
+
     const renderListContent = () => {
         return (
             <Link
-                to={`/forms/${form.id}`}
+                to={linkHref}
                 key={form.id}
                 className="relative grid w-full grid-cols-8 place-items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all ease-in-out hover:scale-[101%]"
             >
@@ -55,7 +61,7 @@ export const FormCard = ({
     const renderGridContent = () => {
         return (
             <Link
-                to={`/forms/${form.id}`}
+                to={linkHref}
                 key={form.id}
                 className="relative col-span-1 flex h-44 flex-col justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all ease-in-out"
             >
