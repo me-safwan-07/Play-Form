@@ -66,9 +66,9 @@ export const updateDisplay = async (req: Request, res: Response, next: NextFunct
 }
 
 export const createDisplay = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const { userId, surveyId } = req.body;
+    const { userId, formId } = req.body;
 
-    if (!surveyId) {
+    if (!formId) {
         res.status(400).json({ error: "Survey ID is required" });
         return 
     }
@@ -85,7 +85,7 @@ export const createDisplay = async (req: Request, res: Response, next: NextFunct
 
         const display = await prisma.display.create({
             data: {
-              surveyId,
+              formId,
               ...(person && {
                 personId: person.id,
               }),
