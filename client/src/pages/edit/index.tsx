@@ -1,26 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { FormEditor } from './components/FormEditor';
 import axios from 'axios';
 import { ErrorComponent } from '@/components/ui/ErrorComponent';
+import { TForm } from '@/types/forms';
 
 export const Edit = () => {
-  const [form, setForm] = useState();
-  useState(() => {
+  const { id } = useParams();
+  const [form, setForm] = useState<TForm| null>(null);
+
+  useEffect(() => {
     const fetchForm = async () => {
-      const res = await axios.get('http://localhost:3000/api/forms/676691f0fa81f9109888c6a7');
+      const res = await axios.get(`http://localhost:3000/api/forms/${id}`);
       if (res.status === 200) {
         setForm(res.data);
       } else {
         console.error('Failed to fetch form data');
       }
-    }
+    };
 
     fetchForm();
-  });
+  }, [id]);
 
-  if (!form) {
-    return <ErrorComponent />
+  if (!form || form.id !== id) {
+    return <ErrorComponent />;
   }
+
   return (
     <FormEditor 
       form={form}
