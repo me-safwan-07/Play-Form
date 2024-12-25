@@ -3,6 +3,8 @@ import { FormMenuBar } from "./FormMenuBar"
 import { QuestionsAudienceTabs } from "./QuestionsStylingSettingsTabs"
 import { QuestionsView } from "./QuestionsView"
 import { TForm } from "@/types/forms";
+import { useEffect, useState } from "react";
+// import { structuredClone } from "@/lib/pollyfills/structuredClone";
 
 interface FormEditorProps {
     form: TForm;
@@ -10,6 +12,11 @@ interface FormEditorProps {
 export const FormEditor =({
     form
 }: FormEditorProps) => {
+    // const [localForm, setLocalForm] = useState<TForm | null>(() => structuredClone(form));
+
+    // useEffect(() => {
+    //     console.log("localForm data:", localForm);
+    // }, [localForm]);
     return (
         <>
             <div className="flex h-full w-full flex-col">
@@ -29,6 +36,7 @@ export const FormEditor =({
                     </main>
                     <aside className="group hidden flex-1 flex-shrink-0 items-center justify-center overflow-hidden border-l border  border-slate-100 bg-slate-50 py-6 md:flex md:flex-col">
                         <PreviewForm 
+                            form={form}
                             previewType= "modal"
                         />
                     </aside>
