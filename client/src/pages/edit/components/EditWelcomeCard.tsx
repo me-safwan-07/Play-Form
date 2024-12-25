@@ -23,7 +23,6 @@ export const EditWelcomeCard = ({
 }: EditWelcomeCardProps) => {
     const [firstReander, setFirstReander] = useState(true);
     const path = useLocation().pathname;
-    // const evvironmentId = path?.split("/environments/")[1]?.split('/')[0];
 
     let open = activeQuestionId == "start";
 
@@ -85,6 +84,8 @@ export const EditWelcomeCard = ({
                     </div>
                     <div className="">
                         <FileInput 
+                            allowedFileExtensions={["png", "jpeg", "jpg"]}
+                            fileUrls={form?.welcomeCard?.fileUrl ? [form.welcomeCard.fileUrl] : []}
                         />
                     </div>
                     <div className="">
@@ -92,18 +93,19 @@ export const EditWelcomeCard = ({
                         <QuestionFormInput 
                             id="headline"
                             value={form.welcomeCard.headline}
-                            localSurvey={form}
+                            localForm={form}
                             label="Note*"
                             questionIdx={-1}
+                            isInvalid={true}
                         />
                     </div>
-                    <div className="">
-                        <Label>Welcome Message</Label>
-                        <div className="">
+                    {/* <div className=""> */}
+                        {/* <Label>Welcome Message</Label> */}
+                        {/* <div className=""> */}
                             {/* LocalizedEditor */}
                             
-                        </div>
-                    </div>
+                        {/* </div> */}
+                    {/* </div> */}
                     <div className="">
                         <div className="">
                             <div className="">
@@ -111,26 +113,19 @@ export const EditWelcomeCard = ({
                             </div>
                         </div>
                     </div>
-                    <div className="">
-                        <div className="">
-                            {/* Switch */}
-                            
+                    <div className="mt-6 flex  items-center">
+                        <div className="mr-2">
+                            <Switch 
+                                id="showResponseCount"
+                                name="showResponseCount"
+                                checked={form.welcomeCard.showResponseCount}
+                                onCheckedChange={() => {}}
+                            />
                         </div>
                         <div className="flex-column">
-                            <Label>Time to Finish</Label>
-                            <div className="ext-sm text-slate-500 dark:text-slate-400">
-                                Display an estimate of completion time for survey
-                            </div>
-                        </div>
-                        <div className="">
-                            <div className="">
-                                {/* Switch */}
-                            </div>
-                            <div className="flex-column">
-                                <Label>Show Response Count</Label>
-                                <div className="text-sm text-slate-500 dark:text-slate-400">
-                                    Display number of responses for survey
-                                </div>
+                            <Label>Show Response Count</Label>
+                            <div className="text-sm text-slate-500 dark:text-slate-400">
+                                Display number of responses for survey
                             </div>
                         </div>
                     </div>
