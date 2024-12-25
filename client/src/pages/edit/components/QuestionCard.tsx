@@ -40,7 +40,7 @@ export const QuestionCard = () => {
                             </div>
                             <div className="grow" dir="auto">
                                 <p className="text-sm font-semibold">
-                                    {questionTypes[0].preset.headline.default}
+                                    {questionTypes .preset.headline.default}
                                 </p>
                                 <p className="mt-1 truncate text-xs text-slate-500">Required</p>
                             </div>
