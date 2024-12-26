@@ -1,6 +1,6 @@
 import { TemplateList } from '@/components/ui/TemplateList'
 import { Search } from 'lucide-react'
-import React from 'react'
+// import React from 'react'
 
 export const TemplateContainer = () => {
   return (

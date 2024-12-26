@@ -1,6 +1,6 @@
 import { PreviewForm } from "@/components/ui/PreviewSurvey"
 import { FormMenuBar } from "./FormMenuBar"
-import { QuestionsAudienceTabs } from "./QuestionsStylingSettingsTabs"
+// import { QuestionsAudienceTabs } from "./QuestionsStylingSettingsTabs"
 import { QuestionsView } from "./QuestionsView"
 import { TForm } from "@/types/forms";
 import { useEffect, useState } from "react";
@@ -26,8 +26,6 @@ export const FormEditor =({
             if(form.questions.length > 0) {
                 setActiveQuestionId(form.questions[0].id);
             }
-            // console.log(form);
-            // console.log(localForm);
         }
 
     }, [localForm]);
@@ -45,7 +43,10 @@ export const FormEditor =({
     return (
         <>
             <div className="flex h-full w-full flex-col">
-                <FormMenuBar />
+                <FormMenuBar 
+                    localForm={localForm}
+                    setLocalForm={setLocalForm}
+                />
                 <div className="relative z-0 flex flex-1 overflow-hidden">
                     <main
                         className="relative z-0 w-1/2 flex-1 overflow-y-auto focus:outline-none"

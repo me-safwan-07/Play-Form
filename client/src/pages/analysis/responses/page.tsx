@@ -8,9 +8,18 @@ const form = {
     "id": "63e7f64d-d594-4b90-b8d8-53653d92006e",
     // "organizationId": "63e7f56a-d594-4b90-b8d8-53653d92006d",
     "name": "Mubark criekters gangolli",
-    "createdAt": "2023-03-20T09:10:30",
-    "updatedAt": "2023-03-20T09:10:30",
-    "status": "inProgress",
+    "createdAt": new Date("2023-03-20T09:10:30"),
+    "updatedAt": new Date("2023-03-20T09:10:30"),
+    "status": "inProgress" as "inProgress",
+    "welcomeCard": {
+        "enabled": true,
+        "showResponseCount": true
+    },
+    "questions": [],
+    "thankYouCard": {
+        "enabled": true,
+        "message": "Thank you for your response!"
+    }
     // "surveyStatus": "completed",
 }
 const Responses = () => {

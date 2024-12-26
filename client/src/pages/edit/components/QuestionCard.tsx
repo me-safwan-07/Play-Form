@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 import * as Collapsible  from "@radix-ui/react-collapsible"
-import { GripIcon, Scale } from "lucide-react"
+import { GripIcon } from "lucide-react"
 import { QuestionMenu } from "./QuestionMenu"
 // import { QUESTIONS_ICON_MAP } from "@/lib/questions"
 import { OpenQuestionForm } from "./OpenQuestionForm"
@@ -9,8 +9,14 @@ import { useState } from "react"
 import { DateQuestionForm } from "./DateQuestionForm"
 import { AddressQuestionForm } from "./AddressQuestionForm"
 import { questionTypes } from "@/lib/questions"
+import { TForm } from "@/types/forms"
 
-export const QuestionCard = () => {
+interface QuestionCardProps {
+    localForm: TForm;
+}
+export const QuestionCard = ({
+    localForm,
+}: QuestionCardProps) => {
     const [type, setType] = useState("MultipleChoiceQuestionForm");
     return (
         <div className="scale-100 shadow-lg flex w-full flex-row rounded-lg bg-white transition-all duration-300 ease-in-out">
@@ -40,7 +46,7 @@ export const QuestionCard = () => {
                             </div>
                             <div className="grow" dir="auto">
                                 <p className="text-sm font-semibold">
-                                    {questionTypes .preset.headline.default}
+                                    {questionTypes[0].preset.headline.default}
                                 </p>
                                 <p className="mt-1 truncate text-xs text-slate-500">Required</p>
                             </div>
@@ -54,11 +60,15 @@ export const QuestionCard = () => {
                 <Collapsible.CollapsibleContent className="px-4 pb-4">
                     {/* Question content */}
                     { type === 'OpenQuestionForm' ? (
-                        <OpenQuestionForm />
+                        <OpenQuestionForm 
+                            localForm={localForm}
+                        />
                     ) : type === 'MultipleChoiceQuestionForm' ? (
-                        <MultipleChoiceQuestionForm />
-                    ): type === 'date' ? <DateQuestionForm /> 
-                    : type === 'address' ? <AddressQuestionForm /> : null
+                        <MultipleChoiceQuestionForm 
+                            localForm={localForm}
+                        />
+                    ): type === 'date' ? <DateQuestionForm localForm={localForm}/> 
+                    : type === 'address' ? <AddressQuestionForm localForm={localForm}/> : null
                     }
                 
                 </Collapsible.CollapsibleContent>

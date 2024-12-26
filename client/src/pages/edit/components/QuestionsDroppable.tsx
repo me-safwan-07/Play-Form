@@ -1,9 +1,17 @@
+import { TForm } from "@/types/forms"
 import { QuestionCard } from "./QuestionCard"
 
-export const QuestionsDroppable = () => {
+interface QuestionsDroppableProps {
+    localForm: TForm;
+}
+export const QuestionsDroppable = ({
+    localForm,  // form data
+ }: QuestionsDroppableProps) => {
     return (
         <div className="">
-            <QuestionCard />
+            <QuestionCard 
+                localForm={localForm}
+            />
         </div>
     )
-}
+};

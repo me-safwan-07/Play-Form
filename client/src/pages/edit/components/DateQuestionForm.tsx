@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/Label";
 import { QuestionFormInput } from "@/components/ui/QuestionFormInput";
 import { OptionsSwitcher } from "@/components/ui/QuestionTypeSelector";
+import { TForm } from "@/types/forms";
 import { PlusIcon } from "lucide-react";
 
 const dateOptions = [
@@ -19,7 +20,12 @@ const dateOptions = [
   },
 ];
 
-export const DateQuestionForm = () => {
+interface DateQuestionFormProps {
+    localForm: TForm;
+}
+export const DateQuestionForm = ({
+    localForm
+}: DateQuestionFormProps) => {
     
     return (
         <form>
@@ -27,6 +33,9 @@ export const DateQuestionForm = () => {
                 id="headline"
                 label={"Question*"}
                 isInvalid={false}
+                value=""
+                localForm={localForm}
+                questionIdx={0}
             />
             <div>
                 <div className="mt-2 inline-flex w-full items-center">
@@ -35,6 +44,9 @@ export const DateQuestionForm = () => {
                             id="subheader"
                             label={"Description"}
                             isInvalid={false}
+                            value=""
+                            localForm={localForm}
+                            questionIdx={1}
                         />
                     </div>
                 </div>

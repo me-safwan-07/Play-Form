@@ -9,16 +9,24 @@ export const PasswordResetFrom = () => {
     const [error, setError] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
 
-    const handleSubmit = async (e) => {
+    interface FormElements extends HTMLFormControlsCollection {
+        email: HTMLInputElement;
+    }
+
+    interface PasswordResetFormElement extends HTMLFormElement {
+        readonly elements: FormElements;
+    }
+
+    const handleSubmit = async (e: React.FormEvent<PasswordResetFormElement>) => {
         e.preventDefault();
         setLoading(true);
         try {
-          await forgotPassword(e.target.elements.email.value);
-        navigate("/auth/forgot-password/email-sent");
-        } catch (e) {
-          setError(e.message);
+            await forgotPassword(e.currentTarget.elements.email.value);
+            navigate("/auth/forgot-password/email-sent");
+        } catch (e: any) {
+            setError(e.message);
         } finally {
-          setLoading(false);
+            setLoading(false);
         }
     };
 

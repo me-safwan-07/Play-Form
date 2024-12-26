@@ -3,9 +3,15 @@ import { Label } from "@/components/ui/Label"
 import { QuestionFormInput } from "@/components/ui/QuestionFormInput"
 import { Switch } from "@/components/ui/Switch"
 import { cn } from "@/lib/utils"
+import { TForm } from "@/types/forms"
 import * as Collapsible from "@radix-ui/react-collapsible"
 
-export const EditThankYouCard = () => {
+interface EditThankYouCardProps {
+    localForm: TForm;
+}
+export const EditThankYouCard = ({
+    localForm,
+}: EditThankYouCardProps) => {
     return (
         <div className={cn(
             "scale-100 shadow-lg group z-20 flex flex-row rounded bg-white transition-transform duration-300 ease-in-out"
@@ -36,12 +42,18 @@ export const EditThankYouCard = () => {
                             id="headline"
                             label="Note*"
                             isInvalid={true}
+                            value=""
+                            localForm={localForm}
+                            questionIdx={0}
                         />
                         
                         <QuestionFormInput 
                             id="subheader"
                             label="Description"
                             isInvalid={false}
+                            value=""
+                            localForm={localForm}
+                            questionIdx={1}
                         />
 
                         <div className="">
@@ -64,6 +76,9 @@ export const EditThankYouCard = () => {
                                         id="buttonLabel"
                                         label="Button Label"
                                         isInvalid={false}
+                                        value=""
+                                        localForm={localForm}
+                                        questionIdx={2}
                                     />
                                 </div>
                                 <div className="space-y-2">

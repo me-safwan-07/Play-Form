@@ -5,8 +5,8 @@ import Button from "@/components/ui/Button/index"
 import { ShareIcon, SquarePenIcon } from "lucide-react"
 
 interface FormAnalysisCTAProps {
-    form: TForm
-    isViewer: boolean
+    form: TForm;
+    isViewer: boolean;
 }
 
 export const FormAnalysisCTA = ({

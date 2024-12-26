@@ -1,4 +1,4 @@
-import { FileInput } from "@/components/ui/FileInput";
+// import { FileInput } from "@/components/ui/FileInput";
 import { Label } from "@/components/ui/Label";
 import { QuestionFormInput } from "@/components/ui/QuestionFormInput";
 import { Switch } from "@/components/ui/Switch";
@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 import { TForm } from "@/types/forms";
 import * as Collapsible from "@radix-ui/react-collapsible";
 // import { FileInput } from "lucide-react";
-import { useState } from "react"
-import { useLocation } from "react-router-dom";
+// import { useState } from "react"
+// import { useLocation } from "react-router-dom";
 
 interface EditWelcomeCardProps {
     localForm: TForm;
@@ -22,15 +22,15 @@ export const EditWelcomeCard = ({
     setActiveQuestionId,
     activeQuestionId,
 }: EditWelcomeCardProps) => {
-    const [firstReander, setFirstReander] = useState(true);
-    const path = useLocation().pathname;
+    // const [firstReander, setFirstReander] = useState(true);
+    // const path = useLocation().pathname;
 
     let open = activeQuestionId == "start";
 
     const setOpen = (e: any) => {
         if (e) {
             setActiveQuestionId("start");
-            setFirstReander(true);
+            // setFirstReander(true);
         } else {
             setActiveQuestionId(null);
         }
@@ -106,7 +106,7 @@ export const EditWelcomeCard = ({
                                 fileUrls={localForm?.welcomeCard?.fileUrl ? [localForm.welcomeCard.fileUrl] : []}
                             />
                         </div> */}
-                        <div className="">
+                        <div className="mt-3">
                             <QuestionFormInput
                                 id="headline"
                                 value={localForm.welcomeCard.headline}

@@ -4,10 +4,10 @@ import * as Collapsible from "@radix-ui/react-collapsible";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 
-interface AddQuestionButtonProps {
-    addQuestion: (question: any) => void;
-    product: string;
-}
+// interface AddQuestionButtonProps {
+//     addQuestion: (question: any) => void;
+//     product: string;
+// }
 export const AddQuestionButton = () => {
     const [open, setOpen] = useState(false);
 

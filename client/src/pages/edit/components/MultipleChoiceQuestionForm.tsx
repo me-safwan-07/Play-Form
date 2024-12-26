@@ -1,49 +1,55 @@
 "use client";
 
 import { DndContext } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { useState, useRef, useEffect } from "react";
+// import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { useState } from "react";
 import { PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/Label";
-import { Input } from "@/components/ui/Input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
+// import { Input } from "@/components/ui/Input";
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { QuestionFormInput } from "@/components/ui/QuestionFormInput";
+import { TForm } from "@/types/forms";
 
-export const MultipleChoiceQuestionForm = () => {
-  const lastChoiceRef = useRef<HTMLInputElement>(null);
-  const questionRef = useRef<HTMLInputElement>(null);
+interface MultipleChoiceQuestionFormProps {
+  localForm: TForm;
+}
+export const MultipleChoiceQuestionForm = ({
+  localForm
+}: MultipleChoiceQuestionFormProps) => {
+  // const lastChoiceRef = useRef<HTMLInputElement>(null);
+  // const questionRef = useRef<HTMLInputElement>(null);
 
-  const [isNew, setIsNew] = useState(true);
-  const [choices, setChoices] = useState<string[]>(["Option 1", "Option 2"]);
+  // const [isNew, setIsNew] = useState(true);
+  // const [choices, setChoices] = useState<string[]>(["Option 1", "Option 2"]);
   const [subheader, setSubheader] = useState<string | null>(null);
-  const [isMultiple, setIsMultiple] = useState(false);
+  // const [isMultiple, setIsMultiple] = useState(false);
 
-  const addChoice = () => {
-    setChoices([...choices, `Option ${choices.length + 1}`]);
-  };
+  // const addChoice = () => {
+  //   setChoices([...choices, `Option ${choices.length + 1}`]);
+  // };
 
-  const deleteChoice = (index: number) => {
-    setChoices(choices.filter((_, idx) => idx !== index));
-  };
+  // const deleteChoice = (index: number) => {
+  //   setChoices(choices.filter((_, idx) => idx !== index));
+  // };
 
-  const updateChoice = (index: number, value: string) => {
-    const updatedChoices = [...choices];
-    updatedChoices[index] = value;
-    setChoices(updatedChoices);
-  };
+  // const updateChoice = (index: number, value: string) => {
+  //   const updatedChoices = [...choices];
+  //   updatedChoices[index] = value;
+  //   setChoices(updatedChoices);
+  // };
 
-  useEffect(() => {
-    if (lastChoiceRef.current) {
-      lastChoiceRef.current.focus();
-    }
-  }, [choices.length]);
+  // useEffect(() => {
+  //   if (lastChoiceRef.current) {
+  //     lastChoiceRef.current.focus();
+  //   }
+  // }, [choices.length]);
 
-  useEffect(() => {
-    if (isNew && questionRef.current) {
-      questionRef.current.focus();
-    }
-  }, [isNew]);
+  // useEffect(() => {
+  //   if (isNew && questionRef.current) {
+  //     questionRef.current.focus();
+  //   }
+  // }, [isNew]);
 
   return (
     <form>
@@ -51,6 +57,9 @@ export const MultipleChoiceQuestionForm = () => {
             id="headline"
             label="Headline"
             isInvalid={false}
+            value={localForm.name || ""} // change the value localform variable
+            localForm={localForm}
+            questionIdx={0}
         />
 
         <div>
@@ -72,6 +81,9 @@ export const MultipleChoiceQuestionForm = () => {
                             id="subheader"
                             label="Description"
                             isInvalid={false}
+                            value={subheader || ""}
+                            localForm={localForm}
+                            questionIdx={0}
                         />
                     </div>
                 </div>

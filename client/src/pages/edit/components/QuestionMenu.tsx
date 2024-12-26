@@ -1,4 +1,4 @@
-import { QUESTIONS_ICON_MAP, QUESTIONS_NAME_MAP } from "@/lib/questions";
+import { QUESTIONS_NAME_MAP } from "@/lib/questions";
 import { 
     DropdownMenu, 
     DropdownMenuItem, 
@@ -42,7 +42,7 @@ export const QuestionMenu = () => {
                             </DropdownMenuSubTrigger>
 
                             <DropdownMenuSubContent>
-                                {Object.entries(QUESTIONS_NAME_MAP).map(([type, name]) => {
+                                {Object.entries(QUESTIONS_NAME_MAP).map(([type]) => {
                                     return (
                                         <DropdownMenuItem
                                             key={type}
@@ -64,7 +64,7 @@ export const QuestionMenu = () => {
                             </DropdownMenuSubTrigger>
 
                             <DropdownMenuSubContent>
-                                {Object.entries(QUESTIONS_NAME_MAP).map(([type, name]) => {
+                                {Object.entries(QUESTIONS_NAME_MAP).map(([type]) => {
                                     return (
                                         <DropdownMenuItem
                                             key={type}

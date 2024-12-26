@@ -1,20 +1,30 @@
 import Button from "@/components/ui/Button/"
 import { Input } from "@/components/ui/Input"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/Tooltip";
+import { TForm } from "@/types/forms";
 import { AlertTriangleIcon, ArrowLeftIcon } from "lucide-react"
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 
-export const FormMenuBar = () => {
-    const product = {
-        name: "Product one"
-    };
-    const [localSurvey, setLocalSurvey] = useState({
-        name: "first form",
-        // status: "draft"
-        status: "draft",
-    });
+interface FormMenuBarProps {
+    localForm: TForm;
+    setLocalForm: (localForm: TForm) => void;
+}
+export const FormMenuBar = ({
+    localForm,
+    setLocalForm,
+}: FormMenuBarProps) => {
+    // const product = {
+    //     name: "Product one"
+    // };
+    // const [localForm, setlocalForm] = useState({
+    //     name: "first form",
+    //     // status: "draft"
+    //     status: "draft",
+    // });
+    const navigate = useNavigate();
     const [isSurveyPublishing, setIsSurveyPublishing] = useState(false);
     const cautionText = "This form received responses.";
 
@@ -40,16 +50,17 @@ export const FormMenuBar = () => {
                         StartIcon={ArrowLeftIcon}
                         onClick={() => {
                             // Navigate to previous form
+                            navigate(-1)
                         }}
                     >
                         Back
                     </Button>
-                    <p className="hidden pl-4 font-semibold md:block">{product.name} / </p>
+                    {/* <p className="hidden pl-4 font-semibold md:block">{product.name} / </p> */}
                     <Input 
-                        defaultValue={localSurvey.name}
+                        defaultValue={localForm.name}
                         onChange={(e) => {
-                            const updatedForm = { ...localSurvey, name: e.target.value};
-                            setLocalSurvey(updatedForm);
+                            const updatedForm = { ...localForm, name: e.target.value};
+                            setLocalForm(updatedForm);
                         }}
                         className="w-72 border-white hover:border-slate-200"
                     />
@@ -82,7 +93,7 @@ export const FormMenuBar = () => {
                     >
                         Save
                     </Button>
-                    {localSurvey.status !== "draft" && (
+                    {localForm.status !== "draft" && (
                         <Button
                             disabled={false}
                             variant="darkCTA"
@@ -95,7 +106,7 @@ export const FormMenuBar = () => {
                             Save & Close
                         </Button>
                     )}
-                    {localSurvey.status == "draft" && (
+                    {localForm.status == "draft" && (
                         <Button
                             disabled={false}
                             variant="darkCTA"

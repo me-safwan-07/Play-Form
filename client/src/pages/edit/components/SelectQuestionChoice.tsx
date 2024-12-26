@@ -1,7 +1,13 @@
 import { QuestionFormInput } from "@/components/ui/QuestionFormInput"
+import { TForm } from "@/types/forms";
 import { GripVerticalIcon, PlusIcon, TrashIcon } from "lucide-react"
 
-export const SelectQuestionChoice = () => {
+interface SelectQuestionChoiceProps {
+    localForm: TForm;
+}
+export const SelectQuestionChoice = ({
+    localForm,
+}: SelectQuestionChoiceProps) => {
     return (
         <div className="flex w-full gap-2">
             <div className="mt-6 ">
@@ -15,6 +21,9 @@ export const SelectQuestionChoice = () => {
                     isInvalid={false}
                     label={""}
                     className="mt-0"
+                    value=""
+                    localForm={localForm}
+                    questionIdx={0}
                 />
             </div>
             <div className="mt-6 flex gap-2">

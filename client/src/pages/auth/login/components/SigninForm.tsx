@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
-import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { XCircleIcon } from "lucide-react";
-import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import Button from "@/components/ui/Button/index";
 import { GoogleButton } from "@/components/ui/SignupOptions/components/GoogleButton";

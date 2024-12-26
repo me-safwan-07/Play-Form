@@ -1,6 +1,7 @@
 import { Label } from "@/components/ui/Label";
 import { QuestionFormInput } from "@/components/ui/QuestionFormInput";
 import { OptionsSwitcher } from "@/components/ui/QuestionTypeSelector";
+import { TForm } from "@/types/forms";
 import { HashIcon, LinkIcon, MailIcon, MessageSquareTextIcon, PhoneIcon } from "lucide-react";
 
 const questionTypes = [
@@ -11,13 +12,21 @@ const questionTypes = [
   { value: "phone", label: "Phone", icon: <PhoneIcon className="h-4 w-4" /> },
 ];
 
-export const OpenQuestionForm = () => {
+interface OpenQuestionFormProps {
+    localForm: TForm;
+}
+export const OpenQuestionForm = ({
+    localForm
+}: OpenQuestionFormProps) => {
     return (
         <form action="">
             <QuestionFormInput 
                 id="headline"
                 isInvalid={true}
                 label={"Question*"}
+                value=""
+                localForm={localForm}
+                questionIdx={0}
             />
 
             <div className="">
@@ -27,6 +36,9 @@ export const OpenQuestionForm = () => {
                             id="subheader"
                             label={"Description"}
                             isInvalid={false}
+                            value=""
+                            localForm={localForm}
+                            questionIdx={1}
                         />
                     </div>
                 </div>
@@ -38,6 +50,9 @@ export const OpenQuestionForm = () => {
                     id="placeholder"
                     isInvalid={false}
                     label={"Placeholder"}
+                    value=""
+                    localForm={localForm}
+                    questionIdx={0}
                 />
             </div>
 

@@ -3,10 +3,10 @@ import { FormWrapper } from "../components/FormWrapper";
 import Testimonial from "../components/Testimonial";
 import { SignupForm } from "./components/SignupForm";
 
-interface TSigninFormState {
-  email: string;
-  password: string;
-}
+// interface TSigninFormState {
+//   email: string;
+//   password: string;
+// }
 
 export const Signin = () => {
     return (

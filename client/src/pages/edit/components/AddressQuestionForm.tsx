@@ -1,9 +1,15 @@
 import { AdvancedOptionToggle } from "@/components/ui/AdvancedOptionToggle"
 import { Button } from "@/components/ui/button"
 import { QuestionFormInput } from "@/components/ui/QuestionFormInput"
+import { TForm } from "@/types/forms"
 import { PlusIcon } from "lucide-react"
 
-export const AddressQuestionForm = () => {
+interface AddressQuestionFormProps {
+    localForm: TForm,
+}
+export const AddressQuestionForm = ({
+    localForm,
+}: AddressQuestionFormProps) => {
 
     return (
         <form>
@@ -11,6 +17,9 @@ export const AddressQuestionForm = () => {
                 id="headline"
                 label="Question*"
                 isInvalid={false}
+                value=""
+                localForm={localForm}
+                questionIdx={0}
             />
 
             <div>
@@ -20,6 +29,9 @@ export const AddressQuestionForm = () => {
                             id="subheader"
                             label={'Description'}
                             isInvalid={false}
+                            value=""
+                            localForm={localForm}
+                            questionIdx={1}
                         />
                     </div>
                 </div>
