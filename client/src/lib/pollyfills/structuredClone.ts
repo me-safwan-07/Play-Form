@@ -5,7 +5,7 @@ let structuredCloneExport: typeof structuredClonePolyfill;
 if (typeof structuredClone === "undefined") {
   structuredCloneExport = structuredClonePolyfill;
 } else {
-  structuredCloneExport = structuredClone;
+  structuredCloneExport = structuredClone as typeof structuredClonePolyfill;
 }
 
 export { structuredCloneExport as structuredClone };

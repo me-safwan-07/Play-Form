@@ -6,7 +6,7 @@ import {
     ArrowUpFromLineIcon, 
     CalendarDaysIcon, 
     HomeIcon, 
-    ImageIcon, 
+    // ImageIcon, 
     ListIcon, 
     MessageSquareTextIcon, 
     Rows3Icon 
@@ -48,15 +48,15 @@ export const questionTypes: TQuestion[] = [
             headline: { default: "What's your favorite color?"},
         }
     },
-    {
-        id: QuestionId.PictureSelection,
-        label: "Picture selection",
-        description: "Ask respondents to select one or more picture",
-        icon: ImageIcon,
-        preset: {
+    // {
+    //     id: QuestionId.PictureSelection,
+    //     label: "Picture selection",
+    //     description: "Ask respondents to select one or more picture",
+    //     icon: ImageIcon,
+    //     preset: {
             
-        }
-    },
+    //     }
+    // },
     {
         id: QuestionId.Date,
         label: "Date",

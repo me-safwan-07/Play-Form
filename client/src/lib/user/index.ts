@@ -1,5 +1,5 @@
 import { signInWithPopup } from "firebase/auth";
-// import { hashPassword } from "../auth";
+// import { hashPassword } from "@/lib/auth"; // Adjust the path according to your project structure
 import { auth, googleProvider } from "@/lib/firebase-config";
 
 export const createUser = async (
@@ -74,14 +74,14 @@ export const forgotPassword = async (email: string) => {
 };
 
 export const resetPassword = async (token: string, password: string): Promise<void> => {
-  const hashedPassword = await hashPassword(password);
+  // const hashedPassword = await hashPassword(password);
   try {
     const res = await fetch(`/api/v1/users/reset-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         token,
-        hashedPassword,
+        password,
       }),
     });
     if (res.status !== 200) {
