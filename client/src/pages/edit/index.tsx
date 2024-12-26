@@ -22,7 +22,7 @@ export const Edit = () => {
     fetchForm();
   }, [id]);
 
-  if (!form || form.id !== id) {
+  if (!form) {
     return <ErrorComponent />;
   }
 
