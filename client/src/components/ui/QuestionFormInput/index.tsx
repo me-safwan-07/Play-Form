@@ -12,6 +12,7 @@ interface QuestionFormInputProps {
     value: string | undefined;
     localForm: TForm;
     questionIdx: number;
+    updateForm?: (data: Partial<TFormQuestion>) => void;
     label: string;
     isInvalid: boolean;
     maxLength?: number;
@@ -25,6 +26,7 @@ export const QuestionFormInput = ({
     localForm,
     label,
     questionIdx,
+    updateForm,
     isInvalid,
     maxLength,
     placeholder,
