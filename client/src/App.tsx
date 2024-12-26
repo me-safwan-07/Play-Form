@@ -4,8 +4,6 @@ import Page from './pages/formPage/page';
 import { TemplateContainer } from './pages/templates/components/TemplateContainer';
 import { Edit } from './pages/edit';
 import { AddQuestionButton } from './pages/edit/components/AddQuestionButton';
-import { QuestionCard } from './pages/edit/components/QuestionCard';
-import { SelectQuestionChoice } from './pages/edit/components/SelectQuestionChoice';
 import Auth from './pages/auth';
 import NotFound from './components/ui/NotFound';
 import UserTable from './pages/apitest/GetUserById';
