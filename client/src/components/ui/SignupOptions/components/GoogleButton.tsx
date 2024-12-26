@@ -4,7 +4,7 @@ import { GoogleIcon } from "../../icons/GoogleIcon";
 export const GoogleButton = ({
   text = "Continue with Google",
   handleGoogleSignIn,
-  inviteUrl,
+  // inviteUrl,
 }: {
   text?: string;
   handleGoogleSignIn: () => void;

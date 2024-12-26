@@ -1,3 +1,4 @@
+// FILEPATH: /path/to/FormCard.tsx
 import { SurveyStatusIndicator } from "@/components/ui/SurveyStatusIndicator";
 import { convertDateString, timeSince } from "@/lib/time";
 import { cn } from "@/lib/utils";
@@ -7,7 +8,7 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
 interface FormCardProps {
-    form: TFormFilters;
+    form: TFormFilters & { id: string; createdAt: Date; updatedAt: Date; status: "draft" | "scheduled" | "inProgress" | "paused" | "completed" };
     orientation: string;
 }
 
@@ -20,7 +21,7 @@ export const FormCard = ({
         else if (form.status === "completed") return "Completed";
         else if (form.status === "draft") return "Draft";
         else if (form.status === "paused") return "Paused";
-    }, [form]);
+    }, [form.status]);
 
     const linkHref = useMemo(() => {
         return form.status === 'draft'
@@ -50,9 +51,7 @@ export const FormCard = ({
                         {timeSince(form.updatedAt.toString())}
                     </div>
                     <div className="place-self-end">
-                        <FormDropdownMenu 
-                            FormDropdownMenuProps={false}
-                        />
+                        <FormDropdownMenu />
                     </div>
                 </div>
             </Link>
@@ -66,9 +65,7 @@ export const FormCard = ({
                 className="relative col-span-1 flex h-44 flex-col justify-between rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all ease-in-out"
             >
                 <div className="flex justify-between">
-                    <FormDropdownMenu 
-                        FormDropdownMenuProps={false}
-                    />
+                    <FormDropdownMenu />
                 </div>
                 <div>
                     <div className="text-md font-medium text-slate-900">{form.name}</div>

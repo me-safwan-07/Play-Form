@@ -1,11 +1,11 @@
 // import { Label } from "@radix-ui/react-dropdown-menu"
 
 import { ImagePlusIcon, TrashIcon } from "lucide-react";
-import { FileInput } from "../FileInput";
+// import { FileInput } from "../FileInput";
 import { Label } from "../Label";
 import { Input } from "../Input";
 import { TForm, TFormQuestion } from "@/types/forms";
-import { useMemo } from "react";
+// import { useMemo } from "react";
 
 interface QuestionFormInputProps {
     id: string;
@@ -22,28 +22,26 @@ interface QuestionFormInputProps {
 
 export const QuestionFormInput = ({
     id,
-    value,
-    localForm,
+    // value,
+    // localForm,
     label,
-    questionIdx,
-    updateForm,
-    isInvalid,
-    maxLength,
+    // questionIdx,
+    // updateForm,
+    // isInvalid,
+    // maxLength,
     placeholder,
     className,
  }: QuestionFormInputProps
 ) => {
-    const question: TFormQuestion = localForm.questions[questionIdx];
-    const isChoice = id.includes("choice");
-    const isThankYoucard = questionIdx === localForm.questions.length;
-    const isWelcomeCard = questionIdx === -1;
+    // const question: TFormQuestion = localForm.questions[questionIdx];
+    // const isChoice = id.includes("choice");
+    // const isThankYoucard = questionIdx === localForm.questions.length;
+    // const isWelcomeCard = questionIdx === -1;
 
-    const questionId = useMemo(() => {
-        return isWelcomeCard ? "start" : isThankYoucard ? "end" : question.id;
-    }, [isWelcomeCard, isThankYoucard, question?.id]);
+    // const questionId = useMemo(() => {
+    //     return isWelcomeCard ? "start" : isThankYoucard ? "end" : question.id;
+    // }, [isWelcomeCard, isThankYoucard, question?.id]);
 
-
-    
     return (
         <div className="w-full">
             <div className="w-full">
