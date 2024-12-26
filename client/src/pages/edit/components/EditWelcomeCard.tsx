@@ -10,14 +10,15 @@ import { useState } from "react"
 import { useLocation } from "react-router-dom";
 
 interface EditWelcomeCardProps {
-    form: TForm;
+    localForm: TForm;
+    setLocalForm: (localForm: TForm) => void;
     setActiveQuestionId: (id: string | null) => void;
     activeQuestionId: string | null;
-
 }
 
 export const EditWelcomeCard = ({
-    form,
+    localForm,
+    setLocalForm,
     setActiveQuestionId,
     activeQuestionId,
 }: EditWelcomeCardProps) => {
@@ -34,14 +35,25 @@ export const EditWelcomeCard = ({
             setActiveQuestionId(null);
         }
     };
+
+    const updateForm = (data: Partial<TForm["welcomeCard"]>) => {
+        setLocalForm({
+            ...localForm,
+            welcomeCard: {
+               ...localForm.welcomeCard,
+               ...data,
+            },
+        })
+    };
     
 
     return (
         <div className={cn(
             open ? "scale-100 shadow-lg" : "scale-97 shadow-md",
-            "group flex flex-row rounded-lg bg-white transition-transform duration-300 ease-in-out"
+            "group flex flex-row rounded-lg bg-white transition-translocalForm duration-300 ease-in-out"
         )}>
             <div className={cn(
+                open ? "bg-slate-50" : "",
                 "flex w-10 items-center justify-center rounded-l-lg border-b border-l border-t group-aria-expanded:rounded-bl-none bg-white group-hover:bg-slate-50"
             )}>
                 <p className="">✋</p>
@@ -57,78 +69,85 @@ export const EditWelcomeCard = ({
                 >
                     <div>
                         <div className="inline-flex">
-                            <div className="">
+                            <div>
                                 <p className="text-sm font-semibold">Welcome Card</p>
                                 {!open && (
                                     <p className="mt-1 truncate text-xs text-slate-500">
-                                        {form?.welcomeCard?.enabled ? "Shown": "Hidden"}
+                                        {localForm?.welcomeCard?.enabled ? "Shown": "Hidden"}
                                     </p>
                                 )}
                             </div>
                         </div>
 
                         <div className="flex items-center space-x-2">
-                            <Label htmlFor="welcome-toggle">{form?.welcomeCard?.enabled  ? "On" : "Off"}</Label>
+                            <Label htmlFor="welcome-toggle">{localForm?.welcomeCard?.enabled  ? "On" : "Off"}</Label>
+
                             <Switch
                                 id="welcome-toggle"
-                                checked={form?.welcomeCard?.enabled}
-                                // create the onClick
+                                checked={localForm?.welcomeCard?.enabled}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateForm({ enabled: !localForm.welcomeCard?.enabled });
+                                }}
                             />
                         </div>
                     </div>
                 </Collapsible.CollapsibleTrigger>
                 
                 <Collapsible.CollapsibleContent className="px-4 pb-6">
-                    <div className="">
-                        <Label>Company Logo</Label>
-                    </div>
-                    <div className="">
-                        <FileInput 
-                            allowedFileExtensions={["png", "jpeg", "jpg"]}
-                            fileUrls={form?.welcomeCard?.fileUrl ? [form.welcomeCard.fileUrl] : []}
-                        />
-                    </div>
-                    <div className="">
-                        {/* QuestionFormInput */}
-                        <QuestionFormInput 
-                            id="headline"
-                            value={form.welcomeCard.headline}
-                            localForm={form}
-                            label="Note*"
-                            questionIdx={-1}
-                            isInvalid={true}
-                        />
-                    </div>
-                    {/* <div className=""> */}
-                        {/* <Label>Welcome Message</Label> */}
-                        {/* <div className=""> */}
-                            {/* LocalizedEditor */}
-                            
-                        {/* </div> */}
-                    {/* </div> */}
-                    <div className="">
-                        <div className="">
-                            <div className="">
-                                {/* QuestionFormInput */}
-                            </div>
+                    <form>
+                        <div className="mt-2">
+                            <Label htmlFor="companyLogo">Company Logo</Label>
                         </div>
-                    </div>
-                    <div className="mt-6 flex  items-center">
-                        <div className="mr-2">
-                            <Switch 
-                                id="showResponseCount"
-                                name="showResponseCount"
-                                checked={form.welcomeCard.showResponseCount}
-                                onCheckedChange={() => {}}
+                        {/* <div className="mt-3 flex w-full items-center justify-center">
+                            <FileInput
+                                id="welcome-card-image"
+                                allowedFileExtensions={["png", "jpeg", "jpg"]}
+                                fileUrls={localForm?.welcomeCard?.fileUrl ? [localForm.welcomeCard.fileUrl] : []}
+                            />
+                        </div> */}
+                        <div className="">
+                            <QuestionFormInput
+                                id="headline"
+                                value={localForm.welcomeCard.headline}
+                                label="Note*"
+                                localForm={localForm}
+                                questionIdx={-1}
+                                isInvalid={true}
+                                updateForm={updateForm}
                             />
                         </div>
-                        <div className="flex-column">
-                            <Label>Show Response Count</Label>
-                            <div className="text-sm text-slate-500 dark:text-slate-400">
-                                Display number of responses for survey
+                        {/* <div className=""> */}
+                            {/* <Label>Welcome Message</Label> */}
+                            {/* <div className=""> */}
+                                {/* LocalizedEditor */}
+                                
+                            {/* </div> */}
+                        {/* </div> */}
+                        <div className="">
+                            <div className="">
+                                <div className="">
+                                    {/* QuestionlocalFormInput */}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        <div className="mt-6 flex  items-center">
+                            <div className="mr-2">
+                                <Switch 
+                                    id="showResponseCount"
+                                    name="showResponseCount"
+                                    checked={localForm.welcomeCard.showResponseCount}
+                                    onCheckedChange={() => {}}
+                                    />
+                            </div>
+                            <div className="flex-column">
+                                <Label>Show Response Count</Label>
+                                <div className="text-sm text-slate-500 dark:text-slate-400">
+                                    Display number of responses for survey
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </Collapsible.CollapsibleContent>
             </Collapsible.Root>
         </div>
