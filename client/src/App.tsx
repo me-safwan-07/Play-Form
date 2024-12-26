@@ -25,8 +25,6 @@ function App() {
           <Route path="forms/:id/analysis/*" element={<Analysis />} />
           <Route path="/add" element={<AddQuestionButton />} />
           <Route path="/add" element={<AddQuestionButton />} />
-          <Route path="/test" element={<QuestionCard />} />
-          <Route path="/test1" element={<SelectQuestionChoice />} />
           <Route path="/auth/*" element={<Auth />} />
           <Route path="/getuser" element={<UserTable />} />
           <Route path="*" element={<NotFound />} />
