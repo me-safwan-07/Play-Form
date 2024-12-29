@@ -12,9 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyToken = void 0;
+exports.verifyToken = exports.createToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const database_1 = require("../database");
+const createToken = (userId, userEmail, options = {}) => {
+    const secret = process.env.JWTAUTH_SECRET;
+    if (!secret) {
+        throw new Error("JWTAUTH_SECRET is not defined");
+    }
+    return jsonwebtoken_1.default.sign({ id: userId }, secret);
+};
+exports.createToken = createToken;
 const verifyToken = (token_1, ...args_1) => __awaiter(void 0, [token_1, ...args_1], void 0, function* (token, userEmail = "") {
     if (!token) {
         throw new Error("No token found");

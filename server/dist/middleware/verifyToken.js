@@ -20,6 +20,7 @@ const verification = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         return res.status(401).send("Unauthorized");
     }
     try {
+        3;
         const decodedToken = yield firebase_1.default.auth().verifyIdToken(idToken);
         req.user = decodedToken;
         next();
