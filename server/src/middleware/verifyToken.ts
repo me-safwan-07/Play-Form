@@ -8,7 +8,8 @@ export const verification = async(req: Request, res: Response, next: NextFunctio
         return res.status(401).send("Unauthorized");
     }
 
-    try {
+    try {3
+        
         const decodedToken = await admin.auth().verifyIdToken(idToken);
         req.user = decodedToken;
         next();

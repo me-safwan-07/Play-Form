@@ -1,6 +1,14 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { prisma } from "../database";
 
+export const createToken = (userId: string, userEmail: string, options = {}): string => {
+    const secret = process.env.JWTAUTH_SECRET;
+    if (!secret) {
+        throw new Error("JWTAUTH_SECRET is not defined");
+    }
+    return jwt.sign({ id: userId }, secret)
+}
+
 export const verifyToken = async (token: string, userEmail: string = ""): Promise<JwtPayload> => {
     if (!token) {
         throw new Error("No token found");
