@@ -1,7 +1,7 @@
 import { customForm } from "@/lib/templates";
 import { cn } from "@/lib/utils";
 import { PlusCircleIcon } from "lucide-react";
-import { Button } from "../../button";
+import Button from "../../Button";
 
 export const StartFromScratchTemplate = () => {
     return (
