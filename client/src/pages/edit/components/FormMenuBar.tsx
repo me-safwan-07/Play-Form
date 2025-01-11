@@ -1,20 +1,28 @@
+import { AlertDialog } from "@/components/ui/AlertDialog";
 import Button from "@/components/ui/Button/"
 import { Input } from "@/components/ui/Input"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/Tooltip";
-import { TForm } from "@/types/forms";
-import { AlertTriangleIcon, ArrowLeftIcon } from "lucide-react"
-import { useState } from "react";
+import { TForm, TFormEditorTabs } from "@/types/forms";
+import { isEqual } from "lodash";
+import { AlertTriangleIcon, ArrowLeftIcon, SettingsIcon } from "lucide-react"
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 
 interface FormMenuBarProps {
+    form: TForm;
     localForm: TForm;
     setLocalForm: (localForm: TForm) => void;
+    activeId: TFormEditorTabs;
+    setActiveId: React.Dispatch<React.SetStateAction<TFormEditorTabs>>;
 }
 export const FormMenuBar = ({
+    form,
     localForm,
     setLocalForm,
+    activeId,
+    setActiveId,
 }: FormMenuBarProps) => {
     // const product = {
     //     name: "Product one"
@@ -24,9 +32,17 @@ export const FormMenuBar = ({
     //     // status: "draft"
     //     status: "draft",
     // });
+    const [audiencePrompt, setAudiencePrompt] = useState(true);
+    const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const navigate = useNavigate();
     const [isSurveyPublishing, setIsSurveyPublishing] = useState(false);
     const cautionText = "This form received responses.";
+
+    useEffect(() => {
+        if (audiencePrompt && activeId === 'settings') {
+            setAudiencePrompt(false);
+        } 
+    }, [activeId, audiencePrompt]);
 
     const handleSurveyPublish = async () => {
         setIsSurveyPublishing(true);
@@ -40,17 +56,33 @@ export const FormMenuBar = ({
             toast.error(`Error saving changes`);
             return;
         }
+    };
+
+    const handleBack = () => {
+        const { updatedAt, ...localFormsRest } = localForm;
+        const { updatedAt: _, ...formRest } = form;
+
+        if(!isEqual(localFormsRest, formRest)) {
+
+        } else {
+            navigate(-1);
+        };
+    };
+
+
+    const handleSaveAndGoBack = async () => {
+        navigate(-1);
     }
+
     return (
         <>
-            <div className="border-b border-slate-200 bg-white px-5 py-3 sm:flex  sm:items-center sm:justify-between">
-                <div className="flex items-center space-x-2 whitespace-nowrap">
+      <div className="border-b border-slate-200 bg-white px-5 py-3 sm:flex sm:items-center sm:justify-between">
+      <div className="flex items-center space-x-2 whitespace-nowrap">
                     <Button
                         variant="secondary"
                         StartIcon={ArrowLeftIcon}
                         onClick={() => {
-                            // Navigate to previous form
-                            navigate(-1)
+                            handleBack();
                         }}
                     >
                         Back
@@ -106,6 +138,20 @@ export const FormMenuBar = ({
                             Save & Close
                         </Button>
                     )}
+
+                    {localForm.status == "draft" && (
+                        <Button
+                            variant="darkCTA"
+                            onClickCapture={() => {
+                                setAudiencePrompt(false);
+                                setActiveId("settings");
+                            }}
+                            EndIcon={SettingsIcon}
+                        >
+                            Continue to Settings
+                        </Button>
+                    )}
+                    
                     {localForm.status == "draft" && (
                         <Button
                             disabled={false}
@@ -118,6 +164,20 @@ export const FormMenuBar = ({
                         </Button>
                     )}
                 </div>
+                <AlertDialog 
+                    headerText="Confirm Form Changes" 
+                    open={isConfirmDialogOpen}
+                    setOpen={setConfirmDialogOpen}
+                    mainText="You have unsaved changes in your form. would you like to save them before leaving?"
+                    confirmBtnLabel="Save"
+                    declineBtnLabel="Discard"
+                    declineBtnVariant="warn"
+                    onDecline={() => {
+                        setConfirmDialogOpen(false);
+                        navigate(-1);
+                    }}
+                    onConfirm={() => handleSaveAndGoBack()}
+                />
             </div>
         </>
     )
