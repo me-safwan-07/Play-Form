@@ -101,3 +101,8 @@ export const QUESTIONS_NAME_MAP = questionTypes.reduce(
   }),
   {}
 );
+
+// export const getQuestionDefaults = (id: string, product: any) => {
+//     const questionType = questionTypes.find((questionTypes) => questionType.id === id);
+//     return;
+// }
