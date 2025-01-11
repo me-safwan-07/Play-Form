@@ -14,9 +14,11 @@ const questionTypes = [
 
 interface OpenQuestionFormProps {
     localForm: TForm;
+    questionIdx: number;
 }
 export const OpenQuestionForm = ({
-    localForm
+    localForm,
+    questionIdx
 }: OpenQuestionFormProps) => {
     return (
         <form action="">
@@ -26,7 +28,7 @@ export const OpenQuestionForm = ({
                 label={"Question*"}
                 value=""
                 localForm={localForm}
-                questionIdx={0}
+                questionIdx={questionIdx}
             />
 
             <div className="">
