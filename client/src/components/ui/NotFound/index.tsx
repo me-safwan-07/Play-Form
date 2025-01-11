@@ -1,7 +1,6 @@
 // import Link from "next/link";
 import { Link } from "react-router-dom";
 import Button from "../Button/index";
-// import { Button } from "@formbricks/ui/Button";
 
 const NotFound = () => {
   return (
