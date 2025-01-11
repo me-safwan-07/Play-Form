@@ -1,5 +1,5 @@
 import { AdvancedOptionToggle } from "@/components/ui/AdvancedOptionToggle"
-import { Button } from "@/components/ui/button"
+import Button from "@/components/ui/Button"
 import { QuestionFormInput } from "@/components/ui/QuestionFormInput"
 import { TForm } from "@/types/forms"
 import { PlusIcon } from "lucide-react"
