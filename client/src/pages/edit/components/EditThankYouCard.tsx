@@ -55,43 +55,6 @@ export const EditThankYouCard = ({
                             localForm={localForm}
                             questionIdx={1}
                         />
-
-                        <div className="">
-                            <div className="flex items-center space-x-1">
-                                <Switch 
-                                    id="showButton"
-                                />
-                                <Label htmlFor="showButton" className="cursor-pointer">
-                                    <div className="ml-2">
-                                    <h3 className="text-sm font-semibold text-slate-700">Show Button</h3>
-                                        <p className="text-xs font-normal text-slate-500">
-                                            Send your respondents to a page of your choice
-                                        </p>
-                                    </div>
-                                </Label>
-                            </div>
-                            <div className="border-1 mt-4 space-y-4 rounded-md border bg-slate-100 p-4 pt-2">
-                                <div className="space-y-2">
-                                    <QuestionFormInput 
-                                        id="buttonLabel"
-                                        label="Button Label"
-                                        isInvalid={false}
-                                        value=""
-                                        localForm={localForm}
-                                        questionIdx={2}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Button Link</Label>
-                                    <Input 
-                                        id="buttonLink"
-                                        name="buttonLink"
-                                        className="bg-white"
-                                        placeholder="https://playerforms.com/signup"
-                                    />
-                                </div>
-                            </div>
-                        </div>
                     </form>
                 </Collapsible.CollapsibleContent>
             </Collapsible.Root>
