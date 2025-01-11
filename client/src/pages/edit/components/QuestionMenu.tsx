@@ -15,8 +15,19 @@ import {
     EllipsisIcon, 
     TrashIcon 
 } from "lucide-react";
+import { TFormQuestionTypeEnum } from "@/types/forms";
 
-export const QuestionMenu = () => {
+interface QuestionMenuProps {
+    questionIdx: number;
+}
+
+export const QuestionMenu = ({
+    questionIdx,
+}: QuestionMenuProps) => {
+
+    // const addQuestionBelow = (index: TFormQuestionTypeEnum) => {
+    //     // const questionDefaults = getQuestionDefaults();
+    // }
     return (
         <div className="flex space-x-2">
             <CopyIcon 
