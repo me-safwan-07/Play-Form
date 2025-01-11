@@ -4,6 +4,7 @@ import { FormEditor } from './components/FormEditor';
 import axios from 'axios';
 import { ErrorComponent } from '@/components/ui/ErrorComponent';
 import { TForm } from '@/types/forms';
+import { FORM_BG_COLORS } from '@/lib/constants';
 
 export const Edit = () => {
   const { id } = useParams();
@@ -35,7 +36,7 @@ export const Edit = () => {
       // attributeClasses={attributeClasses}
       // responseCount={responseCount}
       // membershipRole={currentUserMembership?.role}
-      // colors={SURVEY_BG_COLORS}
+      colors={FORM_BG_COLORS}
       // segments={segments}
       // isUserTargetingAllowed={isUserTargetingAllowed}
       // isMultiLanguageAllowed={isMultiLanguageAllowed}
