@@ -1,8 +1,9 @@
+import Button from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
 import { QuestionFormInput } from "@/components/ui/QuestionFormInput";
 import { OptionsSwitcher } from "@/components/ui/QuestionTypeSelector";
-import { TForm } from "@/types/forms";
-import { HashIcon, LinkIcon, MailIcon, MessageSquareTextIcon, PhoneIcon } from "lucide-react";
+import { TForm, TFormOpenTextQuestion, TFormQuestion } from "@/types/forms";
+import { HashIcon, LinkIcon, MailIcon, MessageSquareTextIcon, PhoneIcon, PlusIcon } from "lucide-react";
 
 const questionTypes = [
   { value: "text", label: "Text", icon: <MessageSquareTextIcon className="h-4 w-4" /> },
@@ -13,37 +14,54 @@ const questionTypes = [
 ];
 
 interface OpenQuestionFormProps {
+    question: TFormOpenTextQuestion;
     localForm: TForm;
     questionIdx: number;
 }
 export const OpenQuestionForm = ({
+    question,
     localForm,
     questionIdx
 }: OpenQuestionFormProps) => {
     return (
-        <form action="">
+        <form>
             <QuestionFormInput 
                 id="headline"
-                isInvalid={true}
-                label={"Question*"}
-                value=""
+                value={question.headline}
                 localForm={localForm}
                 questionIdx={questionIdx}
+                isInvalid={true}
+                label={"Question*"}
             />
 
-            <div className="">
-                <div className="inline-flex w-full items-center">
-                    <div className="w-full">
-                        <QuestionFormInput 
-                            id="subheader"
-                            label={"Description"}
-                            isInvalid={false}
-                            value=""
-                            localForm={localForm}
-                            questionIdx={1}
-                        />
+            <div>
+                {question.subheader !== undefined && (
+                    <div className="inline-flex w-full items-center">
+                        <div className="w-full">
+                            <QuestionFormInput 
+                                id="subheader"
+                                label={"Description"}
+                                isInvalid={false}
+                                value={question.subheader}
+                                localForm={localForm}
+                                questionIdx={questionIdx}
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
+
+                {question.subheader === undefined && (
+                    <Button
+                        size="sm"
+                        variant="minimal"
+                        className="mt-3"
+                        type="button" 
+
+                    >
+                        <PlusIcon className="mr-1 h-4 w-4"/>
+                        Add Description
+                    </Button>
+                )}
 
                 {/* add the toggle button for add description */}
             </div>
@@ -52,9 +70,9 @@ export const OpenQuestionForm = ({
                     id="placeholder"
                     isInvalid={false}
                     label={"Placeholder"}
-                    value=""
+                    value={question.placeholder}
                     localForm={localForm}
-                    questionIdx={0}
+                    questionIdx={questionIdx}
                 />
             </div>
 

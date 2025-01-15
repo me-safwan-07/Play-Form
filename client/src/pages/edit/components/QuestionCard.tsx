@@ -107,6 +107,7 @@ export const QuestionCard = ({
                     {/* Question content */}
                     {question.type === TFormQuestionTypeEnum.OpenText ? (
                         <OpenQuestionForm 
+                            question={question}
                             localForm={localForm}
                             questionIdx={questionIdx}
                         />

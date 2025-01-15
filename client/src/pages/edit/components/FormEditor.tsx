@@ -57,11 +57,11 @@ export const FormEditor =({
                         className="relative z-0 w-1/2 flex-1 overflow-y-auto focus:outline-none"
                         ref={formEditorRef}
                     >
-                        <QuestionsAudienceTabs 
+                        {/* <QuestionsAudienceTabs 
                             activeId={activeView}
                             setActiveId={setActiveView}
                             isStylingTabVisible={true}
-                        />
+                        /> */}
 
                         {activeView === "questions" && (
                             <QuestionsView 

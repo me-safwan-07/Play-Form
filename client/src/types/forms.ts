@@ -83,7 +83,7 @@ export interface FormResponse {
   
   export const ZFormOpenTextQuestion = ZFormQuestionBase.extend({
     type: z.literal(TFormQuestionTypeEnum.OpenText),
-    Placeholder: z.string().optional(),
+    placeholder: z.string().optional(),
     longAnswer: z.boolean().optional(),
     inputType: ZFormOpenTextQuestionInputType.optional().default('text'),
   });

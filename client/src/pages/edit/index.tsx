@@ -36,7 +36,7 @@ export const Edit = () => {
       // attributeClasses={attributeClasses}
       // responseCount={responseCount}
       // membershipRole={currentUserMembership?.role}
-      colors={FORM_BG_COLORS}
+      // colors={FORM_BG_COLORS}
       // segments={segments}
       // isUserTargetingAllowed={isUserTargetingAllowed}
       // isMultiLanguageAllowed={isMultiLanguageAllowed}

@@ -22,10 +22,10 @@ interface QuestionFormInputProps {
 
 export const QuestionFormInput = ({
     id,
-    // value,
-    // localForm,
+    value,
+    localForm,
     label,
-    // questionIdx,
+    questionIdx,
     // updateForm,
     // isInvalid,
     // maxLength,
@@ -33,10 +33,10 @@ export const QuestionFormInput = ({
     className,
  }: QuestionFormInputProps
 ) => {
-    // const question: TFormQuestion = localForm.questions[questionIdx];
+    const question: TFormQuestion = localForm.questions[questionIdx];
     // const isChoice = id.includes("choice");
-    // const isThankYoucard = questionIdx === localForm.questions.length;
-    // const isWelcomeCard = questionIdx === -1;
+    const isThankYoucard = questionIdx === localForm.questions.length;
+    const isWelcomeCard = questionIdx === -1;
 
     // const questionId = useMemo(() => {
     //     return isWelcomeCard ? "start" : isThankYoucard ? "end" : question.id;
@@ -50,15 +50,7 @@ export const QuestionFormInput = ({
                 </div>
 
                 <div className="flex flex-col gap-4 bg-white">
-                    {/* {
-
-                    }
-                    {id === "file" && (
-                        <FileInput 
-                            // id="question-image"
-
-                        />
-                    )} */}
+                    {/* add image uploader component */}
                     <div className="flex items-center space-x-2">
                         <div className="group relative w-full">
                             <div className="h-10 w-full"></div>
@@ -78,15 +70,16 @@ export const QuestionFormInput = ({
                                 name={id}
                                 aria-label={label}
                                 autoComplete="on"
+                                value={value}
                             />
                         </div>
-                        {id === "headline" && (
+                        {id === "headline" && !isWelcomeCard &&(
                             <ImagePlusIcon 
                                 aria-label="Toggle image uploader"
                                 className="ml-2 h-4 w-4 cursor-pointer text-slate-400 hover:text-slate-500"
                             />
                         )}
-                        {id === "subheader" && (
+                        {id === "subheader" && question && question.subheader !== undefined && (
                             <TrashIcon 
                                 className="ml-2 h-4 w-4 cursor-pointer text-slate-400 hover:text-slate-500"
                             />
