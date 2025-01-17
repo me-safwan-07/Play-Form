@@ -14,6 +14,7 @@ interface EditWelcomeCardProps {
     setLocalForm: (localForm: TForm) => void;
     setActiveQuestionId: (id: string | null) => void;
     activeQuestionId: string | null;
+    isInvalid: boolean;
 }
 
 export const EditWelcomeCard = ({
@@ -21,6 +22,7 @@ export const EditWelcomeCard = ({
     setLocalForm,
     setActiveQuestionId,
     activeQuestionId,
+    isInvalid
 }: EditWelcomeCardProps) => {
     // const [firstReander, setFirstReander] = useState(true);
     // const path = useLocation().pathname;
@@ -54,7 +56,8 @@ export const EditWelcomeCard = ({
         )}>
             <div className={cn(
                 open ? "bg-slate-50" : "",
-                "flex w-10 items-center justify-center rounded-l-lg border-b border-l border-t group-aria-expanded:rounded-bl-none bg-white group-hover:bg-slate-50"
+                "flex w-10 items-center justify-center rounded-l-lg border-b border-l border-t group-aria-expanded:rounded-bl-none",
+                isInvalid ? "bg-red-400" : "bg-white group-hover:bg-slate-50"
             )}>
                 <p className="">✋</p>
             </div>
