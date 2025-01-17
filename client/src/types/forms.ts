@@ -16,7 +16,15 @@ export const ZFormThankYouCard = z.object({
   imageUrl: z.string().optional(),
 });
 
-export type TFormThankYouCard = z.infer<typeof ZFormThankYouCard>;
+// Question Types Enum
+export enum TFormQuestionTypeEnum {
+  FileUpload = 'fileUpload',
+  OpenText = 'openText',
+  MultipleChoiceSingle = 'multipleChoiceSingle',
+  MultipleChoiceMulti = 'multipleChoiceMulti',
+  Date = 'date',
+  Address = 'address',
+}
 
 // Welcome Card Schema
 export const ZFormWelcomeCard = z
@@ -24,12 +32,18 @@ export const ZFormWelcomeCard = z
   enabled: z.boolean(),
   headline: z.string().optional(),
   fileUrl: z.string().optional(),
+  // html is pending
   buttonLabel: z.string().optional(),
   showResponseCount: z.boolean().default(false),
 })
 .refine((schema) => !(schema.enabled && !schema.headline), {
   message: 'Welcome card must have a headline',
 });
+
+
+
+export type TFormThankYouCard = z.infer<typeof ZFormThankYouCard>;
+
 
 export type TFormWelcomeCard = z.infer<typeof ZFormWelcomeCard>;
 
@@ -52,15 +66,6 @@ export interface FormResponse {
   
   export type TFormUpdateInput = z.infer<typeof ZFormUpdateInput>;
   
-  // Question Types Enum
-  export enum TFormQuestionTypeEnum {
-    FileUpload = 'fileUpload',
-    OpenText = 'openText',
-    MultipleChoiceSingle = 'multipleChoiceSingle',
-    MultipleChoiceMulti = 'multipleChoiceMulti',
-    Date = 'date',
-    Address = 'address',
-  }
   
   // Base Question Schema
   export const ZFormQuestionBase = z.object({
@@ -70,10 +75,10 @@ export interface FormResponse {
     subheader: z.string().optional(),
     imageUrl: z.string().optional(),
     required: z.boolean(),
-    buttonLabel: z.string().optional(),
-    backButtonLabel: z.string().optional(),
-    scale: z.enum(['number', 'smiley', 'star']).optional(),
-    range: z.union([z.literal(5), z.literal(3), z.literal(4), z.literal(7), z.literal(10)]).optional(),
+    // buttonLabel: z.string().optional(),
+    // backButtonLabel: z.string().optional(),
+    // scale: z.enum(['number', 'smiley', 'star']).optional(),
+    // range: z.union([z.literal(5), z.literal(3), z.literal(4), z.literal(7), z.literal(10)]).optional(),
     isDraft: z.boolean().optional(),
   });
   
