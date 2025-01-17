@@ -9,20 +9,20 @@ interface TOption {
 interface QuestionTypeSelectorProps {
   options: TOption[];
   currentOption: string | undefined;
-  // handleTypeChange: (value: string) => void;
+  handleTypeChange: (value: string) => void;
 }
 
 export const OptionsSwitcher = ({
   options: questionTypes,
   currentOption,
-  // handleTypeChange,
+  handleTypeChange,
 }: QuestionTypeSelectorProps) => {
   return (
     <div className="flex w-full items-center justify-between rounded-md border p-1">
       {questionTypes.map((type) => (
         <div
           key={type.value}
-          // onClick={() => handleTypeChange(type.value)}
+          onClick={() => handleTypeChange(type.value)}
           className={`flex-grow cursor-pointer rounded-md bg-${
             (currentOption === undefined && type.value === "text") || currentOption === type.value
               ? "slate-100"
