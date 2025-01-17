@@ -2,7 +2,8 @@ import Button from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
 import { QuestionFormInput } from "@/components/ui/QuestionFormInput";
 import { OptionsSwitcher } from "@/components/ui/QuestionTypeSelector";
-import { TForm, TFormOpenTextQuestion, TFormQuestion } from "@/types/forms";
+import { TForm, TFormOpenTextQuestion, TFormOpenTextQuestionInputType, TFormQuestion } from "@/types/forms";
+import { update } from "lodash";
 import { HashIcon, LinkIcon, MailIcon, MessageSquareTextIcon, PhoneIcon, PlusIcon } from "lucide-react";
 
 const questionTypes = [
@@ -14,15 +15,32 @@ const questionTypes = [
 ];
 
 interface OpenQuestionFormProps {
-    question: TFormOpenTextQuestion;
     localForm: TForm;
+    question: TFormOpenTextQuestion;
     questionIdx: number;
+    updateQuestion: (questionIdx: number, updatedAttributes: Partial<TFormOpenTextQuestion>) => void;
+    lastQuestion: boolean;
+    isInvalid: string[] | null;
 }
 export const OpenQuestionForm = ({
     question,
+    questionIdx,
+    updateQuestion,
+    isInvalid,
     localForm,
-    questionIdx
+    lastQuestion,
 }: OpenQuestionFormProps) => {
+    const defaultPlaceholder = getPlaceholderByInputType(question.inputType ?? "text");
+    
+    const handleInputChange = (inputType: TFormOpenTextQuestionInputType) => {
+        const updatedAttributes = {
+            inputType,
+            placeholder: getPlaceholderByInputType(inputType),
+            longAnswer: inputType === 'text' ? question.longAnswer : false,
+        };
+        updateQuestion(questionIdx, updatedAttributes);
+    };
+
     return (
         <form>
             <QuestionFormInput 
@@ -30,7 +48,8 @@ export const OpenQuestionForm = ({
                 value={question.headline}
                 localForm={localForm}
                 questionIdx={questionIdx}
-                isInvalid={true}
+                // isInvalid={isInvalid}
+                updateQuestion={updateQuestion}
                 label={"Question*"}
             />
 
@@ -41,10 +60,11 @@ export const OpenQuestionForm = ({
                             <QuestionFormInput 
                                 id="subheader"
                                 label={"Description"}
-                                isInvalid={false}
+                                isInvalid={isInvalid}
                                 value={question.subheader}
                                 localForm={localForm}
                                 questionIdx={questionIdx}
+                                updateQuestion={updateQuestion}
                             />
                         </div>
                     </div>
@@ -56,6 +76,11 @@ export const OpenQuestionForm = ({
                         variant="minimal"
                         className="mt-3"
                         type="button" 
+                        onClick={() => {
+                            updateQuestion(questionIdx, {
+                                subheader: "",
+                            });
+                        }}
 
                     >
                         <PlusIcon className="mr-1 h-4 w-4"/>
@@ -68,11 +93,12 @@ export const OpenQuestionForm = ({
             <div className="mt-2">
                 <QuestionFormInput 
                     id="placeholder"
-                    isInvalid={false}
+                    isInvalid={isInvalid}
                     label={"Placeholder"}
                     value={question.placeholder}
                     localForm={localForm}
                     questionIdx={questionIdx}
+                    updateQuestion={updateQuestion}
                 />
             </div>
 
@@ -81,7 +107,8 @@ export const OpenQuestionForm = ({
                 <div className="">
                     <OptionsSwitcher 
                         options={questionTypes}
-                        currentOption="text"
+                        currentOption={question.inputType}
+                        handleTypeChange={handleInputChange}
                     />
                 </div>
             </div>
@@ -89,4 +116,17 @@ export const OpenQuestionForm = ({
     );
 };
 
-
+const getPlaceholderByInputType = (inputType: TFormOpenTextQuestionInputType) => {
+    switch (inputType) {
+        case "email":
+        return "example@email.com";
+        case "url":
+        return "http://...";
+        case "number":
+        return "42";
+        case "phone":
+        return "+1 123 456 789";
+        default:
+        return "Type your answer here...";
+    }
+};
