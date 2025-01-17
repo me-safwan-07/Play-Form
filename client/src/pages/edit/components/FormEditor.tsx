@@ -16,6 +16,7 @@ export const FormEditor =({
     const [activeView, setActiveView] = useState<TFormEditorTabs>("questions");
     const [activeQuestionId, setActiveQuestionId] = useState<string | null>(null);
     const [localForm, setLocalForm] = useState<TForm | null>(() => structuredClone(form));
+    const [invalidQuestions, setInvalidQuestions] = useState<string[] | null>(null);
     const formEditorRef = useRef(null);
 
     useEffect(() => {
@@ -69,6 +70,8 @@ export const FormEditor =({
                                 setLocalForm={setLocalForm}
                                 activeQuestionId={activeQuestionId}
                                 setActiveQuestionId={setActiveQuestionId}
+                                invalidQuestions={invalidQuestions}
+                                setInvalidQuestions={setInvalidQuestions}
                             />
                         )}
 
