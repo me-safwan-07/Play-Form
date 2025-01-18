@@ -159,9 +159,16 @@ export const QuestionMenu = ({
                         </DropdownMenuSub>
 
                         <DropdownMenuItem
-                            className={`flex min-h-8 cursor-pointer justify-between text-slate-500 hover:text-slate-600
-                            }`}
-                            // disabled={questionIdx === 0}
+                            className={`flex min-h-8 cursor-pointer justify-between text-slate-500 hover:text-slate-600",
+                                ${questionIdx === 0 ? "opacity-50" : ""}
+                            `}
+                            disabled={questionIdx === 0}
+                            onClick={(e) => {
+                                if( questionIdx !== 0) {
+                                    e.stopPropagation();
+                                    moveQuestion(questionIdx, true);
+                                }
+                            }} 
                             >
                             <span className="text-xs text-slate-500">Move up</span>
                             <ArrowUpIcon className="h-4 w-4" />
@@ -169,8 +176,15 @@ export const QuestionMenu = ({
                         
                         <DropdownMenuItem
                             className={`flex min-h-8 cursor-pointer justify-between text-slate-500 hover:text-slate-600
-                            }`}
-                            // disabled={questionIdx === 0}
+                                ${questionIdx === 0 ? "opacity-50" : ""}
+                            `}
+                            disabled={lastQuestion}
+                            onClick={(e) => {
+                                if (!lastQuestion) {
+                                    e.stopPropagation();
+                                    moveQuestion(questionIdx, false);
+                                }
+                            }}
                             >
                             <span className="text-xs text-slate-500">Move down</span>
                             <ArrowDownIcon className="h-4 w-4" />
