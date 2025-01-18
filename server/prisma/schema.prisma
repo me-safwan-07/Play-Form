@@ -21,13 +21,13 @@ model Environment {
   createdAt             DateTime         @default(now()) @map(name: "created_at")
   updatedAt             DateTime         @updatedAt @map(name: "updated_at")
   // type                  EnvironmentType
-  // product               Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId             String
-  widgetSetupCompleted  Boolean          @default(false)
-  appSetupCompleted     Boolean          @default(false)
-  websiteSetupCompleted Boolean          @default(false)
-  // Forms               Form[]
-  // people                Person[]
+  product               Product          @relation(fields: [productId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  productId             String           @db.ObjectId
+  // widgetSetupCompleted  Boolean          @default(false)
+  // appSetupCompleted     Boolean          @default(false)
+  // websiteSetupCompleted Boolean          @default(false)
+  forms               Form[]
+  people              Person[]
   // actionClasses         ActionClass[]
   // attributeClasses      AttributeClass[]
   // apiKeys               ApiKey[]
@@ -44,7 +44,9 @@ model Person {
   userId            String            @unique
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
-  // displays          Display[]
+  environment       Environment?      @relation(fields: [environmentId], references: [id])
+  environmentId     String?           @db.ObjectId
+  displays          Display[]
 }
 
 enum DisplayStatus {
@@ -76,8 +78,10 @@ model Form {
   /// @zod.custom(imports.ZFormThankYouCard)
   /// [FormThankYouCard]
   thankYouCard        Json                    @default("{\"enabled\": false}")
-  // responses           Response[]
+  responses           Response[]
   displays            Display[]
+  environment         Environment?       @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  environmentId       String            @db.ObjectId
   products            Product[]
 
 }
@@ -131,8 +135,8 @@ model Response {
   createdAt        DateTime          @default(now()) @map(name: "created_at")
   updatedAt        DateTime          @updatedAt @map(name: "updated_at")
   finished         Boolean           @default(false)
-  // form             Form              @relation(fields: [formId], references: [id], onDelete: Cascade)
-  // formId           String            @db.ObjectId
+  form             Form              @relation(fields: [formId], references: [id], onDelete: Cascade)
+  formId           String            @db.ObjectId
 }
 
 model Display {
@@ -142,6 +146,8 @@ model Display {
   form       Form          @relation(fields: [formId], references: [id], onDelete: Cascade)
   formId     String        @db.ObjectId
   status     DisplayStatus?
+  person     Person        @relation(fields: [personId], references: [id])
+  personId   String        @db.ObjectId
 }
 
 enum WidgetPlacement {
@@ -153,12 +159,13 @@ enum WidgetPlacement {
 }
 
 model Product {
-  id                    String           @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt             DateTime         @default(now()) @map(name: "created_at")
-  updatedAt             DateTime         @updatedAt @map(name: "updated_at")
+  id                    String            @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt             DateTime          @default(now()) @map(name: "created_at")
+  updatedAt             DateTime          @updatedAt @map(name: "updated_at")
   name                  String
-  form                  Form            @relation(fields: [formId], references: [id], onDelete: Cascade)
-  formId                String           @db.ObjectId
+  form                  Form              @relation(fields: [formId], references: [id], onDelete: Cascade)
+  environments          Environment[]     @relation
+  formId                String            @db.ObjectId
   brandColor            String
   highlightBorderColor  String
   styling               Json
@@ -172,3 +179,7 @@ model Product {
 
   @@unique([name])
 }
+
+// model Integration {
+//   id                  String            @id @default(cuid())
+// }
