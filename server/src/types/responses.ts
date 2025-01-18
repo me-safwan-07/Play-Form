@@ -26,8 +26,8 @@ export const ZResponseInput = z.object({
     // createdAt: z.coerce.date().optional(),
     // updatedAt: z.coerce.date().optional(),
     finished: z.boolean(),
-    // formId: z.string(),
-    // data: ZResponseData,
+    formId: z.string(),
+    data: ZResponseData,
     // ttc: ZResponseTtc.optional(),
     // meta: z
     //     .object({

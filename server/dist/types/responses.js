@@ -20,8 +20,8 @@ exports.ZResponseInput = zod_1.z.object({
     // createdAt: z.coerce.date().optional(),
     // updatedAt: z.coerce.date().optional(),
     finished: zod_1.z.boolean(),
-    // formId: z.string(),
-    // data: ZResponseData,
+    formId: zod_1.z.string(),
+    data: exports.ZResponseData,
     // ttc: ZResponseTtc.optional(),
     // meta: z
     //     .object({
