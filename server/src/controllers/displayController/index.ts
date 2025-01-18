@@ -65,43 +65,43 @@ export const updateDisplay = async (req: Request, res: Response, next: NextFunct
 
 }
 
-export const createDisplay = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const { userId, formId } = req.body;
+// export const createDisplay = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+//     const { userId, formId } = req.body;
 
-    if (!formId) {
-        res.status(400).json({ error: "Survey ID is required" });
-        return 
-    }
+//     if (!formId) {
+//         res.status(400).json({ error: "Survey ID is required" });
+//         return 
+//     }
 
-    try {
-        let person = null;
+//     try {
+//         let person = null;
 
-        if (userId) {
-            person = await getPersonByUserId(userId);
-            if (!person) {
-                person = await createPerson(userId);
-            }
-        }
+//         if (userId) {
+//             person = await getPersonByUserId(userId);
+//             if (!person) {
+//                 person = await createPerson(userId);
+//             }
+//         }
 
-        const display = await prisma.display.create({
-            data: {
-              formId,
-              ...(person && {
-                personId: person.id,
-              }),
-            },
-            select: selectDisplay
-          });
+//         const display = await prisma.display.create({
+//             data: {
+//               formId,
+//               ...(person && {
+//                 personId: person.id,
+//               }),
+//             },
+//             select: selectDisplay
+//           });
 
-        res.status(201).json(display);
-    } catch(error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            res.status(500).json({ error: "Database error: " + error.message });
-        } else {
-            res.status(500).json({ error: "An unexpected error occurred." });
-        }
-    }
-};
+//         res.status(201).json(display);
+//     } catch(error) {
+//         if (error instanceof Prisma.PrismaClientKnownRequestError) {
+//             res.status(500).json({ error: "Database error: " + error.message });
+//         } else {
+//             res.status(500).json({ error: "An unexpected error occurred." });
+//         }
+//     }
+// };
 export const getDisplayByPersonId = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { personId } = req.params;
     const page = parseInt(req.query.page as string) || 1;
