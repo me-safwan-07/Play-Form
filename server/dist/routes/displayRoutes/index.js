@@ -7,6 +7,6 @@ const express_1 = __importDefault(require("express"));
 const displayController_1 = require("../../controllers/displayController");
 const app = (0, express_1.default)();
 app.get('/:displayId', displayController_1.getDisplayByPersonId);
-app.post('/', displayController_1.createDisplay);
+// app.post('/', createDisplay);
 // app.delete('/:id', deletePerson);
 exports.default = app;
