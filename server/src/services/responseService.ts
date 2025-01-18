@@ -8,18 +8,18 @@ const responseSelection = {
     createdAt: true,
     updatedAt: true,
     finished: true,
-    // formId: true,
+    formId: true,
 }
 
 export class ResponseService {
   static async createdResponse(data: TResponseInput): Promise<TResponse> {
     try {
       const prismaData: Prisma.ResponseCreateInput = {
-        // form: {
-        //   connect: {
-        //     id: data.formId,
-        //   },
-        // },
+        form: {
+          connect: {
+            id: data.formId,
+          },
+        },
         finished: data.finished,
       };
 

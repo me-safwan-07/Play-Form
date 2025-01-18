@@ -17,18 +17,18 @@ const responseSelection = {
     createdAt: true,
     updatedAt: true,
     finished: true,
-    // formId: true,
+    formId: true,
 };
 class ResponseService {
     static createdResponse(data) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const prismaData = {
-                    // form: {
-                    //   connect: {
-                    //     id: data.formId,
-                    //   },
-                    // },
+                    form: {
+                        connect: {
+                            id: data.formId,
+                        },
+                    },
                     finished: data.finished,
                 };
                 return yield database_1.prisma.response.create({
