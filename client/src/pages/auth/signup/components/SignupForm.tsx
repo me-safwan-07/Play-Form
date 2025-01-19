@@ -2,17 +2,7 @@ import { useState } from "react";
 import { SignupOptions } from "@/components/ui/SignupOptions";
 import { XCircleIcon } from "lucide-react"
 
-interface SignupFormProps {
-    emailAuthEnabled: boolean;
-    passwordResetEnabled: boolean;
-    googleOAuthEnabled: boolean;
-}
-
-export const SignupForm = ({
-    emailAuthEnabled,
-    passwordResetEnabled,
-    googleOAuthEnabled
-}: SignupFormProps) => {
+export const SignupForm = () => {
     const [error, setError] = useState<string>("");
     return (
         <>
@@ -34,11 +24,7 @@ export const SignupForm = ({
 
             <div className="">
                 <h1 className="mb-4 text-slate-700">Create your Formbricks account</h1>
-                <SignupOptions 
-                    emailAuthEnabled={emailAuthEnabled}
-                    passwordResetEnabled={passwordResetEnabled}
-                    googleOAuthEnabled={googleOAuthEnabled}
-                />
+                <SignupOptions />
             </div>
         </>
     )

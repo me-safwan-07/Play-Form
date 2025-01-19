@@ -16,19 +16,7 @@ export const Signin = () => {
             </div>
             <div className="col-span-3 flex flex-col items-center justify-center">
                 <FormWrapper>
-                    <SignupForm
-                        // webAppUrl={WEBAPP_URL}
-                        // termsUrl={TERMS_URL}
-                        // privacyUrl={PRIVACY_URL}
-                        passwordResetEnabled={!PASSWORD_RESET_DISABLED}
-                        // emailVerificationDisabled={EMAIL_VERIFICATION_DISABLED}
-                        emailAuthEnabled={EMAIL_AUTH_ENABLED}
-                        googleOAuthEnabled={GOOGLE_OAUTH_ENABLED}
-                        // githubOAuthEnabled={GITHUB_OAUTH_ENABLED}
-                        // azureOAuthEnabled={AZURE_OAUTH_ENABLED}
-                        // oidcOAuthEnabled={OIDC_OAUTH_ENABLED}
-                        // oidcDisplayName={OIDC_DISPLAY_NAME}
-                    />
+                    <SignupForm />
                 </FormWrapper>
             </div>
         </div>

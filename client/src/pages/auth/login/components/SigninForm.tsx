@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { XCircleIcon } from "lucide-react";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import { Controller, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import Button from "@/components/ui/Button/index";
 import { GoogleButton } from "@/components/ui/SignupOptions/components/GoogleButton";
@@ -32,17 +32,17 @@ export const SigninForm = ({
   const emailRef = useRef<HTMLInputElement>(null);
   const formMethods = useForm<TSigninFormState>();
   
-  // const onSubmit: SubmitHandler<TSigninFormState> = (async (data) => {
-  //   setLoggingIn(true);
+  const onSubmit: SubmitHandler<TSigninFormState> = (async (data) => {
+    setLoggingIn(true);
 
-  //   try {
-  //     const signInResponse = await sing
-  //   } catch (error: any) {
-  //     setSignInError(error.message || "Invalid credentials, please try again.");
-  //   } finally {
-  //     setLoggingIn(false);
-  //   }
-  // });
+    try {
+      const signInResponse = await signin
+    } catch (error: any) {
+      setSignInError(error.message || "Invalid credentials, please try again.");
+    } finally {
+      setLoggingIn(false);
+    }
+  });
 
   // const [searchParams] = useSearchParams();
   const [loggingIn, setLoggingIn] = useState(false);
