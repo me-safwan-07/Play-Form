@@ -3,6 +3,8 @@ export const GOOGLE_OAUTH_ENABLED =
 export const EMAIL_AUTH_ENABLED = import.meta.env.VITE_EMAIL_AUTH_DISABLED !== "1";
 export const PASSWORD_RESET_DISABLED = import.meta.env.VITE_PASSWORD_RESET_DISABLED === "1";
 
+export const SIGNUP_ENABLED = process.env.SIGNUP_DISABLED !== "1";
+export const INVITE_DISABLED = process.env.VITE_INVITE_DISABLED === "1";
 
 export const SURVEYS_PER_PAGE = 12;
 
