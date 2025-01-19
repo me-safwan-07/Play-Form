@@ -27,7 +27,7 @@ model Environment {
   // appSetupCompleted     Boolean          @default(false)
   // websiteSetupCompleted Boolean          @default(false)
   forms               Form[]
-  people              Person[]
+  // people              Person[]
   // actionClasses         ActionClass[]
   // attributeClasses      AttributeClass[]
   // apiKeys               ApiKey[]
@@ -39,15 +39,15 @@ model Environment {
   @@index([productId])
 }
 
-model Person {
-  id                String            @id @default(auto()) @map("_id") @db.ObjectId
-  userId            String            @unique
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  environment       Environment?      @relation(fields: [environmentId], references: [id])
-  environmentId     String?           @db.ObjectId
-  displays          Display[]
-}
+// model Person {
+//   id                String            @id @default(auto()) @map("_id") @db.ObjectId
+//   userId            String            @unique
+//   createdAt         DateTime          @default(now())
+//   updatedAt         DateTime          @updatedAt
+//   environment       Environment?      @relation(fields: [environmentId], references: [id])
+//   environmentId     String?           @db.ObjectId
+//   displays          Display[]
+// }
 
 enum DisplayStatus {
   seen
@@ -67,23 +67,28 @@ model Form {
   createdAt           DateTime                @default(now()) @map(name: "created_at")
   updatedAt           DateTime                @updatedAt @map(name: "updated_at")
   name                String
-  // createdBy           String?
-  status              FormStatus            @default(draft)
+  redirectUrl         String
+  environment         Environment             @relation(fields: [environmentId], references: [id])
+  environmentId         String                @db.ObjectId
+  creator             User?                   @relation(fields: [createdBy], references: [id])
+  createdBy           String?                 @db.ObjectId
+  status              FormStatus              @default(draft)
   /// @zod.custom(imports.ZFormWelcomeCard)
   /// [FormWelcomeCard]
   welcomeCard         Json                    @default("{\"enabled\": false}")
   /// @zod.custom(imports.ZFormQuestions)
   /// [FormQuestions]
-  questions           Json                   @default("[]")
+  questions           Json                    @default("[]")
   /// @zod.custom(imports.ZFormThankYouCard)
   /// [FormThankYouCard]
   thankYouCard        Json                    @default("{\"enabled\": false}")
   responses           Response[]
   displays            Display[]
-  environment         Environment?       @relation(fields: [environmentId], references: [id], onDelete: Cascade)
-  environmentId       String            @db.ObjectId
   products            Product[]
-
+  autoClose           Int?
+  delay               Int?                     @default(0)
+  styling             Json?
+  verifyEmail         Json?
 }
 
 enum IdentityProvider {
@@ -99,13 +104,18 @@ model User {
   createdAt                 DateTime         @default(now()) @map(name: "created_at")
   updatedAt                 DateTime         @updatedAt @map(name: "updated_at")
   name                      String
-  email                     String           @unique
+  email                     String          
   emailVerified             DateTime?        @map(name: "email_verified")
   imageUrl                  String?
   password                  String?
   identityProvider          IdentityProvider @default(email)
   identityProviderAccountId String?
   accounts                  Account[]
+  responseNotes             ResponseNote[]
+  notificationSettings      Json              @default("{}")
+  forms                     Form[]                   
+
+  @@index([email])
 }
 
 model Account {
@@ -131,12 +141,33 @@ model Account {
 }
 
 model Response {
-  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  id                String           @id @default(auto()) @map("_id") @db.ObjectId
   createdAt        DateTime          @default(now()) @map(name: "created_at")
   updatedAt        DateTime          @updatedAt @map(name: "updated_at")
   finished         Boolean           @default(false)
-  form             Form              @relation(fields: [formId], references: [id], onDelete: Cascade)
+  forms           Form               @relation(fields: [formId], references: [id], onDelete: Cascade)
   formId           String            @db.ObjectId
+  notes            ResponseNote[]
+  /// @zod.custom(imports.ZResponseData)
+  /// [ResponseData]
+  data             Json              @default("{}")
+  /// @zod.custom(imports.ZResponseTtc)
+  /// [ResponseTtc]
+  ttc              Json              @default("{}")
+  /// @zod.custom(imports.ZResponseMeta)
+  /// [ResponseMeta]
+  meta             Json              @default("{}")
+  /// @zod.custom(imports.ZResponsePersonAttributes)
+  /// [ResponsePersonAttributes]
+  personAttributes Json?
+  // singleUseId, used to prevent multiple responses
+  singleUseId      String?
+  language         String?
+
+  @@unique([formId, singleUseId])
+  @@index([formId, createdAt]) // to determine monthly response count
+  @@index([ createdAt]) // to determine monthly identified users (persons)
+  @@index([formId])
 }
 
 model Display {
@@ -146,8 +177,8 @@ model Display {
   form       Form          @relation(fields: [formId], references: [id], onDelete: Cascade)
   formId     String        @db.ObjectId
   status     DisplayStatus?
-  person     Person        @relation(fields: [personId], references: [id])
-  personId   String        @db.ObjectId
+  // person     Person        @relation(fields: [personId], references: [id])
+  // personId   String        @db.ObjectId
 }
 
 enum WidgetPlacement {
@@ -180,6 +211,24 @@ model Product {
   @@unique([name])
 }
 
-// model Integration {
-//   id                  String            @id @default(cuid())
-// }
+model ShortUrl {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt         DateTime         @default(now()) @map(name: "created_at")
+  updatedAt         DateTime         @updatedAt @map(name: "updated_at")
+  url               String           @unique
+}
+
+model ResponseNote {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt  DateTime @default(now()) @map(name: "created_at")
+  updatedAt  DateTime @updatedAt @map(name: "updated_at")
+  response   Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  responseId String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String   @db.ObjectId
+  text       String
+  isResolved Boolean  @default(false)
+  isEdited   Boolean  @default(false)
+
+  @@index([responseId])
+}
