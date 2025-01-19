@@ -3,65 +3,42 @@ import { prisma } from "../../database";
 import { Prisma } from "@prisma/client";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { TUser, TUserCreateInput } from "../../types/user";
 
-// register
-export const userRegister = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+const responseSelection = {
+  id: true,
+  name: true,
+  email: true,
+  emailVerified: true,
+  imageUrl: true,
+  createdAt: true,
+  updatedAt: true,
+  identityProvider: true,
+  notificationSettings: true,
+};
+
+export const getUser = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { name, email, password } = req.body;
+        const id:string = req.params.id;
 
         // check if the user is already registered
-        const existingUser = await prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: {
-                email
+                id,
             },
-            include: {
-                accounts: true,
-            }
+            select: responseSelection
         });
 
-        if (existingUser) {
-            res.status(400).json({
-                error: 'Email already registered'
-            });
+        if (!user) {
+            res.status(404).send({ message: 'User not found' });
             return;
         }
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Create user
-        const user = await prisma.user.create({
-            data: {
-                name,
-                email,
-                password: hashedPassword,
-                identityProvider: 'email'
-            },
-            include: {
-                accounts: true,
-            }
-        });
-
-        // Generate token
-        if (!process.env.JWTAUTH_SECRET) {
-            throw new Error('JWTAUTH_SECRET is not defined');
-        }
-        const token = jwt.sign({ userId: user.id }, process.env.JWTAUTH_SECRET, { expiresIn: '1d' });
-
-        res.status(201).json({
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                identityProvider: user.identityProvider,
-                accounts: user.accounts
-            },
-            token
-        });
+        res.status(200).json({ user });
 
         next();
     } catch (error) {
-        if (error instanceof Error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
             console.error(error.message);
         } else {
             console.error('Unknown error', error);
@@ -71,112 +48,83 @@ export const userRegister = async(req: Request, res: Response, next: NextFunctio
     }
 };
 
-// login
-
-export const userLogin = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createUser = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const { email, password } = req.body;
+        const data: TUserCreateInput = req.body;
 
-        // Find user by email
-        const user = await prisma.user.findUnique({
-            where: {
-                email
-            },
-            include: {
-                accounts: true,
-            }
+        const user = await prisma.user.create({
+            data: data,
+            select: responseSelection
         });
 
-        if (!user) {
-            res.status(401).json({ error: 'Invalid credientials' });
-            return;
-        }
-
-        // check password
-        if (!user.password) {
-            res.status(401).json({ error: 'Invalid credentials' });
-            return;
-        }
-
-        const isValidPassword = await bcrypt.compare(password, user.password);
-
-        if (!isValidPassword) {
-            res.status(401).json({ error: 'Invalid credentials' });
-            return;
-        }
-
-        // Generate token
-        if (!process.env.JWTAUTH_SECRET) {
-            throw new Error('JWTAUTH_SECRET is not defined');
-        }
-        const token = jwt.sign({ userId: user.id }, process.env.JWTAUTH_SECRET, { expiresIn: '1d' });
-
-        res.json({
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                accounts: user.accounts
-            },
-            token
-        });
+        res.status(200).json({ user });
+        next(user);
     } catch (err) {
-        if (err instanceof Error) {
-            res.status(401).json({ error: err.message });
-        } else {
-            res.status(401).json({ error: 'Unknown error' });
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002" ) {
+            res.status(409).json({ message: 'Email already exists' });
+            console.log(err.message)
+            return;
         }
-        return;
+
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+            res.status(403).json({ message: err.message });
+            console.log(err.message);
+            return;
+        }
+        res.status(500).json({ message: 'Failed to create user' });
+        next(err);
     }
 }
 
-// get curent user
-export const me = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const token = req.header("Authorization")?.replace('Bearer ', '');
+        const id: string = req.params.id;
+        const data: TUserCreateInput = req.body;
 
-        if (!token) {
-            res.status(401).json({ error: "Unauthorized" });
-            return;
-        }
-
-        if (!process.env.JWTAUTH_SECRET) {
-            throw new Error('JWTAUTH_SECRET is not defined');
-        }
-
-        const decoded = jwt.verify(token, process.env.JWTAUTH_SECRET);
-        const user = await prisma.user.findUnique({
+        const updateUser = await prisma.user.update({
             where: {
-                id: (decoded as jwt.JwtPayload).userId
+                id
             },
-            include: {
-                accounts: true,
-            }
+            data: data,
+            select: responseSelection
+        });
+
+        res.status(200).json({ user: updateUser });
+        return
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2016') {
+            res.status(404).json({ error: error.message });
+        }
+        res.status(404).json({ message: 'user not updated' });
+        next(error);
+    }
+};
+
+export const deleteUserById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const id: string = req.params.id;
+        const user = await prisma.user.delete({
+            where: {
+                id
+            },
+            select: responseSelection
         });
 
         if (!user) {
-            res.status(404).json({ error: "User not found" });
+            res.status(404).json({ message: 'User not found' });
             return;
         }
 
-        res.json({
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                accounts: user.accounts
-            }
-        });
-
-        next(); 
+        res.status(200).json({ success: true, message: 'User deleted' });
+        next(user);
     } catch (error) {
-        if (error instanceof jwt.JsonWebTokenError) {
-            res.status(401).json({ error: "Invalid token" });
-            return;
-        } else {
-            res.status(500).json({ error: "Failed to authenticate user" });
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            res.status(403).json({ message: error.message });
+            console.log(error.message);
             return;
         }
+
+        res.status(500).json({ message: 'Failed to delete user' });
         next(error);
     }
 };
