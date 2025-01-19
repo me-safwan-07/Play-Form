@@ -1,4 +1,3 @@
-import { createUser } from "@/lib/user";
 import { useRef, useState } from "react";
 import { PasswordInput } from "../PasswordInput";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,26 +6,9 @@ import Button from "../Button/index";
 import { GoogleButton } from "./components/GoogleButton";
 import toast from "react-hot-toast";
 import { TUserCreateInput } from "@/types/user";
+import { createUser } from "@/api/users";
 
-interface SignupOptionsProps {
-  emailAuthEnabled: boolean;
-  // emailFromSearchParams: string;
-  // setError?: (error: string) => void;
-  // emailVerificationDisabled: boolean;
-  passwordResetEnabled: boolean;
-  googleOAuthEnabled: boolean;
-  // githubOAuthEnabled: boolean;
-  // azureOAuthEnabled: boolean;
-  // oidcOAuthEnabled: boolean;
-  // inviteToken: string | null;
-  // callbackUrl: string;
-  // oidcDisplayName?: string;
-}
-export const SignupOptions = ({
-  emailAuthEnabled,
-  passwordResetEnabled,
-  googleOAuthEnabled
-}: SignupOptionsProps) => {
+export const SignupOptions = () => {
   const navigate = useNavigate();
 
   const [password, setPassword] = useState<string | null>(null);
@@ -46,44 +28,37 @@ export const SignupOptions = ({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
     if (!isValid) {
-        toast.error("Please ensure your password meets all requirements.");
         return;
     }
-
-    const formData = new FormData(e.target as HTMLFormElement);
-    const data: TUserCreateInput = {
-        name: formData.get("name")?.toString() || "",
-        email: formData.get("email")?.toString() || "",
-        // password: formData.get("password")?.toString() || "",
-        identityProvider: "email",
-    };
 
     setSigningUp(true);
 
     try {
-        const response = await createUser(data);
-        if (response) {
-            toast.success("Account created successfully!");
-            navigate('/')
-        }
-    } catch (e: any) {
-        toast.error("An error occurred during sign-up. Please try again.");
-        console.error(e.message);
-    } finally {
-        setSigningUp(false);
-    }
+        await createUser(
+          e.target.elements.name.value,
+          e.target.elements.email.value,
+          e.target.elements.password.value,
+          // inviteToken
+        );
+        const url = true
+          ? `/auth/signup-without-verificatio-success`
+          : `/auth/verification-requested?email=${encodeURIComponent(e.target.elements.email.value)}`;
 
-    
-};
+        navigate(url);
+    } catch (e: any) {
+      if (setError) {
+        setError(e.message);
+      }
+      setSigningUp(false)
+  };
 
 
   return (
     <div className="space-y-2">
-      {emailAuthEnabled && (
         <form onSubmit={handleSubmit} ref={formRef} className="space-y-2" onChange={checkFormValidity}>
           {showLogin && (
             <div>
@@ -137,7 +112,7 @@ export const SignupOptions = ({
                   className="focus:border-brand focus:ring-brand block w-full rounded-md shadow-sm sm:text-sm"
                 />
               </div>
-              {passwordResetEnabled && isPasswordFocused && (
+               {isPasswordFocused && (
                 <div className="ml-1 text-right transition-all duration-500 ease-in-out">
                   <Link to="/auth/forgot-password" className="hover:text-brand-dark text-xs text-slate-500">
                     Forgot your password?
@@ -173,27 +148,10 @@ export const SignupOptions = ({
             </Button>
           )}
         </form>
-      )}
-      {googleOAuthEnabled && (
-        <>
-          <GoogleButton inviteUrl={""} />
-        </>
-      )}
-      {/* {githubOAuthEnabled && (
-        <>
-          <GithubButton inviteUrl={callbackUrl} />
-        </>
-      )}
-      {azureOAuthEnabled && (
-        <>
-          <AzureButton inviteUrl={callbackUrl} />
-        </>
-      )}
-      {oidcOAuthEnabled && (
-        <>
-          <OpenIdButton inviteUrl={callbackUrl} text={`Continue with ${oidcDisplayName}`} />
-        </>
-      )} */}
+        <GoogleButton 
+          inviteUrl={""} 
+
+        />
     </div>
   )
 }
