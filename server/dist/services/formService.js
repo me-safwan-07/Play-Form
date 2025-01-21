@@ -1,88 +1,66 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.FormService = void 0;
-const database_1 = require("../database");
-const errors_1 = require("../utils/errors");
-class FormService {
-    static createdForm(data) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return database_1.prisma.form.create({
-                data: {
-                    name: data.name,
-                    // createdBy: data.createdBy,
-                    status: data.status || 'draft',
-                    welcomeCard: data.welcomeCard,
-                    questions: data.questions,
-                    thankYouCard: data.thankYouCard,
-                },
-            });
-        });
-    }
-    static getAllForms() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return database_1.prisma.form.findMany({
-                orderBy: {
-                    createdAt: 'desc',
-                },
-            });
-        });
-    }
-    static getFormById(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const form = yield database_1.prisma.form.findUnique({
-                where: { id },
-            });
-            if (!form) {
-                throw new errors_1.NotFoundError('Form not found');
-            }
-            return form;
-        });
-    }
-    static updateForm(id, data) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const form = yield database_1.prisma.form.findUnique({
-                where: { id },
-            });
-            if (!form) {
-                throw new errors_1.NotFoundError('Form not found');
-            }
-            return database_1.prisma.form.update({
-                where: { id },
-                data,
-            });
-        });
-    }
-    static deleteForm(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const form = yield database_1.prisma.form.findUnique({
-                where: { id },
-            });
-            if (!form) {
-                throw new errors_1.NotFoundError('Form not found');
-            }
-            return database_1.prisma.form.delete({
-                where: { id },
-            });
-        });
-    }
-    static getFormsByUser(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return database_1.prisma.form.findMany({
-                where: { id },
-                orderBy: {
-                    createdAt: 'desc',
-                },
-            });
-        });
-    }
-}
-exports.FormService = FormService;
+// import { Form } from "@prisma/client";
+// import { TFormInput, TFormUpdateInput } from "../types/forms";
+// import { prisma } from "../database";
+// import { NotFoundError } from "../utils/errors";
+// export class FormService {
+//   static async createdForm(data: TFormInput): Promise<Form> {
+//     return prisma.form.create({
+//       data: {
+//         name: data.name,
+//         // createdBy: data.createdBy,
+//         status: data.status || 'draft',
+//         welcomeCard: data.welcomeCard,
+//         questions: data.questions, 
+//         thankYouCard: data.thankYouCard,
+//       },
+//     });
+//   }
+//   static async getAllForms(): Promise<Form[]> {
+//     return prisma.form.findMany({
+//       orderBy: {
+//         createdAt: 'desc',
+//       },
+//     });
+//   }
+//   static async getFormById(id: string): Promise<Form> {
+//     const form = await prisma.form.findUnique({
+//       where: { id },
+//     });
+//     if (!form) {
+//       throw new NotFoundError('Form not found');
+//     }
+//     return form;
+//   }
+//   static async updateForm(id: string, data: TFormUpdateInput): Promise<Form> {
+//     const form = await prisma.form.findUnique({
+//       where: { id },
+//     });
+//     if (!form) {
+//       throw new NotFoundError('Form not found');
+//     }
+//     return prisma.form.update({
+//       where: { id },
+//       data,
+//     });
+//   }
+//   static async deleteForm(id: string): Promise<Form> {
+//     const form = await prisma.form.findUnique({
+//       where: { id },
+//     });
+//     if (!form) {
+//       throw new NotFoundError('Form not found');
+//     }
+//     return prisma.form.delete({
+//       where: { id },
+//     });
+//   }
+//   static async getFormsByUser(id: string): Promise<Form[]> {
+//     return prisma.form.findMany({
+//       where: { id },
+//       orderBy: {
+//         createdAt: 'desc',
+//       },
+//     });
+//   }
+// }
