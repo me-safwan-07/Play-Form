@@ -7,7 +7,7 @@ import authRoutes from "./authRoutes"
 const app: Express = express();
 
 // app.use("/display", displayRoutes);
-// app.use("/forms", formRoutes);
+app.use("/forms", formRoutes);
 // app.use("/user", userRoutes);
 // app.use("/response", responseRoutes);
 app.use("/auth", authRoutes);
