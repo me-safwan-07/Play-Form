@@ -1,84 +1,90 @@
-import { Request, Response } from "express";
-import { error } from "console";
-import { ValidationError } from "../../utils/errors";
-import { TFormInput, TFormUpdateInput } from "../../types/forms";
-import { validateInputs } from "../../utils/validate";
-import { handleError } from "../../utils/error-handler";
-// import { validateFormInput } from "../../validators/form.validator";
-import { FormService } from "../../services/formService";
+// getformcount
 
-export class FormController {
-  static async createForm(req: Request, res: Response) {
-    try {
-      const formData: TFormInput = req.body;
+import { NextFunction, Request, Response } from "express";
+import { prisma } from "../../database";
+import { Prisma } from "@prisma/client";
+import { buildOrderByClause, buildWhereClause, transformPrismaSurvey } from "../../utils/formsUtils";
+import { TForm } from "../../types/forms";
 
-      // Validate form input
-      // const validationError = validateFormInput(formData);
-      // if (validationError) {
-      //   return res.status(400).json({ error: validationError});
-      // }
+export const selectForm = {
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  name: true,
+  type: true,
+  environmentId: true,
+  status: true,
+  welcomeCard: true,
+  questions: true,
+  thankYouCard: true,
+  displayLimit: true,
+  autoClose: true,
+  runOnDate: true,
+  closeOnDate: true,
+  delay: true,
+  displayPercentage: true,
+  autoComplete: true,
+  verifyEmail: true,
+  redirectUrl: true,
+  styling: true,
+  surveyClosedMessage: true,
+  resultShareKey: true,
+};
 
-      // Add user ID from authenticated request
-      
-      const form = await FormService.createdForm(formData);
-      res.status(200).json(form);
-    } catch (error) {
-      handleError(error, res);
+export const getForms = async(req: Request, res: Response): Promise<void> => {
+  const environmentId = req.params.environmentId;
+  const { linit, offset, filterCriteria} = req.body;
+  let formsPrisma;
+  try {
+    formsPrisma = await prisma.form.findMany({
+      where: {
+        environmentId: environmentId,
+        ...buildWhereClause(filterCriteria),
+      },
+      select: selectForm,
+      orderBy: buildOrderByClause(filterCriteria.sortBy),
+      take: linit ? linit : undefined,
+      skip: offset ? offset : undefined
+    });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error);
+      res.status(400).json({ error: "Database error" });
+    }
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+
+  const forms: TForm[] = [];
+
+  if (formsPrisma) {
+    for (const formPrisma of formsPrisma) {
+      const transformedSurvey = transformPrismaSurvey(formPrisma);
+      forms.push(transformedSurvey);
     }
   }
 
-  static async getAllForms(req: Request, res: Response) {
-    try {
-      const forms = await FormService.getAllForms();
-      res.json(forms);
-    } catch (error) {
-      handleError(error, res);
-    }
-  }
-
-  static async getFormById(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const form = await FormService.getFormById(id);
-      res.json(form);
-    } catch (error) {
-      handleError(error, res);
-    }
-  }
-
-  static async updateForm(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const formData: TFormUpdateInput = req.body;
-      
-      const form = await FormService.updateForm(id, formData);
-      res.json(form);
-    } catch (error) {
-      handleError(error, res);
-    }
-  }
-
-  static async deleteForm(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const form = await FormService.deleteForm(id);
-      res.json(form);
-    } catch (error) {
-      handleError(error, res);
-    }
-  }
-
-  static async getUserForm(req: Request, res: Response) {
-    try {
-      const { userId } = req.params;
-      if (!userId) {
-        return res.status(400).json({ error: "User not authenticated"});
-      }
-
-      const forms = await FormService.getFormsByUser(userId);
-      res.json(forms);
-    } catch (error) {
-      handleError(error, res);
-    }
-  } 
+  res.status(200).json({ forms });
 }
+
+export const getFormCount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const environmentId: string = req.params.environmentId;
+      const formcount = await prisma.form.count({
+        where: {
+          environmentId: environmentId
+        }
+      });
+
+      res.status(200).json({ formcount });
+      next();
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        console.log(error);
+        res.status(400).json({ error: "Error in getting form count" });
+    }
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+    next(error);
+  }
+};
