@@ -39,16 +39,6 @@ model Environment {
   @@index([productId])
 }
 
-// model Person {
-//   id                String            @id @default(auto()) @map("_id") @db.ObjectId
-//   userId            String            @unique
-//   createdAt         DateTime          @default(now())
-//   updatedAt         DateTime          @updatedAt
-//   environment       Environment?      @relation(fields: [environmentId], references: [id])
-//   environmentId     String?           @db.ObjectId
-//   displays          Display[]
-// }
-
 enum DisplayStatus {
   seen
   responded
@@ -89,6 +79,8 @@ model Form {
   delay               Int?                     @default(0)
   styling             Json?
   verifyEmail         Json?
+  resultShareKey     String?          @unique
+  displayPercentage  Float?
 }
 
 enum IdentityProvider {
