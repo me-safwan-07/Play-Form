@@ -1,9 +1,7 @@
 import z from 'zod';
-// import { ZAllowedFileExtension } from './common';
+import { ZBaseStyling } from './styling';
 
-// Form Schema
-
-
+// Form Editor Tabs Enum
 export type TFormEditorTabs = "questions" | "settings" | "styling";
 
 // Thank You Card Schema
@@ -15,6 +13,19 @@ export const ZFormThankYouCard = z.object({
   buttonLink: z.string().optional(),
   imageUrl: z.string().optional(),
 });
+
+export const ZFormStyling = ZBaseStyling.extend({
+  overwriteThemeStyling: z.boolean().nullish(),
+})
+
+export const ZFormVerifyEmail = z
+  .object({
+    name: z.optional(z.string()),
+    subheading: z.optional(z.string()),
+  })
+  .optional();
+
+export type TFormVerifyEmail = z.infer<typeof ZFormVerifyEmail>;
 
 // Question Types Enum
 export enum TFormQuestionTypeEnum {
@@ -133,10 +144,22 @@ const ZForms = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   name: z.string(),
+  environmentId: z.string(),
   status: ZFormStatus,
+  autoClose: z.number().nullable(),
+  redirectUrl: z.string().url().nullable(),
+  displayLimit: z.number().nullable(),
   welcomeCard: ZFormWelcomeCard,
   questions: ZFormQuestions,
   thankYouCard: ZFormThankYouCard,
+  delay: z.number(),
+  autoComplete: z.number().nullable(),
+  runOnDate: z.date().nullable(),
+  closeOnDate: z.date().nullable(),
+  styling: ZFormStyling.nullable(),
+  verifyEmail: ZFormVerifyEmail.optional(),
+  resultShareKey: z.string().nullable(),
+  displayPercentage: z.string().nullish(),
 });
 export type TForm = z.infer<typeof ZForms>;
 
@@ -147,9 +170,16 @@ export const ZFormUpdateInput = ZForms.omit({ createdAt: true, updatedAt: true }
   })
 );
 
+export const ZFormFilterCriteria = z.object({
+  name: z.string().optional(),
+  status: z.array(ZFormStatus).optional(),
+  sortBy: z.enum(['createdAt', 'updatedAt', 'name']).optional(),
+});
+
+export type TFormFilterCriteria = z.infer<typeof ZFormFilterCriteria>;
+
 export const ZFormFilters = z.object({
   name: z.string(),
-  // createdAt: z.date(),
   status: z.array(ZFormStatus),
   sortBy: z.enum(['createdAt', 'updatedAt', 'name']),
 });
