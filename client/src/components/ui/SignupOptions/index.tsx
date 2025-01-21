@@ -38,21 +38,20 @@ export const SignupOptions = () => {
     setSigningUp(true);
 
     try {
-        await createUser(
-          e.target.elements.name.value,
-          e.target.elements.email.value,
-          e.target.elements.password.value,
-          // inviteToken
-        );
-        const url = true
-          ? `/auth/signup-without-verificatio-success`
-          : `/auth/verification-requested?email=${encodeURIComponent(e.target.elements.email.value)}`;
-
-        navigate(url);
+      await createUser(
+        e.target.elements.name.value,
+        e.target.elements.email.value,
+        e.target.elements.password.value,
+        // inviteToken
+      );
+      const url = true
+        ? `/auth/signup-without-verificatio-success`
+        : `/auth/verification-requested?email=${encodeURIComponent(e.target.elements.email.value)}`;
+      navigate(url);
     } catch (e: any) {
-      if (setError) {
-        setError(e.message);
-      }
+      // if (setError) {
+      //   setError(e.message);
+      // }
       setSigningUp(false)
   };
 
@@ -148,10 +147,11 @@ export const SignupOptions = () => {
             </Button>
           )}
         </form>
-        <GoogleButton 
+        {/* <GoogleButton 
           inviteUrl={""} 
 
-        />
+        /> */}
     </div>
   )
+}
 }

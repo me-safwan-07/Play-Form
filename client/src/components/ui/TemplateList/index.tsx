@@ -1,7 +1,17 @@
+import { TEnvironment } from "@/types/environment"
 import { StartFromScratchTemplate } from "./components/StartFromScratchTemplate"
 
-export const TemplateList = () => {
-    
+
+interface TemplateListProps {
+    environment: TEnvironment;
+    templateSearch?: string;
+    onTemplateClick?: (template: string) => void;
+}
+export const TemplateList = ({
+    environment,
+    templateSearch,
+    onTemplateClick,
+}: TemplateListProps) => {    
     return (
        <main className="">
             <div className="">

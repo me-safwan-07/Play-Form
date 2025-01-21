@@ -3,13 +3,17 @@ import { SurveyStatusIndicator } from "@/components/ui/SurveyStatusIndicator";
 import { convertDateString, timeSince } from "@/lib/time";
 import { cn } from "@/lib/utils";
 import FormDropdownMenu from "@/components/core/FormsList/components/FormDropdownMenu";
-import { TFormFilters } from "@/types/forms";
+import { TForm, TFormFilters } from "@/types/forms";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
+import { TEnvironment } from "@/types/environment";
 
 interface FormCardProps {
-    form: TFormFilters & { id: string; createdAt: Date; updatedAt: Date; status: "draft" | "scheduled" | "inProgress" | "paused" | "completed" };
+    form: TForm;
+    environment: TEnvironment;
     orientation: string;
+    duplicateForm: (forms: TForm) => void;
+    deleteForm: (formsId: string) => void;
 }
 
 export const FormCard = ({ 

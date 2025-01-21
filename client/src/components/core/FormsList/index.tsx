@@ -1,47 +1,39 @@
 // import { useQuery } from "@tanstack/react-query";
 import { FormFilters } from "./components/FormFilters"
 // import { forms } from "@/lib/api";
-import { useEffect, useState } from "react";
-import { TFormFilters } from "@/types/forms";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { TForm, TFormFilters } from "@/types/forms";
 // import { useDebounce } from "react-use";
 import axios from "axios";
 import { FormCard } from "./components/FormCard";
+import { getForm } from "@/api/forms";
+import { filter } from "lodash";
+import { getFormattedFilters } from "@/utils/formattedFilters";
+import { TEnvironment } from "@/types/environment";
+import Button from "@/components/ui/Button";
 // import Button from "@/components/ui/Button/index";
-// interface FormsListProps {
-//     formsPerPage: number;
-// }
+
+interface FormsListProps {
+    environment: TEnvironment;
+    formsPerPage: number;
+}
 export const initialFilters: TFormFilters = {
     name: "",
-    // createdBy: [],
     status: [],
     sortBy: "updatedAt"
-}
-export const FormsList = () => {
-    const [forms, setForms] = useState<TFormFilters[]>([]);
+};
+export const FormsList = ({
+    environment,
+    formsPerPage: formsLimit
+}: FormsListProps) => {
+    const [forms, setForms] = useState<TForm[]>([]);
     const [isFetching, setIsFetching] = useState(true);
-    // const [hasMore, setHasMore] = useState<boolean>(true);
-
-    useEffect(() => {
-        setIsFetching(true);
-        const fetchInitialForms = async () => {
-            try {
-                const res = await axios.get('http://localhost:3000/api/forms');
-                // if (res.length < formsLimit) {
-                //     setHasMore(false);
-                // } else {
-                //     setHasMore(true);
-                // }
-                setForms(res.data);
-                setIsFetching(false);
-            } catch (err) {
-                console.error(err);
-                setIsFetching(false);
-            }
-        }
-        fetchInitialForms();
-    }, []);
+    const [hasMore, setHasMore] = useState<boolean>(true);
 
     const [formFilters, setFormFilters] = useState<TFormFilters>(initialFilters);
+
+    const filters = useMemo(() => getFormattedFilters(formFilters), [formFilters]);
+
     const [orientation, setOrientation] = useState("");
 
     useEffect(() => {
@@ -54,6 +46,44 @@ export const FormsList = () => {
           localStorage.setItem("formOrientation", "list");
         }
       }, []);
+
+      useEffect(() => {
+        const fetchInitialForms = async () => {
+            setIsFetching(true);
+            const res = await getForm(environment.id, formsLimit, undefined, filters )
+            if (res.length < formsLimit) {
+                setHasMore(false)
+            } else {
+                setHasMore(true)
+            };
+            setForms(res);
+            setIsFetching(false);
+        };
+        fetchInitialForms();
+      }, [environment.id, formsLimit, filters]);
+
+      const fetchNextPage = useCallback(async () => {
+        setIsFetching(true);
+        const newForms = await getForm(environment.id, formsLimit, forms.length, filters);
+        if (newForms.length === 0 || newForms.length < formsLimit) {
+            setHasMore(false);
+        } else {
+            setHasMore(true);
+        }
+
+        setForms([...forms, ...newForms]);
+        setIsFetching(false);
+      }, [environment.id, formsLimit, forms, filters]);
+
+      const handleDeleteForms = async (formId: string) => {
+        const newForms = forms.filter((form) => form.id !== formId);
+        setForms(newForms);
+      };
+
+      const handleDuplicateForm = async (form: TForm) => {
+        const newForms = [form, ...forms];
+        setForms(newForms);
+      };
 
     return (
         <div className="space-y-6">
@@ -77,10 +107,14 @@ export const FormsList = () => {
                             {forms.map((form) => {
                                 return (
                                     <FormCard
-                                    orientation={orientation}
-                                    form={form}
+                                        key={form.id}
+                                        form={form}
+                                        environment={environment}
+                                        orientation={orientation}
+                                        duplicateForm={handleDuplicateForm}
+                                        deleteForm={handleDeleteForms}
                                     />
-                                )
+                                );
                             })}
                         </div>
                     )}
@@ -89,18 +123,23 @@ export const FormsList = () => {
                             {forms.map((form) => {
                                 return (
                                     <FormCard
-                                    orientation={orientation}
-                                    form={form}
+                                        key={form.id}
+                                        form={form}
+                                        environment={environment}
+                                        orientation={orientation}
+                                        duplicateForm={handleDuplicateForm}
+                                        deleteForm={handleDeleteForms}
                                     />
-                                )
+                                );
                             })}
                         </div>
                     )}
                     
                     {/* uncommet this when complete alle the api's */}
-                    {/* {hasMore && (
+                    {hasMore && (
                         <div className="">
                             <Button
+                                onClick={fetchNextPage}
                                 variant='secondary'
                                 size='sm'
                                 loading={isFetching}
@@ -108,7 +147,7 @@ export const FormsList = () => {
                                 Load more
                             </Button>
                         </div>
-                    )} */}
+                    )}
                 </div>
             ) : (
                 <div className="flex h-full flex-col items-center justify-center">
