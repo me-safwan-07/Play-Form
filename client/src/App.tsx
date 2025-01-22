@@ -7,58 +7,53 @@ import { getEnvironments } from './api/environment';
 
 const queryClient = new QueryClient();
 
-const Root: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [environment, setEnvironment] = useState<TEnvironment | null>(null);
-  const navigate = useNavigate();
+const App: React.FC = () => {
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // const [environment, setEnvironment] = useState<TEnvironment | null>(null);
+  // const navigate = useNavigate();
 
-  useEffect(() => {
-    const session = localStorage.getItem('token');
+  // useEffect(() => {
+  //   const session = localStorage.getItem('token');
 
-    if (!session) {
-      navigate('/auth/login');
-      setIsLoading(false);
-      return;
-    }
+  //   if (!session) {
+  //     // navigate('/auth/login');
+  //     // setIsLoading(false);
+  //     return;
+  //   }
 
-    const fetchEnvironment = async () => {
-      try {
-        const environments = await getEnvironments(session);
-        const env = environments.length > 0 ? environments[0] : null;
-        setEnvironment(env);
+  //   const fetchEnvironment = async () => {
+  //     try {
+  //       const environments = await getEnvironments(session);
+  //       const env = environments.length > 0 ? environments[0] : null;
+  //       setEnvironment(env);
 
-        if (env) {
-          navigate(`/environment/${env.id}/`);
-        } else {
-          navigate('/auth/login');
-        }
-      } catch (error) {
-        console.error(`Error getting environment: ${error}`);
-        navigate('/auth/login');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  //       // if (env) {
+  //       //   navigate(`/environment/${env.id}/`);
+  //       // } else {
+  //       //   navigate('/auth/login');
+  //       // }
+  //     } catch (error) {
+  //       console.error(`Error getting environment: ${error}`);
+  //       // navigate('/auth/login');
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
 
-    fetchEnvironment();
-  }, [navigate]);
+  //   fetchEnvironment();
+  // }, [navigate]);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
-    <QueryClientProvider client={queryClient}>
+    // <QueryClientProvider client={queryClient}>
       <AppRouter />
-    </QueryClientProvider>
+    // </QueryClientProvider>
+
   );
 };
 
-const App: React.FC = () => (
-  <Router>
-    <Root />
-  </Router>
-);
-
-export default Root;
+export default App;
