@@ -3,14 +3,14 @@ import { StartFromScratchTemplate } from "./components/StartFromScratchTemplate"
 
 
 interface TemplateListProps {
-    environment: TEnvironment;
+    environment?: TEnvironment;
     templateSearch?: string;
     onTemplateClick?: (template: string) => void;
 }
 export const TemplateList = ({
-    environment,
-    templateSearch,
-    onTemplateClick,
+    // environment,
+    // templateSearch,
+    // onTemplateClick,
 }: TemplateListProps) => {    
     return (
        <main className="">
