@@ -1,7 +1,10 @@
 import { TemplateList } from '@/components/ui/TemplateList'
+import { TEnvironment } from '@/types/environment'
 import { Search } from 'lucide-react'
 // import React from 'react'
-
+interface TemplateContainerProps {
+  environment: TEnvironment | null
+}
 export const TemplateContainer = () => {
   return (
     <div>
@@ -19,7 +22,9 @@ export const TemplateContainer = () => {
                     </div>
                 </div>
 
-                <TemplateList />
+                <TemplateList 
+                    // environment={environment}
+                />
             </div>
         </div>
       </div>
