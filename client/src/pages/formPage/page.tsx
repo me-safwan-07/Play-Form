@@ -19,9 +19,7 @@ import { useEffect, useState } from "react";
 
 export const initialFilters: TFormFilters = {
     name: "",
-    // createdBy: [],
     status: [],
-    // type: [],
     sortBy: "updatedAt"
 }
 const Form: React.FC = () => {
@@ -30,39 +28,39 @@ const Form: React.FC = () => {
     const [environment, setEnvironment] = useState<any>(null);
     const [formCount, setFormCount] = useState<number | null>(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                navigate("/auth/login");
-                return;
-            }
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         const token = localStorage.getItem('token');
+    //         if (!token) {
+    //             navigate("/auth/login");
+    //             return;
+    //         }
 
-            if (!id) {
-                navigate("/auth/login");
-                return;
-            }
+    //         if (!id) {
+    //             navigate("/auth/login");
+    //             return;
+    //         }
 
-            const environments = await getEnvironments(id);
-            const environment = environments.find(env => env.id === id);
+    //         const environments = await getEnvironments(id);
+    //         const environment = environments.find(env => env.id === id);
 
-            if (!environment) {
-                navigate("/auth/login");
-                return;
-            }
+    //         if (!environment) {
+    //             navigate("/auth/login");
+    //             return;
+    //         }
 
-            setEnvironment(environment);
+    //         setEnvironment(environment);
 
-            const formCount = await getFormCount(id);
-            setFormCount(formCount);
-        };
+    //         const formCount = await getFormCount(id);
+    //         setFormCount(formCount);
+    //     };
 
-        fetchData();
-    }, [id, navigate]);
+    //     fetchData();
+    // }, [id, navigate]);
 
-    if (!environment || formCount === null) {
-        return <div>Loading...</div>;
-    }
+    // if (!environment || formCount === null) {
+    //     return <div>Loading...</div>;
+    // }
 
     const createFormButton = (
         <Button
@@ -77,7 +75,7 @@ const Form: React.FC = () => {
 
     return (
         <PageContentWrapper>
-            {formCount > 0 ? (
+            {0 > 0 ? (
                 <>
                     <PageHeader pageTitle="Match Form" cta={createFormButton} />
                     <FormsList
