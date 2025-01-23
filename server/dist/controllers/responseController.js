@@ -1,71 +1,83 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ResponseController = void 0;
-const responseService_1 = require("../services/responseService");
-const responses_1 = require("../types/responses");
-const error_handler_1 = require("../utils/error-handler");
-class ResponseController {
-    static createResponse(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const responseData = req.body;
-                // Validate form input
-                // const validationError = validateFormInput(formData);
-                // if (validationError) {
-                //   return res.status(400).json({ error: validationError});
-                // }
-                const validationError = responses_1.ZResponseInput.safeParse(responseData);
-                if (validationError.error) {
-                    return res.status(400).json({ error: validationError.error.message });
-                }
-                // Add user ID from authenticated request
-                // const formExists = await prisma.form.findUnique({
-                //   where: {
-                //     id: responseData.formId,
-                //   },
-                // });
-                // if(!formExists) {
-                //   return res.status(400).json({ error: 'Form does not exist' });
-                // }
-                const response = yield responseService_1.ResponseService.createdResponse(responseData);
-                res.status(200).json(response);
-            }
-            catch (error) {
-                (0, error_handler_1.handleError)(error, res);
-            }
-        });
-    }
-    static getAllResponses(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const resposes = yield responseService_1.ResponseService.getAllResponse();
-                res.json(resposes);
-            }
-            catch (error) {
-                (0, error_handler_1.handleError)(error, res);
-            }
-        });
-    }
-    static getFormById(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { id } = req.params;
-                const form = yield responseService_1.ResponseService.getResponseById(id);
-                res.json(form);
-            }
-            catch (error) {
-                (0, error_handler_1.handleError)(error, res);
-            }
-        });
-    }
-}
-exports.ResponseController = ResponseController;
+// import { Request, Response } from "express";
+// import { ResponseService } from "../services/responseService";
+// import { TResponseInput, ZResponseInput } from "../types/responses";
+// import { handleError } from "../utils/error-handler";
+// import { prisma } from "../database";
+// export class ResponseController {
+//   static async createResponse(req: Request, res: Response) {
+//     try {
+//       const responseData: TResponseInput = req.body;
+//       // Validate form input
+//       // const validationError = validateFormInput(formData);
+//       // if (validationError) {
+//       //   return res.status(400).json({ error: validationError});
+//       // }
+//       const validationError = ZResponseInput.safeParse(responseData);
+//       if (validationError.error) {
+//         return res.status(400).json({ error: validationError.error.message });
+//       }
+//       // Add user ID from authenticated request
+//       // const formExists = await prisma.form.findUnique({
+//       //   where: {
+//       //     id: responseData.formId,
+//       //   },
+//       // });
+//       // if(!formExists) {
+//       //   return res.status(400).json({ error: 'Form does not exist' });
+//       // }
+//       const response = await ResponseService.createdResponse(responseData);
+//       res.status(200).json(response);
+//     } catch (error) {
+//       handleError(error, res);
+//     }
+//   }
+//   static async getAllResponses(req: Request, res: Response) {
+//     try {
+//       const resposes = await ResponseService.getAllResponse();
+//       res.json(resposes);
+//     } catch (error) {
+//       handleError(error, res);
+//     }
+//   }
+//   static async getFormById(req: Request, res: Response) {
+//     try {
+//       const { id } = req.params;
+//       const form = await ResponseService.getResponseById(id);
+//       res.json(form);
+//     } catch (error) {
+//       handleError(error, res);
+//     }
+//   }
+// //   static async updateForm(req: Request, res: Response) {
+// //     try {
+// //       const { id } = req.params;
+// //       const formData: TFormUpdateInput = req.body;
+// //       const form = await FormService.updateForm(id, formData);
+// //       res.json(form);
+// //     } catch (error) {
+// //       handleError(error, res);
+// //     }
+// //   }
+// //   static async deleteForm(req: Request, res: Response) {
+// //     try {
+// //       const { id } = req.params;
+// //       const form = await FormService.deleteForm(id);
+// //       res.json(form);
+// //     } catch (error) {
+// //       handleError(error, res);
+// //     }
+// //   }
+// //   static async getUserForm(req: Request, res: Response) {
+// //     try {
+// //       const { userId } = req.params;
+// //       if (!userId) {
+// //         return res.status(400).json({ error: "User not authenticated"});
+// //       }
+// //       const forms = await FormService.getFormsByUser(userId);
+// //       res.json(forms);
+// //     } catch (error) {
+// //       handleError(error, res);
+// //     }
+// //   } 
+// }

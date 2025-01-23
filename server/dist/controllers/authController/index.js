@@ -8,10 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserById = exports.updateUser = exports.createUser = exports.getUser = void 0;
+exports.createUser = exports.getUser = void 0;
 const database_1 = require("../../database");
 const client_1 = require("@prisma/client");
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const express_validator_1 = require("express-validator");
 const responseSelection = {
     id: true,
     name: true,
@@ -22,7 +28,9 @@ const responseSelection = {
     updatedAt: true,
     identityProvider: true,
     notificationSettings: true,
+    forms: true,
 };
+// login
 const getUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.id;
@@ -53,78 +61,73 @@ const getUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.getUser = getUser;
 const createUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const data = req.body;
-        const user = yield database_1.prisma.user.create({
-            data: data,
-            select: responseSelection
-        });
-        res.status(200).json({ user });
-        next(user);
+    const errors = (0, express_validator_1.validationResult)(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
     }
-    catch (err) {
-        if (err instanceof client_1.Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
-            res.status(409).json({ message: 'Email already exists' });
-            console.log(err.message);
+    const { name, email, password } = req.body;
+    try {
+        // Check if the user already exists
+        const isUserAlready = yield database_1.prisma.user.findFirst({
+            where: {
+                email
+            }
+        });
+        if (isUserAlready) {
+            res.status(400).json({ message: 'User with this email already exists' });
             return;
         }
-        if (err instanceof client_1.Prisma.PrismaClientKnownRequestError) {
-            res.status(403).json({ message: err.message });
-            console.log(err.message);
+        // Hash the password
+        const hashedPassword = yield bcryptjs_1.default.hash(password, 10);
+        // Create the user
+        const user = yield database_1.prisma.user.create({
+            data: {
+                name,
+                email,
+                password: hashedPassword,
+                // You can omit `forms` here if you don't need to create forms immediately
+            },
+            select: responseSelection,
+        });
+        // Retrieve the forms created by this user
+        const forms = yield database_1.prisma.form.findMany({
+            where: {
+                createdBy: user.id
+            }
+        });
+        user.forms = forms;
+        // JWT Creation
+        if (!process.env.JWT_SECRET) {
+            throw new Error('JWT_SECRET is not defined');
+        }
+        let token;
+        try {
+            // Generate JWT token
+            token = jsonwebtoken_1.default.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        }
+        catch (error) {
+            console.error('Error generating JWT token', error);
+            res.status(500).json({ error: 'Error generating JWT token' });
             return;
         }
-        res.status(500).json({ message: 'Failed to create user' });
-        next(err);
+        // Respond with the user data and token
+        res.status(201).json({ user, token });
+        next();
+    }
+    catch (error) {
+        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+            res.status(400).json({ message: 'User with this email already exists' });
+        }
+        else if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+            console.error(error.message);
+            res.status(400).json({ message: error.message });
+        }
+        else {
+            console.error('Unknown error', error);
+            res.status(500).json({ error: 'Failed to register user' });
+        }
+        next(error);
     }
 });
 exports.createUser = createUser;
-const updateUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const id = req.params.id;
-        const data = req.body;
-        const updateUser = yield database_1.prisma.user.update({
-            where: {
-                id
-            },
-            data: data,
-            select: responseSelection
-        });
-        res.status(200).json({ user: updateUser });
-        return;
-    }
-    catch (error) {
-        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError && error.code === 'P2016') {
-            res.status(404).json({ error: error.message });
-        }
-        res.status(404).json({ message: 'user not updated' });
-        next(error);
-    }
-});
-exports.updateUser = updateUser;
-const deleteUserById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const id = req.params.id;
-        const user = yield database_1.prisma.user.delete({
-            where: {
-                id
-            },
-            select: responseSelection
-        });
-        if (!user) {
-            res.status(404).json({ message: 'User not found' });
-            return;
-        }
-        res.status(200).json({ success: true, message: 'User deleted' });
-        next(user);
-    }
-    catch (error) {
-        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
-            res.status(403).json({ message: error.message });
-            console.log(error.message);
-            return;
-        }
-        res.status(500).json({ message: 'Failed to delete user' });
-        next(error);
-    }
-});
-exports.deleteUserById = deleteUserById;
