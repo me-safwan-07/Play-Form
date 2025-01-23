@@ -26,7 +26,7 @@ model Environment {
   // widgetSetupCompleted  Boolean          @default(false)
   // appSetupCompleted     Boolean          @default(false)
   // websiteSetupCompleted Boolean          @default(false)
-  forms               Form[]
+  // forms               Form[]
   // people              Person[]
   // actionClasses         ActionClass[]
   // attributeClasses      AttributeClass[]
@@ -58,10 +58,10 @@ model Form {
   updatedAt           DateTime                @updatedAt @map(name: "updated_at")
   name                String
   redirectUrl         String
-  environment         Environment             @relation(fields: [environmentId], references: [id])
-  environmentId         String                @db.ObjectId
-  creator             User?                   @relation(fields: [createdBy], references: [id])
-  createdBy           String?                 @db.ObjectId
+  // environment         Environment             @relation(fields: [environmentId], references: [id])
+  // environmentId         String                @db.ObjectId
+  creator             User                 @relation(fields: [createdBy], references: [id])
+  createdBy           String                @db.ObjectId
   status              FormStatus              @default(draft)
   /// @zod.custom(imports.ZFormWelcomeCard)
   /// [FormWelcomeCard]
@@ -79,7 +79,7 @@ model Form {
   delay               Int?                     @default(0)
   styling             Json?
   verifyEmail         Json?
-  resultShareKey     String?          @unique
+  resultShareKey     String?                   @unique
   displayPercentage  Float?
 }
 
