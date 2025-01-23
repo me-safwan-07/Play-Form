@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { TUser, TUserCreateInput } from "../../types/user";
+import { validationResult } from "express-validator";
 
 const responseSelection = {
   id: true,
@@ -15,8 +16,10 @@ const responseSelection = {
   updatedAt: true,
   identityProvider: true,
   notificationSettings: true,
+  forms: true,
 };
 
+// login
 export const getUser = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const id:string = req.params.id;
@@ -37,7 +40,8 @@ export const getUser = async(req: Request, res: Response, next: NextFunction): P
         res.status(200).json({ user });
 
         next();
-    } catch (error) {
+    }
+    catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
             console.error(error.message);
         } else {
@@ -48,83 +52,79 @@ export const getUser = async(req: Request, res: Response, next: NextFunction): P
     }
 };
 
-export const createUser = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const data: TUserCreateInput = req.body;
+export const createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+    }
 
+    const { name, email, password } = req.body;
+
+    try {
+        // Check if the user already exists
+        const isUserAlready = await prisma.user.findFirst({
+            where: {
+                email
+            }
+        });
+
+        if (isUserAlready) {
+            res.status(400).json({ message: 'User with this email already exists' });
+            return;
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create the user
         const user = await prisma.user.create({
-            data: data,
-            select: responseSelection
-        });
-
-        res.status(200).json({ user });
-        next(user);
-    } catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002" ) {
-            res.status(409).json({ message: 'Email already exists' });
-            console.log(err.message)
-            return;
-        }
-
-        if (err instanceof Prisma.PrismaClientKnownRequestError) {
-            res.status(403).json({ message: err.message });
-            console.log(err.message);
-            return;
-        }
-        res.status(500).json({ message: 'Failed to create user' });
-        next(err);
-    }
-}
-
-export const updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const id: string = req.params.id;
-        const data: TUserCreateInput = req.body;
-
-        const updateUser = await prisma.user.update({
-            where: {
-                id
+            data: {
+                name,
+                email,
+                password: hashedPassword,
+                // You can omit `forms` here if you don't need to create forms immediately
             },
-            data: data,
-            select: responseSelection
+            select: responseSelection,
         });
 
-        res.status(200).json({ user: updateUser });
-        return
-    } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2016') {
-            res.status(404).json({ error: error.message });
-        }
-        res.status(404).json({ message: 'user not updated' });
-        next(error);
-    }
-};
-
-export const deleteUserById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const id: string = req.params.id;
-        const user = await prisma.user.delete({
+        // Retrieve the forms created by this user
+        const forms = await prisma.form.findMany({
             where: {
-                id
-            },
-            select: responseSelection
+                createdBy: user.id
+            }
         });
+        user.forms = forms;
 
-        if (!user) {
-            res.status(404).json({ message: 'User not found' });
+        // JWT Creation
+        if (!process.env.JWT_SECRET) {
+            throw new Error('JWT_SECRET is not defined');
+        }
+
+        let token: string;
+        try {
+            // Generate JWT token
+            token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        } catch (error) {
+            console.error('Error generating JWT token', error);
+            res.status(500).json({ error: 'Error generating JWT token' });
             return;
         }
 
-        res.status(200).json({ success: true, message: 'User deleted' });
-        next(user);
+        // Respond with the user data and token
+        res.status(201).json({ user, token });
+        next();
+
     } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            res.status(403).json({ message: error.message });
-            console.log(error.message);
-            return;
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+            res.status(400).json({ message: 'User with this email already exists' });
+        } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            console.error(error.message);
+            res.status(400).json({ message: error.message });
+        } else {
+            console.error('Unknown error', error);
+            res.status(500).json({ error: 'Failed to register user' });
         }
-
-        res.status(500).json({ message: 'Failed to delete user' });
         next(error);
     }
 };
