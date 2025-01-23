@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const displayController_1 = require("../../controllers/displayController");
+// import { getDisplayByPersonId } from "../../controllers/displayController";
 const app = (0, express_1.default)();
-app.get('/:displayId', displayController_1.getDisplayByPersonId);
+// app.get('/:displayId', getDisplayByPersonId);
 // app.post('/', createDisplay);
 // app.delete('/:id', deletePerson);
 exports.default = app;
