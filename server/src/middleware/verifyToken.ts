@@ -1,19 +1,25 @@
 import { NextFunction, Request, Response } from "express";
-import admin from "../lib/firebase";
+import jwt from "jsonwebtoken";
 
-export const verification = async(req: Request, res: Response, next: NextFunction) => {
-    const idToken = req.headers.authorization;
+export const verification = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const token = req.headers.authorization?.split(" ")[1];
 
-    if (!idToken) {
-        return res.status(401).send("Unauthorized");
+    if (!token) {
+        res.status(401).send("Unauthorized");
+        return;
     }
 
-    try {3
-        
-        const decodedToken = await admin.auth().verifyIdToken(idToken);
-        req.user = decodedToken;
+    if (!process.env.JWT_SECRET) {
+        res.status(500).send("JWT_SECRET not defined");
+        return;
+    }
+
+    try {
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET) as { userId: string };
+        req.params = { userId: decodedToken.userId }; // Assign an object with userId to req.user
         next();
     } catch (error) {
-        return res.status(403).send("unauthorized");
+        res.status(403).send("Unauthorized");
+        return;
     }
-}
+};

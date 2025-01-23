@@ -13,20 +13,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verification = void 0;
-const firebase_1 = __importDefault(require("../lib/firebase"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const verification = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const idToken = req.headers.authorization;
-    if (!idToken) {
-        return res.status(401).send("Unauthorized");
+    var _a;
+    const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+    if (!token) {
+        res.status(401).send("Unauthorized");
+        return;
+    }
+    if (!process.env.JWT_SECRET) {
+        res.status(500).send("JWT_SECRET not defined");
+        return;
     }
     try {
-        3;
-        const decodedToken = yield firebase_1.default.auth().verifyIdToken(idToken);
-        req.user = decodedToken;
+        const decodedToken = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        req.params = { userId: decodedToken.userId }; // Assign an object with userId to req.user
         next();
     }
     catch (error) {
-        return res.status(403).send("unauthorized");
+        res.status(403).send("Unauthorized");
+        return;
     }
 });
 exports.verification = verification;
