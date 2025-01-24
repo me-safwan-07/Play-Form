@@ -37,129 +37,143 @@ export const selectForm = {
   resultShareKey: true,
 };
 
-// export const getForm = async (req: Request, res: Response): Promise<void> => {
-//   const formId = req.params.formId;
-//   let formPrisma;
-//   try {
-//     formPrisma = await prisma.form.findUnique({
-//       where: {
-//         id: formId
-//       },
-//       select: selectForm
-//     });
-//   } catch (error) {
-//     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-//       console.log(error);
-//       res.status(400).json({ error: "Database error" });
-//     }
-//     console.log(error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
+export const getForm = async (req: Request, res: Response): Promise<void> => {
+  const formId = req.params.formId;
+  try {
+    const form = await prisma.form.findUnique({
+      where: { id: formId },
+      select: {
+        ...selectForm,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        products: true,
+        responses: true,
+        displays: true
+      }
+    });
 
-//   if (!formPrisma) {
-//     res.status(404).json({ error: "Form not found" });
-//     return;
-//   }
+    if (!form) {
+      res.status(404).json({ error: "Form not found" });
+      return;
+    }
 
-//   const form: TForm = transformPrismaSurvey(formPrisma);
-//   res.status(200).json({ form });
-// }
+    res.status(200).json({ form });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
-// export const getForms = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
-//   const environmentId = req.params.environmentId;
-//   const { limit, offset, filterCriteria} = req.body;
-//   let formsPrisma;
-//   try {
-//     formsPrisma = await prisma.form.findMany({
-//       where: {
-//         environmentId: environmentId,
-//         ...buildWhereClause(filterCriteria),
-//       },
-//       select: selectForm,
-//       orderBy: buildOrderByClause(filterCriteria.sortBy),
-//       take: limit ? limit : undefined,
-//       skip: offset ? offset : undefined
-//     });
-
-//   } catch (error) {
-//     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-//       console.log(error);
-//       res.status(400).json({ error: "Database error" });
-//     }
-//     console.log(error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//     next(error);
-//   }
-
-//   const forms: TForm[] = [];
-
-//   if (formsPrisma) {
-//     for (const formPrisma of formsPrisma) {
-//       const transformedSurvey = transformPrismaSurvey(formPrisma);
-//       forms.push(transformedSurvey);
-//     }
-//   }
-
-//   res.status(200).json({ forms });
-//   next();
-// }
-
-// export const getFormCount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-//   try {
-//     const environmentId: string = req.params.environmentId;
-//       const formcount = await prisma.form.count({
-//         where: {
-//           environmentId: environmentId
-//         }
-//       });
-
-//       res.status(200).json({ formcount });
-//       next();
-//     } catch (error) {
-//       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-//         console.log(error);
-//         res.status(400).json({ error: "Error in getting form count" });
-//     }
-//     console.log(error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//     next(error);
-//   }
-// };
-
-// export const updateForm = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
-//   const { updatedForm } = req.body;
-
-//   try {
-//     const formId = updatedForm.id;
-//     let data: any = {};
+export const getForms = async(req: Request, res: Response): Promise<void> => {
+  const userId = req.params.userId;
+  const { page = 1, limit = 10, search = "" } = req.query;
+  
+  try {
+    const skip = (Number(page) - 1) * Number(limit);
     
-//     const currentForm = ;
-    
-//   }
-// };
+    const [forms, total] = await Promise.all([
+      prisma.form.findMany({
+        where: {
+          createdBy: userId,
+          name: { contains: search as string, mode: 'insensitive' }
+        },
+        select: {
+          ...selectForm,
+          responses: { select: { id: true }},
+          displays: { select: { id: true }}
+        },
+        skip,
+        take: Number(limit),
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.form.count({
+        where: {
+          createdBy: userId,
+          name: { contains: search as string, mode: 'insensitive' }
+        }
+      })
+    ]);
 
-// export const deleteForm = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
-//   const formId = req.params.formId;
+    res.status(200).json({
+      forms,
+      pagination: {
+        total,
+        pages: Math.ceil(total / Number(limit)),
+        page: Number(page),
+        limit: Number(limit)
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
-//   try {
-//     await prisma.form.delete({
-//       where: {
-//         id: formId
-//       },
-//       select: selectForm
-//     });
+export const updateForm = async(req: Request, res: Response): Promise<void> => {
+  const formId = req.params.formId;
+  const userId = req.params.userId;
+  const updates = req.body;
 
-//     res.status(200).json({ message: "Form deleted successfully" });
-//     next();
-//   } catch (err) {
-//     if (err instanceof Prisma.PrismaClientKnownRequestError) {
-//       console.log(err);
-//       res.status(400).json({ error: "Error in deleting form" });
-//     }
-//     res.status(500).json({ error: "Internal Server Error" });
-//     next(err);
-//   }
-// };
+  try {
+    // Verify form ownership
+    const form = await prisma.form.findFirst({
+      where: {
+        id: formId,
+        createdBy: userId
+      }
+    });
+
+    if (!form) {
+      res.status(404).json({ error: "Form not found or unauthorized" });
+      return;
+    }
+
+    const updatedForm = await prisma.form.update({
+      where: { id: formId },
+      data: updates,
+      select: selectForm
+    });
+
+    res.status(200).json({ form: updatedForm });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const deleteForm = async(req: Request, res: Response): Promise<void> => {
+  const formId = req.params.formId;
+  const userId = req.params.userId;
+
+  try {
+    // Verify form ownership
+    const form = await prisma.form.findFirst({
+      where: {
+        id: formId,
+        createdBy: userId
+      }
+    });
+
+    if (!form) {
+      res.status(404).json({ error: "Form not found or unauthorized" });
+      return;
+    }
+
+    await prisma.form.delete({
+      where: { id: formId }
+    });
+
+    res.status(200).json({ message: "Form deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 export const createForm = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const createdBy = req.params?.userId; 
