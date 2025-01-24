@@ -33,7 +33,7 @@ const responseSelection = {
 // login
 const getUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const id = req.params.id;
+        const id = req.params.userId;
         // check if the user is already registered
         const user = yield database_1.prisma.user.findUnique({
             where: {

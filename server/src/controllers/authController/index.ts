@@ -22,7 +22,7 @@ const responseSelection = {
 // login
 export const getUser = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const id:string = req.params.id;
+        const id:string = req.params.userId;
 
         // check if the user is already registered
         const user = await prisma.user.findUnique({
