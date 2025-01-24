@@ -1,165 +1,77 @@
-// import { NextFunction, Request, Response } from "express";
-// import { prisma } from "../../database";
-// import { Prisma } from "@prisma/client";
-// import { DatabaseError } from "../../utils/errors";
-// import { getPerson } from "../personController";
-// import { TPerson } from "../../types/people";
+import { Request, Response } from "express";
+import { prisma } from "../../database";
 
-// export const selectDisplay = {
-//   id: true,
-//   createdAt: true,
-//   updatedAt: true,
-//   surveyId: true,
-//   responseId: true,
-//   personId: true,
-//   status: true,
-// };
+export const getProducts = async (req: Request, res: Response): Promise<void> => {
+  const formId = req.params.formId;
 
-// const ITEMS_PER_PAGE = 10;
+  try {
+    const products = await prisma.product.findMany({
+      where: { formId },
+      include: {
+        environments: true
+      }
+    });
 
-// const getPersonByUserId = async (userId: string) => {
-//   return await prisma.person.findUnique({
-//     where: {
-//       userId,
-//     },
-//   });
-// };
+    res.status(200).json({ products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
-// const createPerson = async (userId: string) => {
-//   return await prisma.person.create({
-//     data: {
-//       userId,
-//     },
-//   });
-// };
+export const createProduct = async (req: Request, res: Response): Promise<void> => {
+  const formId = req.params.formId;
+  const productData = req.body;
 
+  try {
+    const product = await prisma.product.create({
+      data: {
+        ...productData,
+        formId
+      },
+      include: {
+        environments: true
+      }
+    });
 
-// // export const getDisplay = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-// //   const { displayId } = req.params;
-// //   try {
-// //     const display = await prisma.display.findUnique({
-// //       where: {
-// //         id: displayId,
-// //       },
-// //       select: selectDisplay,
-// //     });
+    res.status(201).json({ product });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
-// //     if (!display) {
-// //       res.status(404).json({ error: "Display not found" });
-// //       return;
-// //     }
+export const updateProduct = async (req: Request, res: Response): Promise<void> => {
+  const productId = req.params.productId;
+  const updates = req.body;
 
-// //     res.status(200).json(display);
-// //   } catch (error) {
-// //     if (error instanceof Prisma.PrismaClientInitializationError) {
-// //       return next(new DatabaseError(error.message));
-// //     } else {
-// //       res.status(500).json({ error: "An unexpected error occurred." });
-// //     }
-// //   }
-// // };
+  try {
+    const product = await prisma.product.update({
+      where: { id: productId },
+      data: updates,
+      include: {
+        environments: true
+      }
+    });
 
-// // export const updateDisplay = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-// //   let person: TPerson | null = null;
-  
+    res.status(200).json({ product });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
-// // }
+export const deleteProduct = async (req: Request, res: Response): Promise<void> => {
+  const productId = req.params.productId;
 
-// export const createDisplay = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-//     const { userId, formId } = req.body;
+  try {
+    await prisma.product.delete({
+      where: { id: productId }
+    });
 
-//     if (!formId) {
-//         res.status(400).json({ error: "Survey ID is required" });
-//         return 
-//     }
-
-//     try {
-//         let person = null;
-
-//         if (userId) {
-//             person = await getPersonByUserId(userId);
-//             if (!person) {
-//                 person = await createPerson(userId);
-//             }
-//         }
-
-//         const display = await prisma.display.create({
-//             data: {
-//               formId,
-//               ...(person && {
-//                 personId: person.id,
-//               }),
-//             },
-//             select: selectDisplay
-//           });
-
-//         res.status(201).json(display);
-//     } catch(error) {
-//         if (error instanceof Prisma.PrismaClientKnownRequestError) {
-//             res.status(500).json({ error: "Database error: " + error.message });
-//         } else {
-//             res.status(500).json({ error: "An unexpected error occurred." });
-//         }
-//     }
-// };
-// // export const getDisplayByPersonId = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
-// //     const { personId } = req.params;
-// //     const page = parseInt(req.query.page as string) || 1;
-// //     try {
-// //         const display = await prisma.display.findMany({ // if get any issue in database chage into findUnique
-// //             where: {
-// //                 id: personId,
-// //             },
-// //             select: selectDisplay,
-// //             take: ITEMS_PER_PAGE,
-// //             skip: ITEMS_PER_PAGE * (page - 1),
-// //             orderBy: {
-// //                 createdAt: "desc",
-// //             },
-// //         });
-
-// //         if (!display) {
-// //             res.status(404).send({ error: "Display not found"});
-// //         }
-
-// //         res.status(201).json(display);
-// //     } catch (error) {
-// //         if (error instanceof Prisma.PrismaClientInitializationError) {
-// //             res.status(500).send({ error: "Database error: " + error.message });
-// //         } else {
-// //             res.status(500).json({ error: "An unexpected error occurred." });
-// //         }
-// //     }
-// // };
-// // export const getDisplayCountBySurveyId = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
-// //     const { surveyId } = req.params;
-// //     const { filters } = req.body;
-
-// //     try {
-// //         const display = await prisma.display.count({ // if get any issue in database chage into findUnique
-// //             where: {
-// //               surveyId: surveyId,
-// //               ...(filters && 
-// //                 filters.createdAt && {
-// //                   createdAt: {
-// //                     gte: filters.createdAt.min,
-// //                     lte: filters.createdAt.max,
-// //                   },
-// //                 }
-// //               )
-// //             },
-// //         });
-
-// //         if (!display) {
-// //             res.status(404).send({ error: "Display not found"});
-// //         }
-
-// //         res.status(201).json(display);
-// //     } catch (error) {
-// //         if (error instanceof Prisma.PrismaClientKnownRequestError) {
-// //             res.status(500).send({ error: "Database error: " + error.message });
-// //         } else {
-// //             res.status(500).json({ error: "An unexpected error occurred." });
-// //         }
-// //     }
-// // };
+    res.status(200).json({ message: "Product deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
