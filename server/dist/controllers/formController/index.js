@@ -37,18 +37,20 @@ exports.selectForm = {
     // surveyClosedMessage: true,
     resultShareKey: true,
 };
-const getForm = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getForm = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const formId = req.params.formId;
+    console.log(formId);
+    if (!formId) {
+        console.log("No formId");
+        res.status(404).json({ error: "Form not found" });
+        return;
+    }
     try {
         const form = yield database_1.prisma.form.findUnique({
-            where: { id: formId },
-            select: Object.assign(Object.assign({}, exports.selectForm), { creator: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true
-                    }
-                }, products: true, responses: true, displays: true })
+            where: {
+                id: formId,
+            },
+            select: exports.selectForm,
         });
         if (!form) {
             res.status(404).json({ error: "Form not found" });
@@ -57,13 +59,19 @@ const getForm = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(200).json({ form });
     }
     catch (error) {
+        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+            console.error(error.message);
+            res.status(404).json({ error: "Form not found" });
+            next(error);
+        }
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
+        next(error);
     }
 });
 exports.getForm = getForm;
 const getForms = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.params.userId;
+    const userId = req.user;
     const { page = 1, limit = 10, search = "" } = req.query;
     try {
         const skip = (Number(page) - 1) * Number(limit);

@@ -27,7 +27,8 @@ const verification = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     }
     try {
         const decodedToken = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        req.params = { userId: decodedToken.userId }; // Assign an object with userId to req.user
+        // req.params = { userId: decodedToken.userId }; // Assign an object with userId to req.user
+        req.user = decodedToken.userId;
         next();
     }
     catch (error) {

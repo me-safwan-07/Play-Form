@@ -37,24 +37,21 @@ export const selectForm = {
   resultShareKey: true,
 };
 
-export const getForm = async (req: Request, res: Response): Promise<void> => {
+export const getForm = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const formId = req.params.formId;
+  console.log(formId);
+  if (!formId) {
+    console.log("No formId");
+    res.status(404).json({ error: "Form not found" });
+    return;
+  }
+
   try {
     const form = await prisma.form.findUnique({
-      where: { id: formId },
-      select: {
-        ...selectForm,
-        creator: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
-        products: true,
-        responses: true,
-        displays: true
-      }
+      where: { 
+        id: formId,
+      },
+      select: selectForm,
     });
 
     if (!form) {
@@ -64,13 +61,19 @@ export const getForm = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).json({ form });
   } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.error(error.message);
+      res.status(404).json({ error: "Form not found" });
+      next(error);
+    }
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
+    next(error);
   }
 };
 
 export const getForms = async(req: Request, res: Response): Promise<void> => {
-  const userId = req.params.userId;
+  const userId = req.user;
   const { page = 1, limit = 10, search = "" } = req.query;
   
   try {

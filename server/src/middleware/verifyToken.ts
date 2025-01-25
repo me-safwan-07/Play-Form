@@ -16,7 +16,8 @@ export const verification = async (req: Request, res: Response, next: NextFuncti
 
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET) as { userId: string };
-        req.params = { userId: decodedToken.userId }; // Assign an object with userId to req.user
+        // req.params = { userId: decodedToken.userId }; // Assign an object with userId to req.user
+        req.user = decodedToken.userId;
         next();
     } catch (error) {
         res.status(403).send("Unauthorized");
