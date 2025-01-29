@@ -9,7 +9,7 @@ const HomePage = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-
+    
     if (token) {
         const fetchEnvironment = async () => {
             try {
@@ -31,13 +31,16 @@ const HomePage = () => {
         fetchEnvironment();
     }
   }, [navigate]);
+
+  
   
   return (
     <>
         <Button
             onClick={() => navigate('/auth/signup')}
         >
-            {!isEnvironment ? 'Get started' : 'Go to Forms'}
+            {isEnvironment ? 'Go to Forms' : 'Get started'}
+            {/* {!isEnvironment ? 'Get started' : 'Go to Forms'} */}
         </Button>
     </>
   )
