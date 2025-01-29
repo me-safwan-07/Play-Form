@@ -7,7 +7,7 @@ export const login = async (data: {
 }) => {
     const response = await axios.post('http://localhost:3000/api/auth/login', data);
     if (response.status !== 200) {
-        throw new Error("Failed to login");
+        return response.data;
     }
 
     return response.data.token;
