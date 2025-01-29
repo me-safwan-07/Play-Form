@@ -8,6 +8,7 @@ import { verification } from '../middleware/verifyToken';
 import * as authController from '../controllers/authController';
 import * as formController from '../controllers/formController';
 import * as productController from '../controllers/productController';
+import { environmentController } from "../controllers/environmentController";
 
 const app: Express = express();
 
@@ -20,8 +21,9 @@ const app: Express = express();
 const router = express.Router();
 
 // Auth routes
-router.post('/auth/register', authController.createUser);
+router.post('/auth/signup', authController.createUser);
 router.get('/auth/user/', verification, authController.getUser);
+router.post('/auth/login', authController.login);
 
 // Form routes
 router.get('/forms', verification, formController.getForms);
@@ -40,6 +42,9 @@ router.get('/forms/:formId/products', verification, productController.getProduct
 router.post('/forms/:formId/products', verification, productController.createProduct);
 router.put('/products/:productId', verification, productController.updateProduct);
 router.delete('/products/:productId', verification, productController.deleteProduct);
+
+// Environment routes
+router.get('/environment', verification, environmentController);
 
 export default router;
 

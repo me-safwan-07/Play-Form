@@ -41,6 +41,7 @@ const verifyToken_1 = require("../middleware/verifyToken");
 const authController = __importStar(require("../controllers/authController"));
 const formController = __importStar(require("../controllers/formController"));
 const productController = __importStar(require("../controllers/productController"));
+const environmentController_1 = require("../controllers/environmentController");
 const app = (0, express_1.default)();
 // app.use("/display", displayRoutes);
 // app.use("/forms", formRoutes);
@@ -49,8 +50,9 @@ const app = (0, express_1.default)();
 // app.use("/auth", authRoutes);
 const router = express_1.default.Router();
 // Auth routes
-router.post('/auth/register', authController.createUser);
+router.post('/auth/signup', authController.createUser);
 router.get('/auth/user/', verifyToken_1.verification, authController.getUser);
+router.post('/auth/login', authController.login);
 // Form routes
 router.get('/forms', verifyToken_1.verification, formController.getForms);
 router.get('/forms/:formId', verifyToken_1.verification, formController.getForm);
@@ -66,4 +68,6 @@ router.get('/forms/:formId/products', verifyToken_1.verification, productControl
 router.post('/forms/:formId/products', verifyToken_1.verification, productController.createProduct);
 router.put('/products/:productId', verifyToken_1.verification, productController.updateProduct);
 router.delete('/products/:productId', verifyToken_1.verification, productController.deleteProduct);
+// Environment routes
+router.get('/environment', verifyToken_1.verification, environmentController_1.environmentController);
 exports.default = router;

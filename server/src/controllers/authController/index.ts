@@ -128,3 +128,34 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
         next(error);
     }
 };
+
+export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await prisma.user.findFirst({ where: { email } });
+
+    if (!user || !user.password) {
+        res.status(401).json({ message: 'Invalid email or password' });
+        return;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+        res.status(401).json({ message: 'Invalid email or password' });
+        return;
+    }
+
+    if (!process.env.JWT_SECRET) {
+        throw new Error('JWT_SECRET is not defined');
+    }
+
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        res.status(200).json({ token });
+        next();
+    } catch (error) {
+        console.error('Error generating JWT token', error);
+        res.status(500).json({ error: 'Error generating JWT token' });
+        next(error);
+    }
+}
