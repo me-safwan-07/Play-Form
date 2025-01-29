@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createForm = exports.deleteForm = exports.updateForm = exports.getForms = exports.getForm = exports.selectForm = void 0;
+exports.getFormCount = exports.createForm = exports.deleteForm = exports.updateForm = exports.getForms = exports.getForm = exports.selectForm = void 0;
 const database_1 = require("../../database");
 const client_1 = require("@prisma/client");
 exports.selectForm = {
@@ -46,9 +46,14 @@ const getForm = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         return;
     }
     try {
+        // Check if the id is valid before querying
+        // if (!mongoose.Types.ObjectId.isValid(formId)) {
+        //     res.status(400).json({ error: 'Invalid form ID format' });
+        //     return;
+        // }
         const form = yield database_1.prisma.form.findUnique({
             where: {
-                id: formId,
+                id: formId
             },
             select: exports.selectForm,
         });
@@ -111,7 +116,7 @@ const getForms = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getForms = getForms;
 const updateForm = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const formId = req.params.formId;
-    const userId = req.params.userId;
+    const userId = req.user;
     const updates = req.body;
     try {
         // Verify form ownership
@@ -140,7 +145,7 @@ const updateForm = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.updateForm = updateForm;
 const deleteForm = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const formId = req.params.formId;
-    const userId = req.params.userId;
+    const userId = req.user;
     try {
         // Verify form ownership
         const form = yield database_1.prisma.form.findFirst({
@@ -197,3 +202,24 @@ const createForm = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.createForm = createForm;
+const getFormCount = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user;
+    try {
+        const formCount = yield database_1.prisma.form.count({
+            where: {
+                createdBy: userId
+            }
+        });
+        if (!formCount) {
+            res.status(200).json({ count: 0 });
+            return;
+        }
+        res.status(200).json({ count: formCount });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+        next(error);
+    }
+});
+exports.getFormCount = getFormCount;

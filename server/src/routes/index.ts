@@ -26,8 +26,9 @@ router.get('/auth/user/', verification, authController.getUser);
 router.post('/auth/login', authController.login);
 
 // Form routes
+router.get('/forms/count', verification, formController.getFormCount);
 router.get('/forms', verification, formController.getForms);
-router.get('/forms/:formId', verification, formController.getForm);
+router.get('/form/:formId', verification, formController.getForm);
 router.post('/forms', verification, formController.createForm);
 router.put('/forms/:formId', verification, formController.updateForm);
 router.delete('/forms/:formId', verification, formController.deleteForm);

@@ -54,8 +54,9 @@ router.post('/auth/signup', authController.createUser);
 router.get('/auth/user/', verifyToken_1.verification, authController.getUser);
 router.post('/auth/login', authController.login);
 // Form routes
+router.get('/forms/count', verifyToken_1.verification, formController.getFormCount);
 router.get('/forms', verifyToken_1.verification, formController.getForms);
-router.get('/forms/:formId', verifyToken_1.verification, formController.getForm);
+router.get('/form/:formId', verifyToken_1.verification, formController.getForm);
 router.post('/forms', verifyToken_1.verification, formController.createForm);
 router.put('/forms/:formId', verifyToken_1.verification, formController.updateForm);
 router.delete('/forms/:formId', verifyToken_1.verification, formController.deleteForm);

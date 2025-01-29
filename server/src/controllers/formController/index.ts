@@ -1,6 +1,7 @@
 // getformcount
 
 import { NextFunction, Request, Response } from "express";
+// import mongoose from "mongoose";
 
 interface CustomRequest extends Request {
   user?: {
@@ -37,6 +38,8 @@ export const selectForm = {
   resultShareKey: true,
 };
 
+
+
 export const getForm = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const formId = req.params.formId;
   console.log(formId);
@@ -47,9 +50,15 @@ export const getForm = async (req: Request, res: Response, next: NextFunction): 
   }
 
   try {
+    // Check if the id is valid before querying
+    // if (!mongoose.Types.ObjectId.isValid(formId)) {
+    //     res.status(400).json({ error: 'Invalid form ID format' });
+    //     return;
+    // }
+
     const form = await prisma.form.findUnique({
       where: { 
-        id: formId,
+        id: formId
       },
       select: selectForm,
     });
@@ -119,7 +128,7 @@ export const getForms = async(req: Request, res: Response): Promise<void> => {
 
 export const updateForm = async(req: Request, res: Response): Promise<void> => {
   const formId = req.params.formId;
-  const userId = req.params.userId;
+  const userId = req.user;
   const updates = req.body;
 
   try {
@@ -151,7 +160,7 @@ export const updateForm = async(req: Request, res: Response): Promise<void> => {
 
 export const deleteForm = async(req: Request, res: Response): Promise<void> => {
   const formId = req.params.formId;
-  const userId = req.params.userId;
+  const userId = req.user;
 
   try {
     // Verify form ownership
@@ -215,3 +224,23 @@ export const createForm = async (req: Request, res: Response, next: NextFunction
     next(err);
   }
 };
+
+export const getFormCount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const userId = req.user;
+  try {
+    const formCount = await prisma.form.count({
+      where: {
+        createdBy: userId
+      }
+    });
+    if (!formCount) {
+      res.status(200).json({ count: 0 });
+      return;
+    }
+    res.status(200).json({ count: formCount });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+    next(error);
+  }
+}
