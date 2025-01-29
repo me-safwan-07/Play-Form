@@ -1,15 +1,16 @@
-
-import { Button } from "./components/ui/button"
-import { Progress } from "./components/ui/progress"
-
+import React, { useEffect } from 'react';
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import { getFirstEnvironmentByUserId } from './hooks/environmentHooks';
+import HomePage from './pages/HomePage';
+import AuthPage from './pages/AuthPage';
 
 const App = () => {
   return (
-    <div className="p-5 space-y-2 bg-gray-100">
-      <Button>Click me</Button>
-      <Progress value={33} />
-    </div>
-  )
-}
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path='/auth/*' element={<AuthPage />} />
+    </Routes>
+  );
+};
 
-export default App
+export default App;
