@@ -25,11 +25,9 @@ function SignupOptions() {
 
     const onSubmit = async (data: TSignUpFormState) => {
         setSigningUp(true);
-        console.log(data);
 
         try {
             const token = await signup(data);
-            console.log(token);
             if (token) {
                 localStorage.setItem("token", token);
                 navigate("/");
