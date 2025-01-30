@@ -5,6 +5,7 @@ import Button from '../Button';
 import { GoogleButton } from './components/GoogleButton';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { signup } from '@/hooks/authHooks';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 interface TSignUpFormState {
     name: string;
@@ -125,8 +126,9 @@ function SignupOptions() {
                   Continue with Email
                 </Button>
             </form>
-
-            <GoogleButton />
+            <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+              <GoogleButton />
+            </GoogleOAuthProvider>
         </FormProvider>
     </div>
   )

@@ -11,10 +11,12 @@ export const initialFilters: TFormFilters = {
 export const FormsList = () => {
 
     const [formFilters, setFormFilters] = useState<TFormFilters>(initialFilters);
-
+    const [orientation, setOrientation] = useState<string>("grid");
     return (
-        <div>
-            <FormFilters 
+        <div className="">
+            <FormFilters
+                orientation={orientation}
+                setOrientation={setOrientation}
                 formFilters={formFilters}
                 setFormFilters={setFormFilters}
             />

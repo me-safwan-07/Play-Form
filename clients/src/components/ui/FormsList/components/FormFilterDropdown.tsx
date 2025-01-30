@@ -22,7 +22,7 @@ export const FormFilterDropdown = ({
   isOpen,
   toggleDropdown,
 }: SurveyFilterDropdownProps) => {
-  const triggerClasses = `formFilterDropdown min-w-auto h-8 rounded-md border border-slate-700 sm:px-2 cursor-pointer outline-none 
+  const triggerClasses = `w-1/2 formFilterDropdown min-w-auto h-8 rounded-md border border-slate-700 sm:px-2 cursor-pointer outline-none 
     ${selectedOptions.length > 0 ? "bg-slate-900 text-white" : "hover:bg-slate-900"}`;
 
   return (
@@ -33,7 +33,7 @@ export const FormFilterDropdown = ({
           <ChevronDownIcon className="ml-2 h-4 w-4" />
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="bg-slate-900">
+      <DropdownMenuContent align="start" className="bg-slate-900 z-50">
         {options.map((option) => (
           <DropdownMenuItem
             key={option.value}

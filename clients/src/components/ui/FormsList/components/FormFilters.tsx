@@ -2,72 +2,75 @@ import React, { useState } from "react";
 import { useDebounce } from "react-use";
 import { FormFilterDropdown } from "./FormFilterDropdown";
 import { TFilterOption, TFormFilters, TSortOption } from "@/types/forms";
-import { ChevronDownIcon, Search, X } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/DropdownMenu";
+import { ChevronDownIcon, Grid2X2, List, Search, PlusIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/DropdownMenu";
 import { SortOption } from "./SortOption";
-import Button from "@/components/ui/Button/index";
+import { Input } from "../../input";
+import Button from "../../Button";
+import { useParams } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 interface FormFilterProps {
-  formFilters: TFormFilters,
+  orientation: string;
+  setOrientation: React.Dispatch<React.SetStateAction<string>>;
+  formFilters: TFormFilters;
   setFormFilters: React.Dispatch<React.SetStateAction<TFormFilters>>;
 }
 
 export const initialFilters: TFormFilters = {
   name: "",
   status: [],
-  sortBy: "updatedAt"
-}
+  sortBy: "updatedAt",
+};
 
 const statusOptions: TFilterOption[] = [
-    { label: "In Progress", value: "inProgress" },
-    { label: "Scheduled", value: "scheduled" },
-    { label: "Paused", value: "paused" },
-    { label: "Completed", value: "completed" },
-    { label: "Draft", value: "draft" },
+  { label: "In Progress", value: "inProgress" },
+  { label: "Scheduled", value: "scheduled" },
+  { label: "Paused", value: "paused" },
+  { label: "Completed", value: "completed" },
+  { label: "Draft", value: "draft" },
 ];
 
 const sortOptions: TSortOption[] = [
-    {
-      label: "Last Modified",
-      value: "updatedAt",
-    },
-    {
-      label: "Created On",
-      value: "createdAt",
-    },
-    {
-      label: "Alphabetical",
-      value: "name",
-    },
+  { label: "Last Modified", value: "updatedAt" },
+  { label: "Created On", value: "createdAt" },
+  { label: "Alphabetical", value: "name" },
 ];
 
 export const FormFilters = ({
+  orientation,
+  setOrientation,
   formFilters,
-  setFormFilters
+  setFormFilters,
 }: FormFilterProps) => {
   const { sortBy, status } = formFilters;
   const [name, setName] = useState("");
+  const { environmentId } = useParams();
 
   useDebounce(() => setFormFilters((prev) => ({ ...prev, name: name })), 800, [name]);
 
   const [dropdownOpenStates, setDropdownOpenStates] = useState(new Map());
-  
+
   const toggleDropdown = (id: string) => {
-    setDropdownOpenStates(new Map(dropdownOpenStates).set(id, !dropdownOpenStates.get(id)));
-  }
+    setDropdownOpenStates(new Map(dropdownOpenStates.set(id, !dropdownOpenStates.get(id))));
+  };
 
   const handleStatusChange = (value: string) => {
     if (
-      value === "inProgress" || 
+      value === "inProgress" ||
       value === "paused" ||
       value === "completed" ||
       value === "draft" ||
       value === "scheduled"
-    )  {
+    ) {
       if (status.includes(value)) {
-        setFormFilters((prev) => ({ ...prev, status: prev.status.filter((v) => v !== value)}));
+        setFormFilters((prev) => ({ ...prev, status: prev.status.filter((v) => v !== value) }));
       } else {
-        setFormFilters((prev) => ({...prev, status: [...prev.status, value] }));
+        setFormFilters((prev) => ({ ...prev, status: [...prev.status, value] }));
       }
     }
   };
@@ -77,78 +80,101 @@ export const FormFilters = ({
   };
 
   return (
-    <div className="flex flex-col space-y-2 md:flex-row md:justify-between md:space-y-0">
-      {/* Search Input */}
-      <div className="w-full md:w-auto">
-        <div className="flex h-8 w-full items-center rounded-lg border border-slate-300 bg-white px-4 md:w-64">
-          <Search className="h-4 w-4"/>
-          <input
+    <div className="flex flex-col gap-4">
+      {/* Search and Filters Section */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        {/* Search Input */}
+        <div className="relative w-full md:w-auto">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
             type="text"
-            className="w-full border-none bg-transparent placeholder:text-sm"
-            placeholder="Search by survey name"
+            className="pl-8 w-full border border-gray-300 rounded-md"
+            placeholder="Search by form name"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
         </div>
-      </div>
 
-      {/* Status Filter and Clear Filters Button */}
-      <div className="flex w-full space-x-2 md:w-auto">
-        <div className="w-1/2 md:w-auto">
-          <FormFilterDropdown 
+        {/* Sort and Status Dropdowns */}
+        <div className="flex flex-row sm:flex-row gap-2 w-full">
+          {/* Sort Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              asChild
+              className="w-1/2 formFilterDropdown h-full cursor-pointer border border-slate-700 outline-none hover:bg-slate-700"
+            >
+              <div className="h-8 rounded-md border flex items-center justify-center px-2">
+                <span className="text-sm">
+                  {sortOptions.find((option) => option.value === sortBy)?.label}
+                </span>
+                <ChevronDownIcon className="w-4 h-4 ml-2" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="bg-slate-900">
+              {sortOptions.map((option) => (
+                <SortOption
+                  key={option.value}
+                  option={option}
+                  sortBy={sortBy}
+                  handleSortChange={handleSortChange}
+                />
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Status Dropdown */}
+          <FormFilterDropdown
             title="Status"
             id="status"
             options={statusOptions}
             selectedOptions={status}
             setSelectedOptions={handleStatusChange}
-            isOpen={dropdownOpenStates.get("createdBy")}
+            isOpen={dropdownOpenStates.get("status") || false}
             toggleDropdown={toggleDropdown}
           />
         </div>
-        {/* Sort Dropdown */}
-        <div className="w-full md:w-auto">
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              asChild
-              className="formFilterDropdown h-full w-full cursor-pointer border border-slate-700 outline-none hover:bg-slate-900 md:w-auto">
-              <div className="min-w-auto h-8 rounded-md border sm:flex sm:px-2">
-                <div className="flex w-full items-center justify-center hover:text-white text-xs md:text-sm">
-                  <span>
-                    Sort by: {sortOptions.find((option) => option.value === sortBy)?.label}
-                  </span>
-                  <ChevronDownIcon className="ml-2 h-4 w-4" />
-                </div>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="bg-slate-900">
-              {sortOptions.map((option) => (
-                  <SortOption 
-                    option={option}
-                    key={option.label}
-                    sortBy={formFilters.sortBy}
-                    handleSortChange={handleSortChange}
-                  />
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-      {status.length > 0 && (
-        <div className="w-full md:w-auto">
+
+        {/* Grid/List View and New Form Button */}
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          {/* Grid/List View Buttons */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="darkCTA"
+              size="icon"
+              onClick={() => setOrientation("grid")}
+              className={cn(
+                orientation === "grid" ? "bg-black text-white" : "",
+                "border border-slate-900"
+              )}
+            >
+              <Grid2X2 className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="darkCTA"
+              size="icon"
+              onClick={() => setOrientation("list")}
+              className={cn(
+                orientation === "list" ? "bg-slate-900 text-white" : "",
+                "border border-slate-900"
+              )}
+            >
+              <List className="w-4 h-4" />
+            </Button>
+          </div>
+
+          {/* New Form Button */}
           <Button
-            variant="darkCTA"
             size="sm"
-            onClick={() => {
-              setFormFilters(initialFilters);
-            }}
-            className="h-8 w-full bg-slate-900 text-white md:w-auto flex items-center justify-center"
-            EndIcon={X}
-            endIconClassName="h-4 w-4">
-            Clear Filters
+            variant="darkCTA"
+            className="bg-slate-900 text-white w-full md:w-auto"
+            href={`/environments/${environmentId}/forms/template`}
+            StartIcon={PlusIcon}
+            startIconClassName="text-white"
+          >
+            New Form
           </Button>
         </div>
-      )}
-
+      </div>
     </div>
-  )
-}
+  );
+};
