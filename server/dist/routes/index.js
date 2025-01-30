@@ -53,6 +53,7 @@ const router = express_1.default.Router();
 router.post('/auth/signup', authController.createUser);
 router.get('/auth/user/', verifyToken_1.verification, authController.getUser);
 router.post('/auth/login', authController.login);
+router.get('/auth/google', authController.googleAuth);
 // Form routes
 router.get('/forms/count', verifyToken_1.verification, formController.getFormCount);
 router.get('/forms', verifyToken_1.verification, formController.getForms);

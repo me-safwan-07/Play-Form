@@ -5,7 +5,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { TUser, TUserCreateInput } from "../../types/user";
 import { validationResult } from "express-validator";
-
+import axios from 'axios';
+import { oauth2Client } from "../../utils/oauth2client";
 const responseSelection = {
   id: true,
   name: true,
@@ -158,4 +159,74 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
         res.status(500).json({ error: 'Error generating JWT token' });
         next(error);
     }
+}
+
+const signToken = (id: string) => {
+    if (!process.env.JWT_SECRET) {
+        throw new Error('JWT_SECRET is not defined');
+    }
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: '1d'
+    });
+};
+
+const createSendToken = (user: TUser, statusCode: number, res: Response) => {
+    const token = signToken(user.id);
+    const cookieOptions = {
+        expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+        httpOnly: true,
+        secure: false,
+        path: '/',
+        sameSite: 'none'
+    }
+
+    if (process.env.NODE_ENV === 'production') {
+        cookieOptions.secure = true;
+        cookieOptions.sameSite = 'none';
+    };
+
+
+    res.cookie('jwt', token, {
+        ...cookieOptions,
+        sameSite: 'none' as const
+    });
+
+    console.log(user);
+
+    res.status(statusCode).json({
+        status: 'success',
+        token,
+        data: {
+            user
+        }
+    });
+};
+
+
+export const googleAuth = async (req: Request, res: Response, next: NextFunction) => {
+    const code = req.query.code;
+    console.log("USER CREDENTIAL -> ", code);
+
+    const googleRes = await oauth2Client.getToken(code as string);
+    
+    oauth2Client.setCredentials((await googleRes).tokens);
+
+    const userRes = await axios.get(
+        `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${(await googleRes).tokens.access_token}`
+    );
+	
+    let user = await prisma.user.findFirst({ where: { email: userRes.data.email } });
+   
+    if (!user) {
+        console.log('New User found');
+        user = await prisma.user.create({
+            data: {
+                name: userRes.data.name,
+                email: userRes.data.email,
+                imageUrl: userRes.data.picture,
+            }
+        });
+    }
+
+    createSendToken(user, 201, res);
 }

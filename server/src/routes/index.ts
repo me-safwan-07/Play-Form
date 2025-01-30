@@ -24,6 +24,7 @@ const router = express.Router();
 router.post('/auth/signup', authController.createUser);
 router.get('/auth/user/', verification, authController.getUser);
 router.post('/auth/login', authController.login);
+router.get('/auth/google', authController.googleAuth);
 
 // Form routes
 router.get('/forms/count', verification, formController.getFormCount);

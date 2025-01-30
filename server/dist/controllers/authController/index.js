@@ -12,12 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.createUser = exports.getUser = void 0;
+exports.googleAuth = exports.login = exports.createUser = exports.getUser = void 0;
 const database_1 = require("../../database");
 const client_1 = require("@prisma/client");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const express_validator_1 = require("express-validator");
+const axios_1 = __importDefault(require("axios"));
+const oauth2client_1 = require("../../utils/oauth2client");
 const responseSelection = {
     id: true,
     name: true,
@@ -158,3 +160,55 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.login = login;
+const signToken = (id) => {
+    if (!process.env.JWT_SECRET) {
+        throw new Error('JWT_SECRET is not defined');
+    }
+    return jsonwebtoken_1.default.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: '1d'
+    });
+};
+const createSendToken = (user, statusCode, res) => {
+    const token = signToken(user.id);
+    const cookieOptions = {
+        expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+        httpOnly: true,
+        secure: false,
+        path: '/',
+        sameSite: 'none'
+    };
+    if (process.env.NODE_ENV === 'production') {
+        cookieOptions.secure = true;
+        cookieOptions.sameSite = 'none';
+    }
+    ;
+    res.cookie('jwt', token, Object.assign(Object.assign({}, cookieOptions), { sameSite: 'none' }));
+    console.log(user);
+    res.status(statusCode).json({
+        status: 'success',
+        token,
+        data: {
+            user
+        }
+    });
+};
+const googleAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const code = req.query.code;
+    console.log("USER CREDENTIAL -> ", code);
+    const googleRes = yield oauth2client_1.oauth2Client.getToken(code);
+    oauth2client_1.oauth2Client.setCredentials((yield googleRes).tokens);
+    const userRes = yield axios_1.default.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${(yield googleRes).tokens.access_token}`);
+    let user = yield database_1.prisma.user.findFirst({ where: { email: userRes.data.email } });
+    if (!user) {
+        console.log('New User found');
+        user = yield database_1.prisma.user.create({
+            data: {
+                name: userRes.data.name,
+                email: userRes.data.email,
+                imageUrl: userRes.data.picture,
+            }
+        });
+    }
+    createSendToken(user, 201, res);
+});
+exports.googleAuth = googleAuth;
