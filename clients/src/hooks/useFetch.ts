@@ -11,6 +11,7 @@ const useFetch = <T>(apiFunction: FetchFunction<T>) => {
         const fetchData = async () => {
             try {
                 const result = await apiFunction();
+                console.log(result);
                 setData(result);
             } catch (err: any) {
                 setError(err.message);
