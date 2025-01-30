@@ -117,11 +117,11 @@ input[type="search"]::-ms-reveal {
   display: none;
 }
 
-.surveyFilterDropdown[data-state="open"] {
+.formFilterDropdown[data-state="open"] {
   background-color: #0f172a;
   color: white;
 }
-.surveyFilterDropdown:hover * {
+.formFilterDropdown:hover * {
   background-color: #0f172a;
   color: white;
 }
