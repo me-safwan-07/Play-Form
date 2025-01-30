@@ -1,8 +1,14 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { FormWrapper } from '../components/FormWrapper'
 import { SigninForm } from './components/SigninForm'
 
 function Login() {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
+
   return (
     <div>
       <FormWrapper>

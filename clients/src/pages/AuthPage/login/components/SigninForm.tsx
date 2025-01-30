@@ -6,6 +6,7 @@ import { PasswordInput } from '@/components/ui/PasswordInput';
 import { GoogleButton } from '@/components/ui/SignupOptions/components/GoogleButton';
 import Button from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 interface TSignInFormState {
   email: string;
@@ -118,8 +119,9 @@ export const SigninForm = () => {
                   Login with Email
               </Button>
             </form>
-            {/* google login button */}
-            <GoogleButton />
+            <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+              <GoogleButton />
+            </GoogleOAuthProvider>
         
             <div className='mt-9 text-center text-xs'>
               <span className='leading-5 text-slate-500'>New to PlayForm?</span>
