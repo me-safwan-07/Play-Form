@@ -44,5 +44,6 @@ export const getUser = async (): Promise<AuthResponse> => {
 
 export const googleAuth = async (inviteUrl: string): Promise<any> => {
     const response = await axios.get<AuthResponse>(`http://localhost:3000/api/auth/google?code=${inviteUrl}`);
+    console.log(inviteUrl)
     return response.data;
 };
