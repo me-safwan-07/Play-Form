@@ -1,26 +1,44 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
-export const verification = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const token = req.headers.authorization?.split(" ")[1];
-
-    if (!token) {
-        res.status(401).send("Unauthorized");
-        return;
+declare global {
+  namespace Express {
+    interface Request {
+      userId?: string;
     }
+  }
+}
 
-    if (!process.env.JWT_SECRET) {
-        res.status(500).send("JWT_SECRET not defined");
-        return;
-    }
+export const verifyToken = (req: Request, res: Response, next: NextFunction): void => {
+  console.log('Headers:', req.headers);
+  const authHeader = req.headers.authorization;
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('No valid auth header found:', authHeader);
+    res.status(401).json({ message: 'No token provided' });
+    return;
+  }
 
-    try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET) as { userId: string };
-        // req.params = { userId: decodedToken.userId }; // Assign an object with userId to req.user
-        req.user = decodedToken.userId;
-        next();
-    } catch (error) {
-        res.status(403).send("Unauthorized");
-        return;
+  const token = authHeader.split(' ')[1];
+  console.log('Token:', token);
+  
+  if (!process.env.JWT_SECRET) {
+    res.status(500).send("JWT_SECRET not defined");
+    return;
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
+    console.log('Decoded token:', decoded);
+    if (!decoded.id) {
+      res.status(401).json({ message: 'Invalid token' });
+      return;
     }
+    req.userId = decoded.id;
+    next();
+  } catch (error) {
+    console.log('Token verification error:', error);
+    res.status(401).json({ message: 'Invalid token' });
+    return;
+  }
 };
