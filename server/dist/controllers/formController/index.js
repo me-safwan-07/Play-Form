@@ -11,8 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getFormCount = exports.createForm = exports.deleteForm = exports.updateForm = exports.getForms = exports.getForm = exports.selectForm = void 0;
+// import mongoose from "mongoose";
 const database_1 = require("../../database");
 const client_1 = require("@prisma/client");
+const formsUtils_1 = require("../../utils/formsUtils");
 exports.selectForm = {
     id: true,
     createdAt: true,
@@ -38,22 +40,18 @@ exports.selectForm = {
     resultShareKey: true,
 };
 const getForm = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.user;
     const formId = req.params.formId;
-    console.log(formId);
     if (!formId) {
         console.log("No formId");
         res.status(404).json({ error: "Form not found" });
         return;
     }
     try {
-        // Check if the id is valid before querying
-        // if (!mongoose.Types.ObjectId.isValid(formId)) {
-        //     res.status(400).json({ error: 'Invalid form ID format' });
-        //     return;
-        // }
         const form = yield database_1.prisma.form.findUnique({
             where: {
-                id: formId
+                id: formId,
+                createdBy: userId
             },
             select: exports.selectForm,
         });
@@ -61,7 +59,7 @@ const getForm = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
             res.status(404).json({ error: "Form not found" });
             return;
         }
-        res.status(200).json({ form });
+        res.status(200).json({ form, userId });
     }
     catch (error) {
         if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
@@ -76,37 +74,22 @@ const getForm = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.getForm = getForm;
 const getForms = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.user;
-    const { page = 1, limit = 10, search = "" } = req.query;
+    const userId = req.userId;
+    if (!userId) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+    }
+    const { limit, offset, filterCriteria } = req.query;
     try {
-        const skip = (Number(page) - 1) * Number(limit);
-        const [forms, total] = yield Promise.all([
-            database_1.prisma.form.findMany({
-                where: {
-                    createdBy: userId,
-                    name: { contains: search, mode: 'insensitive' }
-                },
-                select: Object.assign(Object.assign({}, exports.selectForm), { responses: { select: { id: true } }, displays: { select: { id: true } } }),
-                skip,
-                take: Number(limit),
-                orderBy: { createdAt: 'desc' }
-            }),
-            database_1.prisma.form.count({
-                where: {
-                    createdBy: userId,
-                    name: { contains: search, mode: 'insensitive' }
-                }
-            })
-        ]);
-        res.status(200).json({
-            forms,
-            pagination: {
-                total,
-                pages: Math.ceil(total / Number(limit)),
-                page: Number(page),
-                limit: Number(limit)
-            }
+        const filters = typeof filterCriteria === 'string' ? JSON.parse(filterCriteria) : {};
+        const forms = yield database_1.prisma.form.findMany({
+            where: Object.assign({ createdBy: userId }, (0, formsUtils_1.buildWhereClause)(filters)),
+            select: exports.selectForm,
+            orderBy: (0, formsUtils_1.buildOrderByClause)(filters.sortBy),
+            take: limit ? Number(limit) : undefined,
+            skip: offset ? Number(offset) : undefined
         });
+        res.status(200).json({ forms });
     }
     catch (error) {
         console.error(error);
@@ -170,18 +153,16 @@ const deleteForm = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.deleteForm = deleteForm;
 const createForm = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const createdBy = (_a = req.params) === null || _a === void 0 ? void 0 : _a.userId;
-    if (!createdBy) {
-        res.status(401).json({ error: "Unauthorized" });
-        console.log("NO created by");
-        return;
-    }
-    const formBody = req.body;
     try {
+        const userId = req.userId;
+        if (!userId) {
+            res.status(401).json({ message: 'User not authenticated' });
+            return;
+        }
+        const formBody = req.body;
         formBody.creator = {
             connect: {
-                id: createdBy
+                id: userId
             }
         };
         const form = yield database_1.prisma.form.create({

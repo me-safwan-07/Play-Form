@@ -3,11 +3,6 @@
 import { NextFunction, Request, Response } from "express";
 // import mongoose from "mongoose";
 
-interface CustomRequest extends Request {
-  user?: {
-    userId: string;
-  };
-}
 import { prisma } from "../../database";
 import { Prisma } from "@prisma/client";
 import { buildOrderByClause, buildWhereClause, transformPrismaSurvey } from "../../utils/formsUtils";
@@ -38,11 +33,14 @@ export const selectForm = {
   resultShareKey: true,
 };
 
-
+interface CustomRequest extends Request {
+  userId?: string;
+}
 
 export const getForm = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const userId = req.user;
   const formId = req.params.formId;
-  console.log(formId);
+
   if (!formId) {
     console.log("No formId");
     res.status(404).json({ error: "Form not found" });
@@ -50,15 +48,10 @@ export const getForm = async (req: Request, res: Response, next: NextFunction): 
   }
 
   try {
-    // Check if the id is valid before querying
-    // if (!mongoose.Types.ObjectId.isValid(formId)) {
-    //     res.status(400).json({ error: 'Invalid form ID format' });
-    //     return;
-    // }
-
     const form = await prisma.form.findUnique({
       where: { 
-        id: formId
+        id: formId,
+        createdBy: userId
       },
       select: selectForm,
     });
@@ -68,7 +61,7 @@ export const getForm = async (req: Request, res: Response, next: NextFunction): 
       return;
     }
 
-    res.status(200).json({ form });
+    res.status(200).json({ form, userId });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       console.error(error.message);
@@ -82,44 +75,28 @@ export const getForm = async (req: Request, res: Response, next: NextFunction): 
 };
 
 export const getForms = async(req: Request, res: Response): Promise<void> => {
-  const userId = req.user;
-  const { page = 1, limit = 10, search = "" } = req.query;
+  const userId = req.userId;
   
-  try {
-    const skip = (Number(page) - 1) * Number(limit);
-    
-    const [forms, total] = await Promise.all([
-      prisma.form.findMany({
-        where: {
-          createdBy: userId,
-          name: { contains: search as string, mode: 'insensitive' }
-        },
-        select: {
-          ...selectForm,
-          responses: { select: { id: true }},
-          displays: { select: { id: true }}
-        },
-        skip,
-        take: Number(limit),
-        orderBy: { createdAt: 'desc' }
-      }),
-      prisma.form.count({
-        where: {
-          createdBy: userId,
-          name: { contains: search as string, mode: 'insensitive' }
-        }
-      })
-    ]);
+  if (!userId) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
 
-    res.status(200).json({
-      forms,
-      pagination: {
-        total,
-        pages: Math.ceil(total / Number(limit)),
-        page: Number(page),
-        limit: Number(limit)
-      }
+  const { limit, offset, filterCriteria } = req.query;
+  try {
+    const filters = typeof filterCriteria === 'string' ? JSON.parse(filterCriteria) : {};
+    const forms = await prisma.form.findMany({
+      where: {
+        createdBy: userId,
+        ...buildWhereClause(filters)
+      },
+      select: selectForm,
+      orderBy: buildOrderByClause(filters.sortBy),
+      take: limit ? Number(limit) : undefined,
+      skip: offset ? Number(offset) : undefined
     });
+
+    res.status(200).json({ forms });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -187,21 +164,20 @@ export const deleteForm = async(req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const createForm = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const createdBy = req.params?.userId; 
-
-  if (!createdBy) {
-    res.status(401).json({ error: "Unauthorized" });
-    console.log("NO created by");
-    return;
-  }
-
-  const formBody = req.body;
-
+export const createForm = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
+    const userId = req.userId;
+    if (!userId) {
+      res.status(401).json({ message: 'User not authenticated' });
+      return;
+    }
+
+
+    const formBody = req.body;
+    
     formBody.creator = {
       connect: {
-        id: createdBy
+        id: userId
       }
     };
 

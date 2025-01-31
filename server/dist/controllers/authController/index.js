@@ -194,13 +194,19 @@ const createSendToken = (user, statusCode, res) => {
 };
 const googleAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const code = req.query.code;
-    console.log("USER CREDENTIAL -> ", code);
     const googleRes = yield oauth2client_1.oauth2Client.getToken(code);
+    if (!googleRes) {
+        res.status(400).json({ message: 'Failed to get Google tokens' });
+        return;
+    }
     oauth2client_1.oauth2Client.setCredentials((yield googleRes).tokens);
     const userRes = yield axios_1.default.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${(yield googleRes).tokens.access_token}`);
+    if (!userRes) {
+        res.status(400).json({ message: 'Failed to get Google user info' });
+        return;
+    }
     let user = yield database_1.prisma.user.findFirst({ where: { email: userRes.data.email } });
     if (!user) {
-        console.log('New User found');
         user = yield database_1.prisma.user.create({
             data: {
                 name: userRes.data.name,

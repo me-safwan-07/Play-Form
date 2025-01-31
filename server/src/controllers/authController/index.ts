@@ -205,20 +205,28 @@ const createSendToken = (user: TUser, statusCode: number, res: Response) => {
 
 export const googleAuth = async (req: Request, res: Response, next: NextFunction) => {
     const code = req.query.code;
-    console.log("USER CREDENTIAL -> ", code);
 
     const googleRes = await oauth2Client.getToken(code as string);
+
+    if (!googleRes) {
+        res.status(400).json({ message: 'Failed to get Google tokens' });
+        return;
+    }
     
     oauth2Client.setCredentials((await googleRes).tokens);
 
     const userRes = await axios.get(
         `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${(await googleRes).tokens.access_token}`
     );
+
+    if (!userRes) {
+        res.status(400).json({ message: 'Failed to get Google user info' });
+        return;
+    }
 	
     let user = await prisma.user.findFirst({ where: { email: userRes.data.email } });
    
     if (!user) {
-        console.log('New User found');
         user = await prisma.user.create({
             data: {
                 name: userRes.data.name,
