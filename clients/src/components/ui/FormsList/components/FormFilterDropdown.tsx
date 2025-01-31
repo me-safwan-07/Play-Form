@@ -22,7 +22,7 @@ export const FormFilterDropdown = ({
   isOpen,
   toggleDropdown,
 }: SurveyFilterDropdownProps) => {
-  const triggerClasses = `w-1/2 formFilterDropdown min-w-auto h-8 rounded-md border border-slate-700 sm:px-2 cursor-pointer outline-none 
+  const triggerClasses = `formFilterDropdown min-w-auto h-8 rounded-md border border-slate-700 px-2 cursor-pointer outline-none 
     ${selectedOptions.length > 0 ? "bg-slate-900 text-white" : "hover:bg-slate-900"}`;
 
   return (

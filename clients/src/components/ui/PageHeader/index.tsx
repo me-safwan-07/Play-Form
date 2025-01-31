@@ -16,7 +16,7 @@ export const PageHeader = ({ cta, children }: PageHeaderProps) => {
   const { environmentId } = useParams();
   return (
     <div className="border-b sticky top-0 bg-background z-10">
-      <div className="container flex items-center justify-between h-16  md:px-4 space-x-4 pb-4">
+      <div className="container flex items-center justify-between h-16  space-x-4 pb-4">
         <img src={logoHref} alt="Logo" className="text-sm h-8 sm:inline " />
         {/* {cta} */}
         <div className="flex items-center">

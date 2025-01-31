@@ -4,7 +4,7 @@ import { convertDateString, timeSince } from "@/lib/time";
 import { cn } from "@/lib/utils";
 import { TForm, TFormFilters } from "@/types/forms";
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { TEnvironment } from "@/types/environment";
 import FormDropdownMenu from "./FormDropdownMenu";
 
@@ -17,8 +17,13 @@ interface FormCardProps {
 }
 
 export const FormCard = ({ 
-    form, orientation 
+    form,
+    environment,
+    orientation,
+    duplicateForm,
+    deleteForm,
 }: FormCardProps) => {
+    const { environmentId } = useParams();
     const formStatusLabel = useMemo(() => {
         if (form.status === "inProgress") return "In Progress";
         else if (form.status === "scheduled") return "Scheduled";
@@ -29,8 +34,8 @@ export const FormCard = ({
 
     const linkHref = useMemo(() => {
         return form.status === 'draft'
-            ? `/forms/${form.id}/edit`
-            : `/forms/${form.id}/analysis/summary`
+            ? `/environments/${environmentId}/forms/${form.id}/edit`
+            : `/environments/${environmentId}/forms/${form.id}/analysis/summary`
     }, [form.status, form.id]); 
 
     const renderListContent = () => {
@@ -38,27 +43,42 @@ export const FormCard = ({
             <Link
                 to={linkHref}
                 key={form.id}
-                className="relative grid w-full grid-cols-8 place-items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all ease-in-out hover:scale-[101%]"
-            >
-                <div className="col-span-2 flex max-w-full items-center justify-self-start text-sm font-medium text-slate-900">
+                className="w-full flex flex-row md:grid-cols-8 place-items-center gap-2 md:gap-3 rounded-xl border border-slate-200 bg-white p-2 md:p-4 shadow-sm transition-all ease-in-out hover:scale-[101%]"
+                >
+                {/* Form Name (Full width on mobile, col-span-2 on desktop) */}
+                <div className="col-span-1 md:col-span-2 flex w-full items-center justify-self-start text-sm font-medium text-slate-900">
                     <div className="w-full truncate">{form.name}</div>
                 </div>
-                <div className="flex w-fit items-center gap-2 rounded-full py-1">
-                    <SurveyStatusIndicator status={form.status}/> {formStatusLabel}{" "}
+
+                {/* Status Indicator (Full width on mobile, auto width on desktop) */}
+                <div className=" col-span-1 md:flex w-full md:w-fit items-center gap-2 rounded-full py-1">
+                    <SurveyStatusIndicator status={form.status} /> 
+                    <div className="hidden md:block">{formStatusLabel}</div>
                 </div>
 
-                <div className="col-span-4 grid w-full grid-cols-5 place-items-center">
+                {/* Additional Details (Hidden on mobile, visible on desktop) */}
+                <div className="hidden md:grid col-span-4 w-full grid-cols-5 place-items-center">
+                    {/* Created At */}
                     <div className="col-span-2 overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-600">
-                        {convertDateString(form.createdAt.toString())}
+                    {convertDateString(form.createdAt.toString())}
                     </div>
+
+                    {/* Updated At */}
                     <div className="col-span-2 overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-600">
-                        {timeSince(form.updatedAt.toString())}
+                    {timeSince(form.updatedAt.toString())}
                     </div>
+
+                    {/* Dropdown Menu */}
                     <div className="place-self-end">
                         <FormDropdownMenu />
                     </div>
                 </div>
-            </Link>
+
+                {/* Mobile-Specific Dropdown Menu (Visible on mobile, hidden on desktop) */}
+                <div className="md:hidden w-full flex justify-end">
+                    <FormDropdownMenu />
+                </div>
+                </Link>
         )
     }
     const renderGridContent = () => {
