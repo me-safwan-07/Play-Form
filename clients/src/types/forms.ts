@@ -138,7 +138,7 @@ export const ZFormInput = z.object({
 
 export type TFormInput = z.infer<typeof ZFormInput>;
 
-const ZForms = z.object({
+const ZForm = z.object({
   id: z.string().cuid2(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -162,9 +162,9 @@ const ZForms = z.object({
 });
 
 // Rename to avoid duplicate type definition
-export type TFormSchema = z.infer<typeof ZForms>;
+export type TForm = z.infer<typeof ZForm>;
 
-export const ZFormUpdateInput = ZForms.omit({ createdAt: true, updatedAt: true }).and(
+export const ZFormUpdateInput = ZForm.omit({ createdAt: true, updatedAt: true }).and(
   z.object({
     createdAt: z.coerce.date(),
     updatedAt: z.coerce.date(),
@@ -201,26 +201,3 @@ const ZSortOption = z.object({
 });
 
 export type TSortOption = z.infer<typeof ZSortOption>;
-
-export interface TForm {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  name: string;
-  status: string;
-  welcomeCard?: any;
-  questions: any[];
-  thankYouCard?: any;
-  delay?: number;
-  displayPercentage?: number;
-  verifyEmail?: boolean;
-  redirectUrl?: string;
-  styling?: any;
-  resultShareKey?: string;
-}
-
-// export interface TFormFilterCriteria {
-//   search?: string;
-//   status?: string;
-//   // add other filter criteria as needed
-// }
