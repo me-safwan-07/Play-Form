@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import routes from "./routes";
 import cors from "cors";
+import { verifyToken } from './middleware/verifyToken';
 
 dotenv.config();
 
@@ -23,6 +24,10 @@ app.use(express.json());
 const BASE_URL: string = process.env.BASE_URL || ""; // Default to empty if not set
 const routePrefix = BASE_URL.startsWith("/") ? BASE_URL : `/${BASE_URL}`;
 app.use(routePrefix, routes);
+
+// Add this before your protected routes
+app.use('/api/forms', verifyToken);
+app.use('/api/responses', verifyToken);
 
 // Server listening on a specified port
 const port = process.env.PORT || 3000;
