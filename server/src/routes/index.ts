@@ -1,10 +1,5 @@
 import express, { Express, Request, Response } from "express";
-import displayRoutes from './displayRoutes';
-import userRoutes from './userRoutes';
-import formRoutes from './formRoutes';
-import responseRoutes from './responseRoutes';
-import authRoutes from "./authRoutes"
-import { verification } from '../middleware/verifyToken';
+import { verifyToken } from '../middleware/verifyToken';
 import * as authController from '../controllers/authController';
 import * as formController from '../controllers/formController';
 import * as productController from '../controllers/productController';
@@ -22,17 +17,17 @@ const router = express.Router();
 
 // Auth routes
 router.post('/auth/signup', authController.createUser);
-router.get('/auth/user/', verification, authController.getUser);
+// router.get('/auth/user/', verifyToken authController.getUser);
 router.post('/auth/login', authController.login);
 router.get('/auth/google', authController.googleAuth);
 
 // Form routes
-router.get('/forms/count', verification, formController.getFormCount);
-router.get('/forms', verification, formController.getForms);
-router.get('/form/:formId', verification, formController.getForm);
-router.post('/forms', verification, formController.createForm);
-router.put('/forms/:formId', verification, formController.updateForm);
-router.delete('/forms/:formId', verification, formController.deleteForm);
+router.get('/forms/count', verifyToken, formController.getFormCount);
+router.get('/forms', verifyToken, formController.getForms);
+router.get('/form/:formId', verifyToken, formController.getForm);
+router.post('/forms', verifyToken, formController.createForm);
+router.put('/forms/:formId', verifyToken, formController.updateForm);
+router.delete('/forms/:formId', verifyToken, formController.deleteForm);
 
 // Response routes
 // router.get('/forms/:formId/responses', verification, responseController.getResponses);
@@ -40,13 +35,13 @@ router.delete('/forms/:formId', verification, formController.deleteForm);
 // router.put('/responses/:responseId', verification, responseController.updateResponse);
 
 // Product routes
-router.get('/forms/:formId/products', verification, productController.getProducts);
-router.post('/forms/:formId/products', verification, productController.createProduct);
-router.put('/products/:productId', verification, productController.updateProduct);
-router.delete('/products/:productId', verification, productController.deleteProduct);
+router.get('/forms/:formId/products', verifyToken, productController.getProducts);
+router.post('/forms/:formId/products', verifyToken, productController.createProduct);
+router.put('/products/:productId', verifyToken, productController.updateProduct);
+router.delete('/products/:productId', verifyToken, productController.deleteProduct);
 
 // Environment routes
-router.get('/environment', verification, environmentController);
+router.get('/environment', verifyToken, environmentController);
 
 export default router;
 
