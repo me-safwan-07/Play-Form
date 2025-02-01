@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "npm-run-all --parallel dev:*",
-    "dev:client": "cd client && npm run dev",
+    "dev:client": "cd clients && npm run dev",
     "dev:server": "cd server && npm run server",
     "postinstall": "npm-run-all --parallel install:*",
     "install:client": "cd client && npm install",
