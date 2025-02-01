@@ -1,4 +1,3 @@
-
 import {
     TFormQuestionTypeEnum as QuestionId,
     TFormOpenTextQuestion,
@@ -11,7 +10,9 @@ import {
     // ImageIcon, 
     ListIcon, 
     MessageSquareTextIcon, 
-    Rows3Icon 
+    Rows3Icon,
+    FileIcon,
+    TextIcon
 } from "lucide-react";
 import { replaceQuestionPresetPlaceholders } from "./templates";
 
@@ -93,13 +94,15 @@ export const questionTypes: TQuestion[] = [
     // },
 ];
 
-export const QUESTIONS_ICON_MAP = questionTypes.reduce(
-  (prev, curr) => ({
-    ...prev,
-    [curr.id]: <curr.icon className="h-5 w-5" />,
-  }),
-  {}
-);
+export const QUESTIONS_ICON_MAP: Record<TFormQuestionTypeEnum, JSX.Element> = {
+    [TFormQuestionTypeEnum.FileUpload]: <FileIcon className="h-4 w-4" />,
+    [TFormQuestionTypeEnum.OpenText]: <TextIcon className="h-4 w-4" />,
+    [TFormQuestionTypeEnum.MultipleChoiceSingle]: <ListIcon className="h-4 w-4" />,
+    [TFormQuestionTypeEnum.MultipleChoiceMulti]: <ListIcon className="h-4 w-4" />,
+    [TFormQuestionTypeEnum.Date]: <CalendarDaysIcon className="h-4 w-4" />,
+    [TFormQuestionTypeEnum.Address]: <HomeIcon className="h-4 w-4" />,
+    // Add all other question types here...
+};
 
 export const QUESTIONS_NAME_MAP = questionTypes.reduce(
   (prev, curr) => ({
@@ -108,6 +111,10 @@ export const QUESTIONS_NAME_MAP = questionTypes.reduce(
   }),
   {}
 ) as Record<TFormQuestionTypeEnum, string>;
+
+export const universalQuestionPresets = {
+  required: true,
+};
 
 export const getQuestionDefaults = (id: string, product: any) => {
     const questionType: TQuestion | undefined = questionTypes.find((question) => question.id === id);
