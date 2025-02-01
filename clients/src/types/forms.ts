@@ -43,9 +43,7 @@ export const ZFormWelcomeCard = z
   enabled: z.boolean(),
   headline: z.string().optional(),
   fileUrl: z.string().optional(),
-  // html is pending
-  buttonLabel: z.string().optional(),
-  showResponseCount: z.boolean().default(false),
+  html: z.string().optional(),
 })
 .refine((schema: { enabled: boolean; headline?: string }) => !(schema.enabled && !schema.headline), {
   message: 'Welcome card must have a headline',
