@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFormCount = exports.createForm = exports.deleteForm = exports.updateForm = exports.getForms = exports.getForm = exports.selectForm = void 0;
+exports.duplicateForm = exports.getFormCount = exports.createForm = exports.deleteForm = exports.updateForm = exports.getForms = exports.getForm = exports.selectForm = void 0;
 // import mongoose from "mongoose";
 const database_1 = require("../../database");
 const client_1 = require("@prisma/client");
@@ -97,32 +97,53 @@ const getForms = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getForms = getForms;
-const updateForm = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const updateForm = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const formId = req.params.formId;
-    const userId = req.user;
-    const updates = req.body;
+    const userId = req.userId;
+    const updatedForm = req.body.updatedForm;
+    console.log(updatedForm);
+    let data = {};
     try {
         // Verify form ownership
         const form = yield database_1.prisma.form.findFirst({
             where: {
-                id: formId,
-                createdBy: userId
+                createdBy: userId,
+                id: formId
             }
         });
         if (!form) {
             res.status(404).json({ error: "Form not found or unauthorized" });
             return;
         }
-        const updatedForm = yield database_1.prisma.form.update({
-            where: { id: formId },
-            data: updates,
+        updatedForm.updatedAt = new Date();
+        data = Object.assign(Object.assign({}, exports.updateForm), data);
+        if (data.status === 'scheduled' && data.runOnDate === null) {
+            data.status = 'inProgress';
+        }
+        if ((data.status === 'completed' || data.status === 'paused' || data.status === 'inProgress') &&
+            data.runOnDate &&
+            data.runOnDate > new Date()) {
+            data.status = 'scheduled';
+        }
+        const modifiedForm = yield database_1.prisma.form.update({
+            where: {
+                id: formId
+            },
+            data,
             select: exports.selectForm
         });
-        res.status(200).json({ form: updatedForm });
+        res.status(200).json({ form: modifiedForm });
+        next();
     }
     catch (error) {
+        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+            console.error(error.message);
+            res.status(404).json({ error: "Form not found" });
+            next(error);
+        }
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
+        next(error);
     }
 });
 exports.updateForm = updateForm;
@@ -204,3 +225,31 @@ const getFormCount = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.getFormCount = getFormCount;
+const duplicateForm = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const formId = req.params.formId;
+    const userId = req.userId;
+    try {
+        const existingForm = yield database_1.prisma.form.findUnique({
+            where: { id: formId }
+        });
+        const currentDate = new Date();
+        if (!existingForm) {
+            res.status(404).json({ error: "Form not found" });
+            return;
+        }
+        const duplicateForm = yield database_1.prisma.form.create({
+            data: Object.assign(Object.assign({}, existingForm), { id: undefined, createdBy: undefined, createdAt: currentDate, updatedAt: currentDate, name: `${existingForm.name} (Copy)`, status: "draft", questions: existingForm.questions, creator: {
+                    connect: {
+                        id: userId
+                    }
+                }, welcomeCard: existingForm.welcomeCard, thankYouCard: existingForm.thankYouCard, styling: existingForm.styling ? existingForm.styling : null })
+        });
+        res.status(200).json({ form: duplicateForm });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+        next(error);
+    }
+});
+exports.duplicateForm = duplicateForm;

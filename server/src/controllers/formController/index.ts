@@ -4,9 +4,10 @@ import { NextFunction, Request, Response } from "express";
 // import mongoose from "mongoose";
 
 import { prisma } from "../../database";
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { buildOrderByClause, buildWhereClause, transformPrismaSurvey } from "../../utils/formsUtils";
 import { TForm } from "../../types/forms";
+import { structuredClone } from "../../utils/pollyfills/structuredClone";
 
 export const selectForm = {
   id: true,
@@ -103,17 +104,21 @@ export const getForms = async(req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const updateForm = async(req: Request, res: Response): Promise<void> => {
+export const updateForm = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
   const formId = req.params.formId;
-  const userId = req.user;
-  const updates = req.body;
+  const userId = req.userId;
+  const updatedForm = req.body.updatedForm;
+
+  console.log(updatedForm);
+
+  let data: any = {};
 
   try {
     // Verify form ownership
     const form = await prisma.form.findFirst({
       where: {
-        id: formId,
-        createdBy: userId
+        createdBy: userId,
+        id: formId
       }
     });
 
@@ -122,16 +127,44 @@ export const updateForm = async(req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const updatedForm = await prisma.form.update({
-      where: { id: formId },
-      data: updates,
+      updatedForm.updatedAt = new Date();
+
+      data = {
+        ...updateForm,
+        ...data,
+      }
+
+      if (data.status === 'scheduled' && data.runOnDate === null) {
+        data.status = 'inProgress';
+      }
+
+      if (
+        (data.status === 'completed' || data.status === 'paused' || data.status === 'inProgress') &&
+        data.runOnDate &&
+        data.runOnDate > new Date()
+    ) {
+        data.status = 'scheduled';
+      }
+
+    const modifiedForm = await prisma.form.update({
+      where: { 
+        id: formId 
+      },
+      data,
       select: selectForm
     });
 
-    res.status(200).json({ form: updatedForm });
+    res.status(200).json({ form: modifiedForm });
+    next();
   } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.error(error.message);
+      res.status(404).json({ error: "Form not found" });
+      next(error);
+    }
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
+    next(error);
   }
 };
 
@@ -219,4 +252,45 @@ export const getFormCount = async (req: Request, res: Response, next: NextFuncti
     res.status(500).json({ error: "Internal Server Error" });
     next(error);
   }
+};
+
+export const duplicateForm = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const formId = req.params.formId;
+  const userId = req.userId;
+  try {
+    const existingForm = await prisma.form.findUnique({
+      where: { id: formId }
+    });
+    const currentDate = new Date();
+    if (!existingForm) {
+      res.status(404).json({ error: "Form not found" });
+      return;
+    }
+    const duplicateForm = await prisma.form.create({
+      data: { 
+        ...existingForm, 
+        id: undefined,
+        createdBy: undefined,
+        createdAt: currentDate,
+        updatedAt: currentDate,
+        name: `${existingForm.name} (Copy)`,
+        status: "draft",
+        questions: existingForm.questions as Prisma.JsonObject,
+        creator: {
+          connect: {
+            id: userId
+          }
+        },
+        welcomeCard: existingForm.welcomeCard as Prisma.JsonObject,
+        thankYouCard: existingForm.thankYouCard as Prisma.JsonObject,
+        styling: existingForm.styling ? existingForm.styling as Prisma.JsonObject : null,
+      }
+    });
+    res.status(200).json({ form: duplicateForm });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+    next(error);
+  }
 }
+

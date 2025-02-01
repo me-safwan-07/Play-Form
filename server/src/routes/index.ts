@@ -24,14 +24,15 @@ router.get('/auth/google', authController.googleAuth);
 // Form routes
 router.get('/forms/count', verifyToken, formController.getFormCount);
 router.get('/forms', verifyToken, formController.getForms);
-router.get('/form/:formId', verifyToken, formController.getForm);
+router.get('/form/:formId', verifyToken, formController.getForm);   
 router.post('/forms', verifyToken, formController.createForm);
 router.put('/forms/:formId', verifyToken, formController.updateForm);
 router.delete('/forms/:formId', verifyToken, formController.deleteForm);
+router.get("/forms/:formId/duplicate", verifyToken, formController.duplicateForm);
 
 // Response routes
 // router.get('/forms/:formId/responses', verification, responseController.getResponses);
-// router.post('/forms/:formId/responses', responseController.createResponse);
+// router.post('/forms/:formId/responses'   , responseController.createResponse);
 // router.put('/responses/:responseId', verification, responseController.updateResponse);
 
 // Product routes

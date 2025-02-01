@@ -61,9 +61,10 @@ router.get('/form/:formId', verifyToken_1.verifyToken, formController.getForm);
 router.post('/forms', verifyToken_1.verifyToken, formController.createForm);
 router.put('/forms/:formId', verifyToken_1.verifyToken, formController.updateForm);
 router.delete('/forms/:formId', verifyToken_1.verifyToken, formController.deleteForm);
+router.get("/forms/:formId/duplicate", verifyToken_1.verifyToken, formController.duplicateForm);
 // Response routes
 // router.get('/forms/:formId/responses', verification, responseController.getResponses);
-// router.post('/forms/:formId/responses', responseController.createResponse);
+// router.post('/forms/:formId/responses'   , responseController.createResponse);
 // router.put('/responses/:responseId', verification, responseController.updateResponse);
 // Product routes
 router.get('/forms/:formId/products', verifyToken_1.verifyToken, productController.getProducts);
