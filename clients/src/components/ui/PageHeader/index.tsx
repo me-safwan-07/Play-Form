@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 export interface PageHeaderProps {
@@ -17,7 +17,9 @@ export const PageHeader = ({ cta, children }: PageHeaderProps) => {
   return (
     <div className="border-b sticky top-0 bg-background z-10">
       <div className="container flex items-center justify-between h-16  space-x-4 pb-4">
-        <img src={logoHref} alt="Logo" className="text-sm h-8 sm:inline " />
+        <Link to={`/environments/${environmentId}/forms`}>
+          <img src={logoHref} alt="Logo" className="text-sm h-8 sm:inline " />
+        </Link>
         {/* {cta} */}
         <div className="flex items-center">
           <Avatar

@@ -36,7 +36,7 @@ export const DeleteDialog = ({
       <div>{children}</div>
       <div className="mt-4 space-x-2 text-right">
         <Button
-        //   loading={isSaving}
+          loading={isSaving}
           variant="secondary"
           onClick={() => {
             if (useSaveInsteadOfCancel && onSave) {
@@ -46,7 +46,9 @@ export const DeleteDialog = ({
           }}>
           {useSaveInsteadOfCancel ? "Save" : "Cancel"}
         </Button>
-        <Button 
+        <Button
+            variant="warn"
+            loading={isDeleting}
             onClick={onDelete} 
             disabled={disabled}
         >
