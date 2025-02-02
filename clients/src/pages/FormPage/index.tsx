@@ -25,7 +25,7 @@ export function FormHome() {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log(data);
+      // console.log(data);
       setCount(data.data.count);
     };
     fetchForms();
