@@ -9,6 +9,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.duplicateForm = exports.getFormCount = exports.createForm = exports.deleteForm = exports.updateForm = exports.getForms = exports.getForm = exports.selectForm = void 0;
 // import mongoose from "mongoose";
@@ -101,8 +112,7 @@ const updateForm = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     const formId = req.params.formId;
     const userId = req.userId;
     const updatedForm = req.body.updatedForm;
-    console.log(updatedForm);
-    let data = {};
+    // console.log("Received updated form:", updatedForm);
     try {
         // Verify form ownership
         const form = yield database_1.prisma.form.findFirst({
@@ -115,8 +125,9 @@ const updateForm = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
             res.status(404).json({ error: "Form not found or unauthorized" });
             return;
         }
-        updatedForm.updatedAt = new Date();
-        data = Object.assign(Object.assign({}, exports.updateForm), data);
+        // Fix: Use updatedForm instead of updateForm (which was undefined)
+        const data = Object.assign(Object.assign({}, updatedForm), { updatedAt: new Date() });
+        // Handle status changes
         if (data.status === 'scheduled' && data.runOnDate === null) {
             data.status = 'inProgress';
         }
@@ -125,24 +136,25 @@ const updateForm = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
             data.runOnDate > new Date()) {
             data.status = 'scheduled';
         }
+        // Remove any properties that shouldn't be updated directly
+        const { id, createdAt, createdBy } = data, updateData = __rest(data, ["id", "createdAt", "createdBy"]);
         const modifiedForm = yield database_1.prisma.form.update({
             where: {
                 id: formId
             },
-            data,
+            data: updateData,
             select: exports.selectForm
         });
         res.status(200).json({ form: modifiedForm });
-        next();
     }
     catch (error) {
+        console.error("Update error:", error);
         if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
-            console.error(error.message);
             res.status(404).json({ error: "Form not found" });
-            next(error);
         }
-        console.error(error);
-        res.status(500).json({ error: "Internal Server Error" });
+        else {
+            res.status(500).json({ error: "Internal Server Error" });
+        }
         next(error);
     }
 });

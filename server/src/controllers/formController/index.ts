@@ -109,9 +109,7 @@ export const updateForm = async(req: Request, res: Response, next: NextFunction)
   const userId = req.userId;
   const updatedForm = req.body.updatedForm;
 
-  console.log(updatedForm);
-
-  let data: any = {};
+  // console.log("Received updated form:", updatedForm);
 
   try {
     // Verify form ownership
@@ -127,43 +125,44 @@ export const updateForm = async(req: Request, res: Response, next: NextFunction)
       return;
     }
 
-      updatedForm.updatedAt = new Date();
+    // Fix: Use updatedForm instead of updateForm (which was undefined)
+    const data = {
+      ...updatedForm,
+      updatedAt: new Date(),
+    };
 
-      data = {
-        ...updateForm,
-        ...data,
-      }
+    // Handle status changes
+    if (data.status === 'scheduled' && data.runOnDate === null) {
+      data.status = 'inProgress';
+    }
 
-      if (data.status === 'scheduled' && data.runOnDate === null) {
-        data.status = 'inProgress';
-      }
-
-      if (
-        (data.status === 'completed' || data.status === 'paused' || data.status === 'inProgress') &&
-        data.runOnDate &&
-        data.runOnDate > new Date()
+    if (
+      (data.status === 'completed' || data.status === 'paused' || data.status === 'inProgress') &&
+      data.runOnDate &&
+      data.runOnDate > new Date()
     ) {
-        data.status = 'scheduled';
-      }
+      data.status = 'scheduled';
+    }
+
+    // Remove any properties that shouldn't be updated directly
+    const { id, createdAt, createdBy, ...updateData } = data;
 
     const modifiedForm = await prisma.form.update({
       where: { 
         id: formId 
       },
-      data,
+      data: updateData,
       select: selectForm
     });
 
     res.status(200).json({ form: modifiedForm });
-    next();
   } catch (error) {
+    console.error("Update error:", error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      console.error(error.message);
       res.status(404).json({ error: "Form not found" });
-      next(error);
+    } else {
+      res.status(500).json({ error: "Internal Server Error" });
     }
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
     next(error);
   }
 };
