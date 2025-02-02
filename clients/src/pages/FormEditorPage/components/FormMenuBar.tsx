@@ -74,13 +74,20 @@ export const FormMenuBar = ({
     const handleFormSave = async () => {
         setIsFormSaving(true);
         try {
-            localForm.questions = localForm.questions.map((question) => {
+            // Clean up questions by removing draft status
+            const cleanedQuestions = localForm.questions.map((question) => {
                 const { isDraft, ...rest } = question;
                 return rest;
             });
 
-            console.log({...localForm})
-            const updatedForm = await axios.put(`http://localhost:3000/api/forms/${form.id}`, {updatedForm: {...localForm}},
+            const formToUpdate = {
+                ...localForm,
+                questions: cleanedQuestions
+            };
+
+            const response = await axios.put(
+                `http://localhost:3000/api/forms/${form.id}`,
+                { updatedForm: formToUpdate },
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -89,18 +96,16 @@ export const FormMenuBar = ({
                 }
             );
 
+            const updatedForm = response.data.form;
+            setLocalForm(updatedForm);
             setIsFormSaving(false);
-            console.log(updatedForm.data);
-            setLocalForm(updatedForm.data.form); 
-            console.log("localForm -> ", localForm);
-            toast.success("Changes saved")
+            toast.success("Changes saved");
         } catch (e) {
             console.error(e);
             setIsFormSaving(false);
             toast.error(`Error saving changes`);
-            return;
         }
-    }
+    };
     
     const handleSaveAndGoBack = async () => {
         await handleFormSave();
@@ -109,7 +114,21 @@ export const FormMenuBar = ({
     const handleSurveyPublish = async () => {
         setIsFormPublishing(true);
         try {
-            const updatedForm = await axios.put(`http://localhost:3000/api/forms/${form.id}`, {updatedForm: {...localForm}},
+            // Clean up questions by removing draft status
+            const cleanedQuestions = localForm.questions.map((question) => {
+                const { isDraft, ...rest } = question;
+                return rest;
+            });
+
+            const formToUpdate = {
+                ...localForm,
+                questions: cleanedQuestions,
+                status: "published"  // Update status to published
+            };
+
+            const response = await axios.put(
+                `http://localhost:3000/api/forms/${form.id}`,
+                { updatedForm: formToUpdate },
                 {
                     headers: {
                         "Content-Type": "application/json",
@@ -118,14 +137,14 @@ export const FormMenuBar = ({
                 }
             );
 
-            console.log(updatedForm.data);
+            const updatedForm = response.data.form;
+            setLocalForm(updatedForm);
             setIsFormPublishing(false);
             navigate(`/environments/${environmentId}/forms/${localForm.id}/summary?success=true`);
         } catch (e) {
             console.error(e);
             setIsFormPublishing(false);
-            toast.error(`Error saving changes`);
-            return;
+            toast.error(`Error publishing form`);
         }
     };
     

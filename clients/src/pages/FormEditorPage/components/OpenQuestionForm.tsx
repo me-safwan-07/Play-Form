@@ -3,7 +3,6 @@ import { Label } from "@/components/ui/Label";
 import { QuestionFormInput } from "@/components/ui/QuestionFormInput";
 import { OptionsSwitcher } from "@/components/ui/QuestionTypeSelector";
 import { TForm, TFormOpenTextQuestion, TFormOpenTextQuestionInputType, TFormQuestion } from "@/types/forms";
-import { update } from "lodash";
 import { HashIcon, LinkIcon, MailIcon, MessageSquareTextIcon, PhoneIcon, PlusIcon } from "lucide-react";
 
 const questionTypes = [
@@ -18,9 +17,9 @@ interface OpenQuestionFormProps {
     localForm: TForm;
     question: TFormOpenTextQuestion;
     questionIdx: number;
-    updateQuestion: (questionIdx: number, updatedAttributes: Partial<TFormOpenTextQuestion>) => void;
+    updateQuestion: (questionIdx: number, data: Partial<TFormQuestion>) => void;
     lastQuestion: boolean;
-    isInvalid: string[] | null;
+    isInvalid: boolean;
 }
 export const OpenQuestionForm = ({
     question,
@@ -28,11 +27,11 @@ export const OpenQuestionForm = ({
     updateQuestion,
     isInvalid,
     localForm,
-    lastQuestion,
 }: OpenQuestionFormProps) => {
     const defaultPlaceholder = getPlaceholderByInputType(question.inputType ?? "text");
     
-    const handleInputChange = (inputType: TFormOpenTextQuestionInputType) => {
+    const handleInputChange = (value: string) => {
+        const inputType = value as TFormOpenTextQuestionInputType;
         const updatedAttributes = {
             inputType,
             placeholder: getPlaceholderByInputType(inputType),
@@ -48,7 +47,7 @@ export const OpenQuestionForm = ({
                 value={question.headline}
                 localForm={localForm}
                 questionIdx={questionIdx}
-                // isInvalid={isInvalid}
+                isInvalid={isInvalid}
                 updateQuestion={updateQuestion}
                 label={"Question*"}
             />
@@ -57,14 +56,14 @@ export const OpenQuestionForm = ({
                 {question.subheader !== undefined && (
                     <div className="inline-flex w-full items-center">
                         <div className="w-full">
-                            <QuestionFormInput 
+                            <QuestionFormInput
                                 id="subheader"
-                                label={"Description"}
-                                isInvalid={isInvalid}
                                 value={question.subheader}
                                 localForm={localForm}
                                 questionIdx={questionIdx}
+                                isInvalid={isInvalid}
                                 updateQuestion={updateQuestion}
+                                label={"Description"}
                             />
                         </div>
                     </div>
@@ -93,9 +92,9 @@ export const OpenQuestionForm = ({
             <div className="mt-2">
                 <QuestionFormInput 
                     id="placeholder"
-                    isInvalid={isInvalid}
                     label={"Placeholder"}
-                    value={question.placeholder}
+                    isInvalid={isInvalid}
+                    value={question.placeholder ? question.placeholder : defaultPlaceholder}
                     localForm={localForm}
                     questionIdx={questionIdx}
                     updateQuestion={updateQuestion}
@@ -104,7 +103,7 @@ export const OpenQuestionForm = ({
 
             <div className="mt-3">
                 <Label htmlFor="questionType">Input Type</Label>
-                <div className="">
+                <div className="mt-2 flex items-center">
                     <OptionsSwitcher 
                         options={questionTypes}
                         currentOption={question.inputType}

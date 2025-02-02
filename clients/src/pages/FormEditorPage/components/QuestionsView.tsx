@@ -33,9 +33,6 @@ export const QuestionsView = ({
     invalidQuestions,
     setInvalidQuestions
 }: QuestionViewProps) => {
-    useEffect(() => {
-        console.log(localForm);
-    }, [localForm]);
     const internalQuestionIdMap = useMemo(() => {
         //  TypeError: Cannot read properties of undefined (reading 'reduce')
         return localForm.questions.reduce((acc: { [key: string]: string }, question) => {
@@ -43,6 +40,11 @@ export const QuestionsView = ({
             return acc;
         }, {} as { [key: string]: string });
     }, [localForm.questions]);
+
+    useEffect(() => {
+        console.log("localForm");
+        console.log(localForm);
+    }, [localForm]);
 
     const updateQuestion = (questionIdx: number, updatedAttributes: any) => {
         let updatedForm = { ...localForm };
@@ -174,6 +176,7 @@ export const QuestionsView = ({
 
     const onDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
+        
         const newQuestions = Array.from(localForm.questions);
         const sourceIndex = newQuestions.findIndex((question) => question.id === active.id);
         const destinationIndex = newQuestions.findIndex((question) => question.id === over?.id);

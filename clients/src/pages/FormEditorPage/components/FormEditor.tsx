@@ -82,8 +82,11 @@ export const FormEditor =({
                     </main>
                     <aside className="group hidden flex-1 flex-shrink-0 items-center justify-center overflow-hidden border-l border  border-slate-100 bg-slate-50 py-6 md:flex md:flex-col">
                         <PreviewForm 
-                            form={form}
-                            previewType= "modal"
+                            form={localForm}
+                            questionId={activeQuestionId}
+                            environmentId={environmentId}
+                            previewType= "fullwidth"
+                            // onFileUpload={async(file) => {file.name}}
                         />
                     </aside>
                 </div>

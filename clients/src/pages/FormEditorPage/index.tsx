@@ -35,6 +35,12 @@ export const FormEditorPage = () => {
     fetchForm();
   }, [formId]);
 
+
+  useEffect(() => {
+    console.log("form");
+    console.log(form);
+  }, [form]);
+
   if (!form) {
     return <ErrorComponent />;
   }
