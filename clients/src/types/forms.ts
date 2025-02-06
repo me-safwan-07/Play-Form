@@ -83,6 +83,7 @@ export interface FormResponse {
     subheader: z.string().optional(),
     imageUrl: z.string().optional(),
     required: z.boolean(),
+    pattern: z.string().optional(),
     // buttonLabel: z.string().optional(),
     // backButtonLabel: z.string().optional(),
     // scale: z.enum(['number', 'smiley', 'star']).optional(),
