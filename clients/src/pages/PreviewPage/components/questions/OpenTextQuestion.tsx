@@ -5,6 +5,7 @@ import Button from "@/components/ui/Button";
 import { Subheader } from "../general/Subheader";
 import { BackButton } from "../buttons/BackButton";
 import { SubmitButton } from "../buttons/SubmitButton";
+import { ScrollableContainer } from "../wrappers/ScrollableContainer";
 
 interface OpenTextQuestionProps {
     key: string;
@@ -29,42 +30,44 @@ export const OpenTextQuestion = ({ key, question, currentQuestionId, isFirstQues
             key={question.id}
             className="w-full"
         >
-            <div>
-                <Headline 
-                    questionId={question.id}
-                    headline={question.headline}
-                />
-                <Subheader 
-                    subheader={question.subheader} 
-                    questionId={question.id} 
-                />
-                <div className="mt-4">
-                    <input
-                        ref={openTextRef}
-                        tabIndex={1}
-                        name={question.id}
-                        id={question.id}
-                        placeholder={question.placeholder}
-                        dir="auto"
-                        step={"any"}
-                        required={question.required}
-                        type={question.type}
-                        className="border placeholder:fb-text-placeholder fb-text-subheading focus:fb-border-brand fb-bg-input-bg fb-rounded-custom fb-block fb-w-full fb-border fb-p-2 fb-shadow-sm focus:fb-outline-none focus:fb-ring-0 sm:fb-text-sm"
-                        // pattern={question.type  === "phone" ? "+91" : ".*"}
+            <ScrollableContainer>
+                <div>
+                    <Headline 
+                        questionId={question.id}
+                        headline={question.headline}
                     />
+                    <Subheader 
+                        subheader={question.subheader} 
+                        questionId={question.id} 
+                    />
+                    <div className="mt-4">
+                        <input
+                            ref={openTextRef}
+                            tabIndex={1}
+                            name={question.id}
+                            id={question.id}
+                            placeholder={question.placeholder}
+                            dir="auto"
+                            step={"any"}
+                            required={question.required}
+                            type={question.type}
+                            className="border border-slate-300 placeholder:text-slate-400 color-slate-700 focus:border-slate-500  block w-full bg-slate-50 rounded-[8px] p-2 shadow-sm focus:outline-none focus:ring-0 sm:text-sm"
+                            // pattern={question.type  === "phone" ? "+91" : ".*"}
+                        />
+                    </div>
                 </div>
-            </div>
+            </ScrollableContainer>
             <div className="flex w-full justify-between px-6 py-4">
                 {!isFirstQuestion && 
                     <BackButton
-                        onClick={() => {}}
-                        tabIndex={1}
+                    onClick={() => {}}
+                    tabIndex={1}
                     />}
                 <div></div>
                 <SubmitButton
                     isLastQuestion={isLastQuestion}
                     tabIndex={1}
-                />
+                    />
             </div>
 
         </form>

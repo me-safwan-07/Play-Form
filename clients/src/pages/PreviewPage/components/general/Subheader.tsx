@@ -7,7 +7,7 @@ export const Subheader = ({ subheader, questionId }: SubheaderProps) => {
     return (
         <p 
             id={questionId}
-            className="fb-text-subheading fb-text-gray-500 fb-text-sm fb-font-medium fb-mb-2 fb-mt-4 fb-ml-6"
+            className="text-slate-700 block break-words text-sm font-normal leading-5"
             dir="auto"
         >
             {subheader}

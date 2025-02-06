@@ -11,7 +11,7 @@ export const ScrollableContainer = ({ children }: ScrollableContainerProps) => {
   const [isAtTop, setIsAtTop] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isSurveyPreview = !!document.getElementById("survey-preview");
+  const isSurveyPreview = !!document.getElementById("form-preview");
 
   const checkScroll = () => {
     if (!containerRef.current) return;
@@ -50,7 +50,7 @@ export const ScrollableContainer = ({ children }: ScrollableContainerProps) => {
   return (
     <div className="relative">
       {!isAtTop && (
-        <div className="absolute left-0 right-2 top-0 z-10 h-4 bg-gradient-to-b from-gray-200 to-transparent"></div>
+        <div className="bg-white absolute left-0 right-2 top-0 z-10 h-4 bg-gradient-to-b to-transparent "></div>
       )}
       <div
         ref={containerRef}
@@ -60,7 +60,7 @@ export const ScrollableContainer = ({ children }: ScrollableContainerProps) => {
         }}
         className={cn(
           "overflow-auto px-4 pb-1",
-          isOverflowHidden ? "no-scrollbar" : "bg-gray-100"
+          isOverflowHidden ? "no-scrollbar" : "bg-white"
         )}
         onMouseEnter={() => toggleOverflow(false)}
         onMouseLeave={() => toggleOverflow(true)}
@@ -68,7 +68,7 @@ export const ScrollableContainer = ({ children }: ScrollableContainerProps) => {
         {children}
       </div>
       {!isAtBottom && (
-        <div className="absolute -bottom-2 left-0 right-2 h-8 bg-gradient-to-t from-gray-200 to-transparent"></div>
+        <div className="bg-white absolute -bottom-2 left-0 right-2 h-8 linear-gradient-to-t from-gray-200 to-transparent"></div>
       )}
     </div>
   );

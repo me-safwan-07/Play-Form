@@ -38,7 +38,7 @@ export const SubmitButton = ({
       ref={buttonRef}
       type={type}
       autoFocus={focus}
-      className="bg-brand border border-submit-button-border text-on-brand focus:ring-focus rounded-custom flex items-center px-3 py-3 text-base font-medium leading-4 shadow-sm hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2"
+      className="bg-slate-500 border border-transparent text-white focus:ring-slate-500 rounded-lg flex items-center px-3 py-3 text-base font-medium leading-4 shadow-sm hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2"
       onClick={onClick}
       disabled={disabled}
     >
