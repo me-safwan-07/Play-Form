@@ -1,6 +1,4 @@
-import React, { useEffect } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
-import { getFirstEnvironmentByUserId } from './hooks/environmentHooks';
+import { Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import AuthPage from './pages/AuthPage';
 import { Toaster } from "react-hot-toast";
