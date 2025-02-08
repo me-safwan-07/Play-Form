@@ -6,38 +6,38 @@ import { SubmitButton } from "../buttons/SubmitButton";
 
 interface WelcomeCardProps {
     headline?: string;
-    onSumit: () => void;
+    // onSubmit: () => void;
     form: TForm;
     isCurrent: boolean;
 }
 
 export const WelcomeCard = ({
     headline,
-    onSumit,
+    // onSubmit,
     form,
     isCurrent,
 }: WelcomeCardProps) => {
-    const handleSubmit = () => {
-        onSumit();
-    }
+    // const handleSubmit = () => {
+    //     onSubmit();
+    // }
 
-    useEffect(() => {
-        const handleEnter = (e: KeyboardEvent) => {
-            if (e.key === "Enter") {
-                handleSubmit();
-            }
-        };
-        if (isCurrent) {
-            document.addEventListener("keydown", handleEnter);
-        } else {
-            document.removeEventListener("keydown", handleEnter);
-        }
+    // useEffect(() => {
+    //     const handleEnter = (e: KeyboardEvent) => {
+    //         if (e.key === "Enter") {
+    //             handleSubmit();
+    //         }
+    //     };
+    //     if (isCurrent) {
+    //         document.addEventListener("keydown", handleEnter);
+    //     } else {
+    //         document.removeEventListener("keydown", handleEnter);
+    //     }
 
-        return () => {
-            document.removeEventListener("keydown", handleEnter);
-        };
+    //     return () => {
+    //         document.removeEventListener("keydown", handleEnter);
+    //     };
 
-    }, [isCurrent]);
+    // }, [isCurrent]);
 
     return (
         <div>

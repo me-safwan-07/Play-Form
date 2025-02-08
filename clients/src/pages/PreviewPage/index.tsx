@@ -1,5 +1,5 @@
 import { Variants, motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { OpenTextQuestion } from "./components/questions/OpenTextQuestion";
 import { TForm } from "@/types/forms";
 import { TabOption } from "@/components/ui/TabOption";
@@ -44,7 +44,7 @@ const previewParentContainerVariant: Variants = {
 
 export const FormPreview = ({ 
     form,  
-    questionId 
+    getSetQuestionId
 }: FormPreviewProps) => {
     const [isFullScreenPreview, setIsFullScreenPreview] = useState(false);
     const [previewMode, setPreviewMode] = useState("mobile");
@@ -87,6 +87,10 @@ export const FormPreview = ({
         },
       };
 
+    // useEffect(() => {
+    //     console.log(form.questions.filter((question) => question.id === questionId))
+    // })
+
     const resetQuestionProgress = () => {
         let storePreviewMode = previewMode;
         setPreviewMode("null");
@@ -121,7 +125,7 @@ export const FormPreview = ({
                         <MediaBackground isMobilePreview>
                             <div className="flex h-full w-full flex-col justify-center item-center ">
                                 <div className="z-10 w-full max-w-md rounded-lg border border-transparent">
-                                    <Form form={form} />
+                                    <Form form={form}  getSetQuestionId={getSetQuestionId}/>
                                 </div>
                             </div>
                         </MediaBackground>                 
@@ -147,7 +151,7 @@ export const FormPreview = ({
                             isEditorView
                         >
                             <div className="z-0 w-full max-w-md rounded-lg border-transparent">
-                                <Form form={form} />
+                                <Form form={form} getSetQuestionId={getSetQuestionId}/>
                             </div>
                         </MediaBackground>
                     </div>
