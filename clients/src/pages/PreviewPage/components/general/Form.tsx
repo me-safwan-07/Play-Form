@@ -2,14 +2,10 @@ import { cn } from '@/lib/utils';
 import { TForm } from '@/types/forms';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ProgressBar } from './ProgressBar';
-import { Headline } from './Headline';
-import { Progress } from './Progress';
-import { Subheader } from './Subheader';
-import { OpenTextQuestion } from '../questions/OpenTextQuestion';
-import { ScrollableContainer } from '../wrappers/ScrollableContainer';
 import { TResponseData, TResponseDataValue } from '@/types/responses';
 import { WelcomeCard } from './WelcomeCard';
 import { forms } from '@/lib/api';
+import { QuestionConditional } from './QuestionConditional';
 
 // fb-bg-survey-bg: white
 // survey-shadow: form-shadow (index.css)
@@ -22,13 +18,25 @@ function Form({
     form,
     getSetQuestionId,
 }: FormProps) {
-    const [questionId, setQuestionId] = useState(() => {
-        if (form.welcomeCard.enabled) {
-            return "start"
+    const [questionId, setQuestionId] = useState("");
+
+    useEffect(() => {
+        if (getSetQuestionId) {
+            setQuestionId(getSetQuestionId);
+        } else if (form.welcomeCard.enabled) {
+            setQuestionId("start");
         } else {
-            return form?.questions[0]?.id;
+            setQuestionId(form?.questions[0]?.id);
         }
-    })
+        // console.log("questionId", questionId);
+        // console.log("getsetQuestionID", getSetQuestionId);
+    }, [getSetQuestionId]);
+
+    useEffect(() => {
+        console.log("single mount");
+        console.log("form", form);
+        console.log("getSetQuestion", getSetQuestionId);
+    }, []);
 
     const contentRef = useRef<HTMLDivElement | null>(null);
     const [loadingElement, setLoadingElement] = useState(false);
@@ -105,6 +113,10 @@ function Form({
         const question = form.questions[questionIdx];
         if (!question) return undefined;
 
+        // if (form.welcomeCard.enabled) {
+        //     questionIdx = 0
+        // }
+
         const content = () => {
             if (questionIdx === -1) {
                 return (
@@ -118,12 +130,24 @@ function Form({
                 );
             } else {
                 return (
-                    <OpenTextQuestion
+                    // <OpenTextQuestion
+                    //     key={question.id}
+                    //     question={question}
+                    //     currentQuestionId={question.id}
+                    //     isFirstQuestion={questionIdx === 0}
+                    //     onSubmit={onSubmit}
+                    // />
+                    <QuestionConditional 
                         key={question.id}
+                        formId={form.id}
                         question={question}
-                        currentQuestionId={question.id}
-                        isFirstQuestion={questionIdx === 0}
+                        value={responseData[question.id]}
+                        onChange={onChange}
                         onSubmit={onSubmit}
+                        onBack={onBack}
+                        isFirstQuestion={question.id === form?.questions[0]?.id}
+                        isLastQuestion={question.id === form.questions[form.questions.length - 1].id}
+                        currentQuestionId={questionId}
                     />
                 );
             }
@@ -145,8 +169,7 @@ function Form({
                     {content()}
                 </div>
                 <div className="mx-6 mb-10 mt-2 space-y-3 md:mb-6 md:mt-6">
-                    {/* <ProgressBar form={form} questionId={question.id} /> */}
-                    <Progress progress={0.5} />
+                    <ProgressBar form={form} questionId={question.id} />
                 </div>
             </div>
         )
@@ -154,7 +177,7 @@ function Form({
 
   return (
     <div>
-        {getCardContent(1, 0)}
+        {getCardContent(currIdxTemp, 0)}
     </div>
   )
 }

@@ -3,41 +3,42 @@ import { useEffect } from "react";
 import { ScrollableContainer } from "../wrappers/ScrollableContainer";
 import { Headline } from "./Headline";
 import { SubmitButton } from "../buttons/SubmitButton";
+import { TResponseData } from "@/types/responses";
 
 interface WelcomeCardProps {
     headline?: string;
-    // onSubmit: () => void;
+    onSubmit: (data: TResponseData) => void;
     form: TForm;
     isCurrent: boolean;
 }
 
 export const WelcomeCard = ({
     headline,
-    // onSubmit,
+    onSubmit,
     form,
     isCurrent,
 }: WelcomeCardProps) => {
-    // const handleSubmit = () => {
-    //     onSubmit();
-    // }
+    const handleSubmit = () => {
+        onSubmit({ ["welcomeCard"]: "clicked" });
+    }
 
-    // useEffect(() => {
-    //     const handleEnter = (e: KeyboardEvent) => {
-    //         if (e.key === "Enter") {
-    //             handleSubmit();
-    //         }
-    //     };
-    //     if (isCurrent) {
-    //         document.addEventListener("keydown", handleEnter);
-    //     } else {
-    //         document.removeEventListener("keydown", handleEnter);
-    //     }
+    useEffect(() => {
+        const handleEnter = (e: KeyboardEvent) => {
+            if (e.key === "Enter") {
+                handleSubmit();
+            }
+        };
+        if (isCurrent) {
+            document.addEventListener("keydown", handleEnter);
+        } else {
+            document.removeEventListener("keydown", handleEnter);
+        }
 
-    //     return () => {
-    //         document.removeEventListener("keydown", handleEnter);
-    //     };
+        return () => {
+            document.removeEventListener("keydown", handleEnter);
+        };
 
-    // }, [isCurrent]);
+    }, [isCurrent]);
 
     return (
         <div>
@@ -48,13 +49,14 @@ export const WelcomeCard = ({
                 />
             </ScrollableContainer>
 
-            <div className="fb-flex fb-flex-col fb-gap-2 fb-mt-4">
+            <div className="mx-6 mt-4 flex gap-4 py-4">
                <SubmitButton
                     buttonLabel="Start"
                     isLastQuestion={false}
-                    focus={true}
+                    // focus={true}
                     onClick={handleSubmit}
-               />
+                    type="button"
+                />
             </div>
         </div>
     )
