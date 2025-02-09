@@ -1,5 +1,5 @@
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-
+import React from 'react';
 
 import { TForm } from "@/types/forms"
 import { QuestionCard } from "./QuestionCard"
@@ -33,7 +33,7 @@ export const QuestionsDroppable = ({
             <SortableContext items={localForm.questions} strategy={verticalListSortingStrategy}>
                 {localForm.questions.map((question, questionIdx) => (
                     <QuestionCard
-                        key={internalQuestionIdMap[question.id]}
+                        key={question.id}
                         localForm={localForm}
                         question={question}
                         questionIdx={questionIdx}

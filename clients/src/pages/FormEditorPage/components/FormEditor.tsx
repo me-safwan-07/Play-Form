@@ -40,6 +40,10 @@ export const FormEditor =({
         }
     }, [form?.questions]);
 
+
+    useEffect(() => {
+        console.log("active", activeQuestionId)
+    }, [activeQuestionId])
     if(!localForm) {
         return <LoadingSkeleton />
     }
