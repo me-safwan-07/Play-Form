@@ -50,18 +50,6 @@ export const FormEditorPage = () => {
       form={form}
       environmentId={environmentId}
       responseCount={responseCount}
-      // product={product}
-      // environment={environment}
-      // actionClasses={actionClasses}
-      // attributeClasses={attributeClasses}
-      // responseCount={responseCount}
-      // membershipRole={currentUserMembership?.role}
-      // colors={FORM_BG_COLORS}
-      // segments={segments}
-      // isUserTargetingAllowed={isUserTargetingAllowed}
-      // isMultiLanguageAllowed={isMultiLanguageAllowed}
-      // isFormbricksCloud={IS_FORMBRICKS_CLOUD}
-      // isUnsplashConfigured={UNSPLASH_ACCESS_KEY ? true : false}
     />
   );
 };

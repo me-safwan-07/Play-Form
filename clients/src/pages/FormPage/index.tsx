@@ -31,7 +31,7 @@ export function FormHome() {
     fetchForms();
   }, []);
 
- console.log(count);
+
   if (!environmentId) {
     navigate('/auth/login');
     return null;
