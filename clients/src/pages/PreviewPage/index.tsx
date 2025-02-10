@@ -145,7 +145,7 @@ export const FormPreview = ({
                                 <ResetProgressButton onClick={() => resetQuestionProgress()} />
                             </div>           
                         </div>
-                        {/* <MediaBackground 
+                        <MediaBackground 
                             // form={form}
                             // questionId={questionId}
                             // contentRef={ContentRef}
@@ -154,7 +154,7 @@ export const FormPreview = ({
                             <div className="z-0 w-full max-w-md rounded-lg border-transparent">
                                 <Form form={form} getSetQuestionId={getSetQuestionId}/>
                             </div>
-                        </MediaBackground> */}
+                        </MediaBackground>
                     </div>
                 )}
             </motion.div>

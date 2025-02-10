@@ -6,7 +6,7 @@ import { TResponseData } from "@/types/responses";
 interface QuestionConditionalProps {
     question: TFormQuestion;
     value: string | number | string[] | Record<string, string>;
-    onChange: (responseData: TResponseData) => void;
+    onChange?: (responseData: TResponseData) => void;
     onSubmit: (data: TResponseData) => void;
     onBack: () => void;
     currentQuestionId: string;
