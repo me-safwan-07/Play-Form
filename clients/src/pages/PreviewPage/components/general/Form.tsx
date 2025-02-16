@@ -7,6 +7,7 @@ import { WelcomeCard } from './WelcomeCard';
 import { forms } from '@/lib/api';
 import { QuestionConditional } from './QuestionConditional';
 import StackedCardContainer from '../wrappers/StackedCardContainer';
+import { ResponseErrorComponent } from './ResponseErrorComponent';
 
 // fb-bg-survey-bg: white
 // survey-shadow: form-shadow (index.css)
@@ -19,58 +20,35 @@ function Form({
     form,
     getSetQuestionId,
 }: FormProps) {
-    const [questionId, setQuestionId] = useState("hnmgzky3j5igggovnrdc75fm");
-
-    useEffect(() => {
+    const [questionId, setQuestionId] = useState(() => {
         if (getSetQuestionId) {
-            setQuestionId(getSetQuestionId);
-        } else if (form?.welcomeCard?.enabled) {
-            setQuestionId("start");
-        } else if (form?.questions?.length > 0) {
-            setQuestionId(form.questions[0].id);
+            return getSetQuestionId;
+        } else if (form.welcomeCard.enabled) {
+            return "start";
+        } else {
+            return form.questions[0]?.id;
         }
-    }, [getSetQuestionId, form]);
+    });
+    const [showError, setShowError] = useState(false);
 
-    useEffect(() => {
-        console.log("QuestionID", questionId);
-    }, [questionId, form, getSetQuestionId])
-    
-
-    useEffect(() => {
-        console.log("single mount");
-        console.log("form", form);
-        console.log("getSetQuestion", getSetQuestionId);
-    }, []);
-
-    const contentRef = useRef<HTMLDivElement | null>(null);
+    const [isResponseSendingFinished, setIsResponseSendingFinished] = useState(false);
     const [loadingElement, setLoadingElement] = useState(false);
     const [history, setHistory] = useState<string[]>([]);
     const [responseData, setResponseData] = useState<TResponseData>({});
-    
-    const currentQuestionId = questionId;
-
-    const cardArrangement = "straight";
-
+    const [cardArrangement, setcardArrangement] = "straight"; // TODO if styling.cardArrangement
     const currentQuestionIndex = form?.questions ? form.questions.findIndex((q) => q.id === questionId): -1;
-
-    useEffect(() => {
-        console.log("index", currentQuestionIndex);
-    }, [questionId, forms, getSetQuestionId])
-
-    // written by chartGPT
     const currentQuestion = useMemo(() => {
-        if (!form?.questions) return undefined;
-        if (questionId === "end") {
-            if (!form?.thankYouCard?.enabled) {
-                const newHistory = [...history];
-                const prevQuestionId = newHistory.pop();
-                return form?.questions.find((q) => q.id === prevQuestionId);
-            }
-            return undefined;
-        }
-        return form?.questions.find((q) => q.id === questionId);
+       if (questionId === "end" && !form.thankYouCard.enabled) {
+        const newHistory = [...history];
+        const prevQuestionId = newHistory.pop();
+        return form?.questions.find((q) => q.id === prevQuestionId);
+       } else {
+        return form.questions.find((q) => q.id === questionId);
+       }
     }, [questionId, form, history]);
-    
+    const contentRef = useRef<HTMLDivElement | null>(null);
+    const currentQuestionId = questionId;
+    // const showProgressBar = !styling.hideProgressBar;
 
     useEffect(() => {
         // scroll to top when question changes
@@ -82,27 +60,34 @@ function Form({
     let currIdxTemp = currentQuestionIndex;
     let currQuesTemp = currentQuestion;
 
-    const getNextQuestionId = (): string => {
+    const getNextQuestionId = (data: TResponseData): string => {
         const questions = form.questions;
-
+        const responseValue = data[questionId];
+    
         if (questionId === "start") return questions[0]?.id || "end";
 
         if (currIdxTemp === -1) throw new Error("Question not found");
-
+        if(currentQuestion) {
+            setResponseData({ ...responseData, responseValue });
+        }
 
         return questions[currIdxTemp + 1]?.id || 'end';
     };
 
-    // const onChange = (responseDataUpdate: TResponseData) => {
-    //     const updatedResponseData = { ...responseData, ...responseDataUpdate };
-    //     setResponseData(updatedResponseData);
-    // }
+    const onChange = (responseDataUpdate: TResponseData) => {
+        const updatedResponseData = { ...responseData, ...responseDataUpdate };
+        setResponseData(updatedResponseData);
+    }
 
     const onSubmit = (responseData: TResponseData) => {
         const questionId = Object.keys(responseData)[0];
         setLoadingElement(true);
         const nextQuestionId = getNextQuestionId(responseData);
-        // onChange(responseData);
+        const finished = nextQuestionId === 'end';
+        onChange(responseData);
+        if (finished) {
+            window.parent.postMessage("playformcompleted", "*");
+        }
         setQuestionId(nextQuestionId);
         setHistory([...history, questionId]);
         setLoadingElement(false);
@@ -120,10 +105,16 @@ function Form({
         }
         if (!prevQuestionId) throw new Error("Question not found");
         setQuestionId(prevQuestionId);
-    }
+    };
 
     
     const getCardContent = (questionIdx: number, offset: number): JSX.Element | undefined => {
+        if (showError) {
+            return (
+                // not completed yet
+                <ResponseErrorComponent />
+            )
+        }
         const content = () => {
             if (questionIdx === -1) {
                 return (
@@ -137,7 +128,6 @@ function Form({
                 );
             } else {
                 const question = form.questions[questionIdx];
-                console.log("question",question);
                 return (
                     question && (
                         <QuestionConditional 
@@ -145,7 +135,7 @@ function Form({
                             formId={form.id}
                             question={question}
                             value={responseData[question.id]}
-                            // onChange={onChange}
+                            onChange={onChange}
                             onSubmit={onSubmit}
                             onBack={onBack}
                             isFirstQuestion={question.id === form?.questions[0]?.id}
@@ -158,23 +148,26 @@ function Form({
         }
             
         return (
-            <div
-                className={cn(
-                    "no-scrollbar md:rounded-lg bg-white flex h-full w-full flex-col justify-between overflow-hidden transition-all duration-1000 ease-in-out form-shadow ",
-                    offset === 0 ? "opacity-100" : "opacity-0"
-                )}
-            >
+            <div className="h-full w-full">
                 <div
-                    ref={contentRef}
                     className={cn(
-                        loadingElement ? 'animate-pulse opacity-60' : ''
+                        "no-scrollbar md:rounded-lg bg-white flex h-full w-full flex-col justify-between overflow-hidden transition-all duration-1000 ease-in-out form-shadow ",
+                        cardArrangement === "simple" ? "form-shadow" : "",
+                        offset === 0 ? "opacity-100" : "opacity-0"
                     )}
-                >
-                    {content()}
+                    >
+                    <div
+                        ref={contentRef}
+                        className={cn(
+                            loadingElement ? 'animate-pulse opacity-60' : ''
+                        )}
+                        >
+                        {content()}
+                    </div>
+                    <div className="mx-6 mb-10 mt-2 space-y-3 md:mb-6 md:mt-6">
+                        {/* <ProgressBar form={form} questionId={questionId} /> */}
+                    </div>
                 </div>
-                {/* <div className="mx-6 mb-10 mt-2 space-y-3 md:mb-6 md:mt-6">
-                    <ProgressBar form={form} questionId={question.id} />
-                </div> */}
             </div>
         )
     }

@@ -31,11 +31,14 @@ export const QuestionConditional = ({
         <OpenTextQuestion 
             key={question.id}
             question={question}
+            value={typeof value === 'string' ? value : ""}
             currentQuestionId={currentQuestionId}
             isFirstQuestion={isFirstQuestion}
             isLastQuestion={isLastQuestion}
             formId={formId}
             onSubmit={onSubmit}
+            onBack={onBack}
+            onChange={onChange}
         />
     ): null;
 }

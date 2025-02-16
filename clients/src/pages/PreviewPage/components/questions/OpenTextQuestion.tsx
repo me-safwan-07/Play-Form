@@ -9,17 +9,27 @@ import { TResponseData } from "@/types/responses";
 
 interface OpenTextQuestionProps {
     question: TFormOpenTextQuestion;
+    value: string;
+    onChange: (responseData: TResponseData) => void;
+    onSubmit: (data: TResponseData) => void;
+    onBack: () => void;
+    autoFocus?: boolean;
     currentQuestionId: string;
     isFirstQuestion: boolean;
     isLastQuestion: boolean;
     formId: string;
-    onSubmit: (responseData: TResponseData) => void;
+    // autoFocusEnabled: boolean;
 }
 
 export const OpenTextQuestion: React.FC<OpenTextQuestionProps> = ({
     question,
     isFirstQuestion,
     isLastQuestion,
+    formId,
+    value,
+    onChange,
+    onSubmit,
+    onBack,
 }) => {
 
     const openTextRef = useCallback(
@@ -84,7 +94,13 @@ export const OpenTextQuestion: React.FC<OpenTextQuestionProps> = ({
             </ScrollableContainer>
             <div className="flex w-full justify-between px-6 py-4">
                 {!isFirstQuestion && (
-                    <BackButton onClick={() => { /* Implement navigation */ }} tabIndex={1} />
+                    <BackButton 
+                        onClick={() => {
+                            onBack();
+                        }} 
+                        tabIndex={1} 
+                        
+                    />
                 )}
                 <SubmitButton isLastQuestion={isLastQuestion} tabIndex={1} />
             </div>
