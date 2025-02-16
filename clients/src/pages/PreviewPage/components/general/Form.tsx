@@ -122,14 +122,8 @@ function Form({
         setQuestionId(prevQuestionId);
     }
 
+    
     const getCardContent = (questionIdx: number, offset: number): JSX.Element | undefined => {
-        const question = form.questions[questionIdx];
-        if (!question) return undefined;
-
-        // if (form.welcomeCard.enabled) {
-        //     questionIdx = 0
-        // }
-
         const content = () => {
             if (questionIdx === -1) {
                 return (
@@ -142,23 +136,27 @@ function Form({
                     />
                 );
             } else {
+                const question = form.questions[questionIdx];
+                console.log("question",question);
                 return (
-                    <QuestionConditional 
-                        key={question.id}
-                        formId={form.id}
-                        question={question}
-                        value={responseData[question.id]}
-                        // onChange={onChange}
-                        onSubmit={onSubmit}
-                        onBack={onBack}
-                        isFirstQuestion={question.id === form?.questions[0]?.id}
-                        isLastQuestion={question.id === form.questions[form.questions.length - 1].id}
-                        currentQuestionId={questionId}
-                    />
-                );
+                    question && (
+                        <QuestionConditional 
+                            key={question.id}
+                            formId={form.id}
+                            question={question}
+                            value={responseData[question.id]}
+                            // onChange={onChange}
+                            onSubmit={onSubmit}
+                            onBack={onBack}
+                            isFirstQuestion={question.id === form?.questions[0]?.id}
+                            isLastQuestion={question.id === form.questions[form.questions.length - 1].id}
+                            currentQuestionId={questionId}
+                        />
+                    )
+                )
             }
         }
-
+            
         return (
             <div
                 className={cn(
@@ -180,19 +178,18 @@ function Form({
             </div>
         )
     }
-
-  return (
-    <div>
-        {/* {getCardContent(currIdxTemp, 0)} */}
-        <StackedCardContainer 
-            cardArrangement={"simple"}
-            currentQuestionId={questionId}
-            getCardContent={getCardContent}
-            form={form}
-            setQuestionId={setQuestionId}
-        />
-    </div>
-  )
+    return (
+        <div>
+            {/* {getCardContent(currIdxTemp, 0)} */}
+            <StackedCardContainer 
+                cardArrangement={"simple"}
+                currentQuestionId={questionId}
+                getCardContent={getCardContent}
+                form={form}
+                setQuestionId={setQuestionId}
+            />
+        </div>
+    )
 }
 
 export default Form

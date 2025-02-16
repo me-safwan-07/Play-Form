@@ -4,8 +4,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TForm } from "@/types/forms";
-import "../../styles/global.css"
-import "../../styles/preflight.css"
+// import "../../styles/global.css"
+// import "../../styles/preflight.css"
 
 interface StackedCardContainerProps {
     cardArrangement: string;
@@ -29,9 +29,10 @@ const StackedCardContainer: React.FC<StackedCardContainerProps> = ({
     const [cardWidth, setCardWidth] = useState<number>(0);
 
     const questionIdxTemp = useMemo(() => {
-        if (currentQuestionId === 'start') return form.welcomeCard.enabled ? -1 : 0;
+        if (currentQuestionId === 'start' && form.welcomeCard?.enabled) return -1;
         return form.questions.findIndex(question => question.id === currentQuestionId);
-    }, [currentQuestionId, form.welcomeCard.enabled, form.questions]);
+    }, [currentQuestionId, form.welcomeCard, form.questions]);
+    
 
     const [prevQuestionIdx, setPrevQuestionIdx] = useState(questionIdxTemp - 1);
     const [currentQuestionIdx, setCurrentQuestionIdx] = useState(questionIdxTemp);
@@ -82,6 +83,12 @@ const StackedCardContainer: React.FC<StackedCardContainerProps> = ({
         }
     }, [visitedQuestionIdx, cardRefs, cardArrangement]);
 
+    
+    useEffect(() => {
+        console.log('questionIdx: ', questionIdxTemp);
+        console.log("currentQuestionIdx: ", currentQuestionId);
+        console.log("form welcome enabled: ", form.welcomeCard.enabled);
+    }, [questionIdxTemp, currentQuestionId, form.welcomeCard.enabled]);
 
     return (
         <div 

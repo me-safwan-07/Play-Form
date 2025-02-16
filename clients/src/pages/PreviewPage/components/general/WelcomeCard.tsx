@@ -28,17 +28,18 @@ export const WelcomeCard = ({
                 handleSubmit();
             }
         };
+    
         if (isCurrent) {
             document.addEventListener("keydown", handleEnter);
-        } else {
-            document.removeEventListener("keydown", handleEnter);
         }
+        console.log("Rendering WelcomeCard, isCurrent:", isCurrent);
 
+    
         return () => {
             document.removeEventListener("keydown", handleEnter);
         };
-
     }, [isCurrent]);
+    
 
     return (
         <div>
