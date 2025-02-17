@@ -43,7 +43,7 @@ export const SubmitButton = ({
       onClick={onClick}
       disabled={disabled}
     >
-      {buttonLabel || (isLastQuestion ? "Finish" : "Next")}
+      {isLastQuestion ? "Finish" : "Next"}
     </button>
   );
 };

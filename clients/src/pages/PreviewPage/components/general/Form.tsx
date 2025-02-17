@@ -35,7 +35,7 @@ function Form({
     const [loadingElement, setLoadingElement] = useState(false);
     const [history, setHistory] = useState<string[]>([]);
     const [responseData, setResponseData] = useState<TResponseData>({});
-    const [cardArrangement, setcardArrangement] = "straight"; // TODO if styling.cardArrangement
+    const [cardArrangement, setcardArrangement] = useState("simple"); // TODO if styling.cardArrangement
     const currentQuestionIndex = form?.questions ? form.questions.findIndex((q) => q.id === questionId): -1;
     const currentQuestion = useMemo(() => {
        if (questionId === "end" && !form.thankYouCard.enabled) {
@@ -57,19 +57,24 @@ function Form({
         }
     }, [questionId]);
 
+
+    useEffect(() => {
+        console.log(responseData);
+    }, [responseData]);
+
     let currIdxTemp = currentQuestionIndex;
     let currQuesTemp = currentQuestion;
 
-    const getNextQuestionId = (data: TResponseData): string => {
+    const getNextQuestionId = (): string => {
         const questions = form.questions;
-        const responseValue = data[questionId];
+        // const responseValue = data[questionId];
     
         if (questionId === "start") return questions[0]?.id || "end";
 
         if (currIdxTemp === -1) throw new Error("Question not found");
-        if(currentQuestion) {
-            setResponseData({ ...responseData, responseValue });
-        }
+        // if(currentQuestion) {
+        //     setResponseData({ ...responseData, responseValue });
+        // }
 
         return questions[currIdxTemp + 1]?.id || 'end';
     };
@@ -79,15 +84,15 @@ function Form({
         setResponseData(updatedResponseData);
     }
 
-    const onSubmit = (responseData: TResponseData) => {
-        const questionId = Object.keys(responseData)[0];
+    const onSubmit = () => {
+        const questionId = getNextQuestionId;
         setLoadingElement(true);
-        const nextQuestionId = getNextQuestionId(responseData);
+        const nextQuestionId = getNextQuestionId();
         const finished = nextQuestionId === 'end';
         onChange(responseData);
-        if (finished) {
-            window.parent.postMessage("playformcompleted", "*");
-        }
+        // if (finished) {
+        //     window.parent.postMessage("playformcompleted", "*");
+        // }
         setQuestionId(nextQuestionId);
         setHistory([...history, questionId]);
         setLoadingElement(false);
@@ -145,7 +150,7 @@ function Form({
                     )
                 )
             }
-        }
+        };
             
         return (
             <div className="h-full w-full">
@@ -175,7 +180,7 @@ function Form({
         <div>
             {/* {getCardContent(currIdxTemp, 0)} */}
             <StackedCardContainer 
-                cardArrangement={"simple"}
+                cardArrangement={cardArrangement}
                 currentQuestionId={questionId}
                 getCardContent={getCardContent}
                 form={form}

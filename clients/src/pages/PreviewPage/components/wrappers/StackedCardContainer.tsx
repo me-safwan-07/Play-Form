@@ -83,6 +83,15 @@ const StackedCardContainer: React.FC<StackedCardContainerProps> = ({
         }
     }, [visitedQuestionIdx, cardRefs, cardArrangement]);
 
+    const getCardHeight = (offset: number): string => {
+        // Take default height depending upon card content
+        if (offset === 0) return 'auto';
+        // preserver original height
+        else if (offset < 0) return "initial";
+        // Assign the height of the foremost card to all card behids it
+        else return cardHeight;
+    }
+
     
     useEffect(() => {
         console.log('questionIdx: ', questionIdxTemp);
@@ -98,7 +107,7 @@ const StackedCardContainer: React.FC<StackedCardContainerProps> = ({
             <div style={{ height: cardHeight }}>
             {cardArrangement === "simple" ? (
                 <div 
-                    className="w-full"
+                    className="w-full h-full"
                     // style={{
                     //     ...borderStyles
                     // }}    
@@ -129,10 +138,11 @@ const StackedCardContainer: React.FC<StackedCardContainerProps> = ({
                                     height: "100%",
                                     transitionDuration: "600ms",
                                     pointerEvents: offset === 0 ? "auto" : "none",
-                                    // ...borderStyles
+                                    // // ...borderStyles
                                 }}
                                 className="cursor-pointer rounded-custom bg-survey-bg absolute inset-x-0 backdrop-blur-md transition-all ease-in-out"
-                                >
+                            >
+                                
                                 {getCardContent(questionIdxTemp, offset)}
                             </div>
                         );
