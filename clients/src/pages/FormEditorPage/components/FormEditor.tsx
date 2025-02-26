@@ -86,7 +86,7 @@ export const FormEditor =({
                     <aside className="group hidden flex-1 flex-shrink-0 items-center justify-center overflow-hidden border-l border  border-slate-100 bg-slate-50 py-6 md:flex md:flex-col">
                         <FormPreview 
                             form={localForm}
-                            getSetQuestionId={activeQuestionId}
+                            questionId={activeQuestionId}
                         />
                     </aside>
                 </div>
