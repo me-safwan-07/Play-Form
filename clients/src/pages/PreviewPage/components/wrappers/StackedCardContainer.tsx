@@ -1,17 +1,15 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { TForm } from "@/types/forms";
+
+
 // offset = 0 -> current question card
 // offset < 0 -> Question cards that are already answered
 // offset > 0 -> Question cards that are not answered
-
-import { useEffect, useMemo, useRef, useState } from "react";
-import { TForm } from "@/types/forms";
-// import "../../styles/global.css"
-// import "../../styles/preflight.css"
-
 interface StackedCardContainerProps {
     cardArrangement: string;
     currentQuestionId: string;
-    getCardContent: (questionIdx: number, offset: number) => JSX.Element | undefined;
     form: TForm,
+    getCardContent: (questionIdx: number, offset: number) => JSX.Element | undefined;
     setQuestionId: React.Dispatch<React.SetStateAction<string>>;
 }
 
@@ -23,6 +21,8 @@ const StackedCardContainer: React.FC<StackedCardContainerProps> = ({
     setQuestionId,
 }) => {
     const [hovered, setHovered] = useState(false);
+    const highlightBorderColor = "white";
+    const cardBorderColor = "white";
     const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
     const resizeObserver = useRef<ResizeObserver | null>(null);
     const [cardHeight, setCardHeight] = useState("auto");
@@ -38,13 +38,16 @@ const StackedCardContainer: React.FC<StackedCardContainerProps> = ({
     const [currentQuestionIdx, setCurrentQuestionIdx] = useState(questionIdxTemp);
     const [nextQuestionIdx, setNextQuestionIdx] = useState(questionIdxTemp + 1);
     const [visitedQuestionIdx, setVisitedQuestionIdx] = useState<number[]>([]);
+
     useEffect(() => {
         if (questionIdxTemp > currentQuestionIdx) {
             // Next question is clicked
             setPrevQuestionIdx(currentQuestionIdx);
             setCurrentQuestionIdx(questionIdxTemp);
             setNextQuestionIdx(questionIdxTemp + 1);
-            setVisitedQuestionIdx((prev) => [...prev, questionIdxTemp]);
+            setVisitedQuestionIdx((prev) => {
+                return [...prev, questionIdxTemp];
+            });
         } else if (questionIdxTemp < currentQuestionIdx) {
             // Previous question is clicked
             setCurrentQuestionIdx(currentQuestionIdx);
@@ -58,7 +61,45 @@ const StackedCardContainer: React.FC<StackedCardContainerProps> = ({
                 return prev;
             });
         }
-    }, [questionIdxTemp]);
+    }, [questionIdxTemp, currentQuestionIdx, visitedQuestionIdx]);
+
+    const borderStyles = useMemo(() => {
+        const baseStyle = {
+            border: "1px solid",
+            borderRadius: "8px",
+        }
+        const borderColor = !highlightBorderColor ? cardBorderColor : highlightBorderColor;
+        return {
+            ...baseStyle,
+            borderColor: borderColor,
+        }
+    }, [cardBorderColor, highlightBorderColor]);
+
+    const calculateCardTransform = useMemo(() => {
+        const rotationCoefficient = cardWidth >= 1000 ? 1.5 : cardWidth > 650 ? 2 : 3;
+        return (offset: number) => {
+            switch(cardArrangement) {
+                case "casual":
+                    return offset < 0
+                    ? `translateX(33%)`
+                    : `translateX(0) rotate(-${(hovered ? rotationCoefficient : rotationCoefficient - 0.5) * offset}deg)`;
+                case "straight":
+                    return offset < 0 ? `translateY(25%)` : `translateY(-${(hovered ? 12 : 10) * offset}px)`;
+                default:
+                    return offset < 0 ? `translateX(0)` : `translateX(0)`;
+            }
+        };
+    }, [cardArrangement, cardWidth, hovered]);
+
+    const straightCardArrangementStyles = (offset: number) => {
+        if (cardArrangement === "straight") {
+        // styles to set the descending width of stacked question cards when card arrangement is set to straight
+        return {
+            width: `${100 - 5 * offset >= 100 ? 100 : 100 - 5 * offset}%`,
+            margin: "auto",
+        };
+        }
+    };
 
     // UseEffect to handle the resize of current question card and set card height accordingly
     useEffect(() => {
@@ -68,20 +109,26 @@ const StackedCardContainer: React.FC<StackedCardContainerProps> = ({
                 if (resizeObserver) {
                     resizeObserver.current?.disconnect();
                 }
-                // resizeObserver.current = new ResizeObserver((entries) => {
-                //     for (const entry of entries) {
-                //         setCardHeight(entry.target.height + "px");
-                //         setCardWidth(entry.target.width);
-                //     }
-                // });
-                // resizeObserver.current?.observe(currentElement);
+                resizeObserver.current = new ResizeObserver((entries) => {
+                    for (const entry of entries) {
+                        setCardHeight(entry.contentRect.height + "px");
+                        setCardWidth(entry.contentRect.width);
+                    }
+                });
+                resizeObserver.current?.observe(currentElement);
             }
         }, 0);
         return () => {
             resizeObserver.current?.disconnect();
             clearTimeout(timer);
         }
-    }, [visitedQuestionIdx, cardRefs, cardArrangement]);
+    }, [questionIdxTemp, cardRefs, cardArrangement]);
+
+    // Reset question progress, when card arrangement changes
+    useEffect(() => {
+        setQuestionId(form.welcomeCard.enabled ? "start" : form?.questions[0]?.id);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [cardArrangement])
 
     const getCardHeight = (offset: number): string => {
         // Take default height depending upon card content
@@ -90,14 +137,7 @@ const StackedCardContainer: React.FC<StackedCardContainerProps> = ({
         else if (offset < 0) return "initial";
         // Assign the height of the foremost card to all card behids it
         else return cardHeight;
-    }
-
-    
-    useEffect(() => {
-        console.log('questionIdx: ', questionIdxTemp);
-        console.log("currentQuestionIdx: ", currentQuestionId);
-        console.log("form welcome enabled: ", form.welcomeCard.enabled);
-    }, [questionIdxTemp, currentQuestionId, form.welcomeCard.enabled]);
+    };
 
     return (
         <div 
@@ -107,10 +147,10 @@ const StackedCardContainer: React.FC<StackedCardContainerProps> = ({
             <div style={{ height: cardHeight }}>
             {cardArrangement === "simple" ? (
                 <div 
-                    className="w-full h-full"
-                    // style={{
-                    //     ...borderStyles
-                    // }}    
+                    className="w-full"
+                    style={{
+                        ...borderStyles
+                    }}    
                 >
                     {getCardContent(questionIdxTemp, 0)}
                 </div>
@@ -133,12 +173,13 @@ const StackedCardContainer: React.FC<StackedCardContainerProps> = ({
                                 key={questionIdxTemp}
                                 style={{
                                     zIndex: 1000 - questionIdxTemp,
-                                    transform: `translateY(${offset * 100}%)`,
+                                    transform: `${calculateCardTransform(offset)}`,
                                     opacity: isHidden ? 0 : (100 - 0 * offset / 10),
-                                    height: "100%",
+                                    height: getCardHeight(offset),
                                     transitionDuration: "600ms",
                                     pointerEvents: offset === 0 ? "auto" : "none",
-                                    // // ...borderStyles
+                                    ...borderStyles,
+                                    ...straightCardArrangementStyles(offset),
                                 }}
                                 className="cursor-pointer rounded-custom bg-survey-bg absolute inset-x-0 backdrop-blur-md transition-all ease-in-out"
                             >
