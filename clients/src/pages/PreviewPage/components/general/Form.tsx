@@ -1,10 +1,8 @@
 import { cn } from '@/lib/utils';
 import { TForm } from '@/types/forms';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ProgressBar } from './ProgressBar';
 import { TResponseData } from '@/types/responses';
 import { WelcomeCard } from './WelcomeCard';
-import { forms } from '@/lib/api';
 import { QuestionConditional } from './QuestionConditional';
 import StackedCardContainer from '../wrappers/StackedCardContainer';
 import { ResponseErrorComponent } from './ResponseErrorComponent';
@@ -13,13 +11,23 @@ import { ResponseErrorComponent } from './ResponseErrorComponent';
 // survey-shadow: form-shadow (index.css)
 interface FormProps {
     form: TForm,
-    getSetQuestionId?: string | null;
+    autoFocus?: boolean;
+    onDisplay?: () => void;
+    getSetIsError?: (getSetError: (value: boolean) => void) => void;
+    getSetIsResponseSendingFinished?: (getSetIsResponseSendingFinished: (value: boolean) => void) => void;
+    getSetQuestionId?: string | null,
 }
 
 function Form({
     form,
     getSetQuestionId,
+    autoFocus = false,
+    onDisplay = () => {},
+    getSetIsError,
+    getSetIsResponseSendingFinished
 }: FormProps) {
+    const autoFocusEnabled = autoFocus !== undefined ? autoFocus : window.self === window.top;
+
     const [questionId, setQuestionId] = useState(() => {
         if (getSetQuestionId) {
             return getSetQuestionId;
@@ -30,12 +38,14 @@ function Form({
         }
     });
     const [showError, setShowError] = useState(false);
-
-    const [isResponseSendingFinished, setIsResponseSendingFinished] = useState(false);
+    // flag state to store whether response processing has been completed or not, we ignore  this check for form editor preview and link form preview where getSetIsResponseSendingFinished is undefined
+    const [isResponseSendingFinished, setIsResponseSendingFinished] = useState(
+        getSetIsResponseSendingFinished ? false : true
+    );
     const [loadingElement, setLoadingElement] = useState(false);
     const [history, setHistory] = useState<string[]>([]);
     const [responseData, setResponseData] = useState<TResponseData>({});
-    const [cardArrangement, setcardArrangement] = useState("simple"); // TODO if styling.cardArrangement
+    const [cardArrangement, setcardArrangement] = useState("straight"); // TODO if styling.cardArrangement
     const currentQuestionIndex = form?.questions ? form.questions.findIndex((q) => q.id === questionId): -1;
     const currentQuestion = useMemo(() => {
        if (questionId === "end" && !form.thankYouCard.enabled) {
@@ -59,13 +69,40 @@ function Form({
 
 
     useEffect(() => {
-        console.log(responseData);
-    }, [responseData]);
+        // call onDisplay when component is mounted
+        onDisplay();
 
-    let currIdxTemp = currentQuestionIndex;
-    let currQuesTemp = currentQuestion;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-    const getNextQuestionId = (): string => {
+    useEffect(() => {
+        if (getSetIsError) {
+            getSetIsError((value: boolean) => {
+                setShowError(value);
+            });
+        }
+    }, [getSetIsError]);
+
+    useEffect(() => {
+        if (getSetQuestionId) {
+          getSetQuestionId((value: string) => {
+            setQuestionId(value);
+          });
+        }
+    }, [getSetQuestionId]);
+
+    useEffect(() => {
+        if (getSetIsResponseSendingFinished) {
+        getSetIsResponseSendingFinished((value: boolean) => {
+            setIsResponseSendingFinished(value);
+        });
+        }
+    }, [getSetIsResponseSendingFinished]);
+
+    const currIdxTemp = currentQuestionIndex;
+    const currQuesTemp = currentQuestion;
+
+    const getNextQuestionId = (data: TResponseData): string => {
         const questions = form.questions;
         // const responseValue = data[questionId];
     
@@ -75,6 +112,8 @@ function Form({
         // if(currentQuestion) {
         //     setResponseData({ ...responseData, responseValue });
         // }
+
+        // if (currQuesTemp?)
 
         return questions[currIdxTemp + 1]?.id || 'end';
     };
