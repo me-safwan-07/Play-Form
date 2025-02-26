@@ -1,6 +1,5 @@
 import { Variants, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { OpenTextQuestion } from "./components/questions/OpenTextQuestion";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { TForm } from "@/types/forms";
 import { TabOption } from "@/components/ui/TabOption";
 import { ExpandIcon, MonitorIcon, ShrinkIcon, SmartphoneIcon } from "lucide-react";
@@ -10,9 +9,10 @@ import Form from "./components/general/Form";
 
 interface FormPreviewProps {
     form: TForm,
-    getSetQuestionId?: string | null,
-    
+    questionId?: string | null,
 }
+
+let formNametemp: string;
 
 const previewParentContainerVariant: Variants = {
     expanded: {
@@ -41,11 +41,11 @@ const previewParentContainerVariant: Variants = {
     },
   };
 
-  let setQuestionId = (_: string) => {};
+let setQuestionId = (_: string) => {};
 
 export const FormPreview = ({ 
     form,  
-    getSetQuestionId
+    questionId
 }: FormPreviewProps) => {
     const [isFullScreenPreview, setIsFullScreenPreview] = useState(false);
     const [previewMode, setPreviewMode] = useState("mobile");
@@ -65,8 +65,8 @@ export const FormPreview = ({
           boxShadow: "0px 4px 5px 4px rgba(169, 169, 169, 0.25)",
           transition: {
             ease: "easeInOut",
-            duration: 0.3,
-          },
+            duration: shrink ? 0.3 : 0,
+        },
         },
         expanded_with_fixed_positioning: {
           zIndex: 1050,
@@ -88,31 +88,58 @@ export const FormPreview = ({
         },
       };
 
-    // useEffect(() => {
-    //     console.log(form.questions.filter((question) => question.id === questionId))
-    // })
+    const updateQuestionId = useCallback(
+        (newQuestionId: string) => {
+            if (!newQuestionId || newQuestionId === "hidden") return
+            if (newQuestionId === "start" && !form.welcomeCard.enabled) return;
+            setQuestionId(newQuestionId);
+        },
+        [form.welcomeCard.enabled]
+    );
+
+    useEffect(() => {
+        if (questionId) {
+            updateQuestionId(questionId)
+        }
+    }, [questionId, updateQuestionId]);
+
+    // this useEffect is for refreshing the form preview only if user is switching between templates on form templates page and hence we are checking for form.id === "someUniqueId" which is a common Id for all templates
+    useEffect(() => {
+        if (form.name !== formNametemp && form.id === "someUniqueId1") {
+            resetQuestionProgress();
+            formNametemp = form.name;
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [form]) 
 
     const resetQuestionProgress = () => {
-        let storePreviewMode = previewMode;
+        const storePreviewMode = previewMode;
         setPreviewMode("null");
         setTimeout(() => {
             setPreviewMode(storePreviewMode);
         }, 10);
 
         setQuestionId(form.welcomeCard.enabled ? "start": form?.questions[0]?.id);
-
     }
+
     return (
         <div className="flex h-full w-full flex-col items-center justify-items-center" id="form-preview">
             <motion.div 
                 variants={previewParentContainerVariant}
                 className="fixed hidden h-[95%] w-5/6"
-                animate="shrink"
+                animate={isFullScreenPreview ? "expanded" : "shrink"}
             />
             <motion.div 
                 layout
                 variants={previewScreenVariants}
-                animate={isFullScreenPreview ? "expanded": "shrink"}
+                animate={
+                    isFullScreenPreview 
+                        ? previewPosition === 'relative'
+                            ? "expanded"
+                            : "expanded_with_fixed_positioning"
+                        : 'shrink'
+                }
                 className="relative flex h-[95%] max-h-[95%] w-5/6 items-center justify-center rounded-lg border border-slate-200 bg-slate-200" 
             >
                 {previewMode === "mobile" && (
@@ -123,10 +150,17 @@ export const FormPreview = ({
                         <div className="absolute right-0 top-0 m-2">
                             <ResetProgressButton onClick={() => resetQuestionProgress()} />
                         </div>    
-                        <MediaBackground isMobilePreview>
+                        <MediaBackground isMobilePreview ContentRef={ContentRef}>
                             <div className="flex h-full w-full flex-col justify-center item-center ">
                                 <div className="z-10 w-full max-w-md rounded-lg border border-transparent">
-                                    <Form form={form}  getSetQuestionId={getSetQuestionId}/>
+                                    <Form 
+                                        form={form}
+                                        isRedirectDisabled={true}
+                                        getSetQuestionId={(f: (value: string) => void) => {
+                                            setQuestionId = f;
+                                        }}
+                                        questionId={questionId}
+                                    />
                                 </div>
                             </div>
                         </MediaBackground>                 
@@ -142,17 +176,46 @@ export const FormPreview = ({
                             </div>
                             <div className="ml-4 flex w-full justify-between font-mono text-sm text-slate-400">
                                 <p>Preview</p>
-                                <ResetProgressButton onClick={() => resetQuestionProgress()} />
+
+                                <div className="flex items-center">
+                                    {isFullScreenPreview ? (
+                                        <ShrinkIcon 
+                                            className="mr-2 h-4 w-4 cursor-pointer"
+                                            onClick={() => {
+                                                setShrink(true);
+                                                setPreviewPosition("relative");
+                                                setTimeout(() => setIsFullScreenPreview(false), 300);
+                                            }}
+                                        />
+                                    ): (
+                                        <ExpandIcon 
+                                            className="mr-2 h-4 w-4 cursor-pointer"
+                                            onClick={() => {
+                                                setShrink(false);
+                                                setIsFullScreenPreview(true);
+                                                setTimeout(() => setPreviewPosition('fixed'), 300);
+                                            }}
+                                        />
+                                    )}
+                                    <ResetProgressButton onClick={() => resetQuestionProgress()} />
+                                </div>
                             </div>           
                         </div>
                         <MediaBackground 
                             // form={form}
                             // questionId={questionId}
-                            // contentRef={ContentRef}
+                            ContentRef={ContentRef}
                             isEditorView
                         >
                             <div className="z-0 w-full max-w-md rounded-lg border-transparent">
-                                <Form form={form} getSetQuestionId={getSetQuestionId}/>
+                                <Form 
+                                    form={form}
+                                    isRedirectDisabled={true}
+                                    questionId={questionId}
+                                    getSetQuestionId={(f: (value: string) => void) => {
+                                        setQuestionId = f;
+                                    }}                                
+                                />
                             </div>
                         </MediaBackground>
                     </div>
