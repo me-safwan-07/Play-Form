@@ -5,7 +5,7 @@ import { TabOption } from "@/components/ui/TabOption";
 import { ExpandIcon, MonitorIcon, ShrinkIcon, SmartphoneIcon } from "lucide-react";
 import { ResetProgressButton } from "@/components/ui/ResetProgressButton";
 import { MediaBackground } from "@/components/ui/MediaBackground";
-import Form from "./components/general/Form";
+import { FormInline } from "@/components/FormInline";
 
 interface FormPreviewProps {
     form: TForm,
@@ -153,13 +153,13 @@ export const FormPreview = ({
                         <MediaBackground isMobilePreview ContentRef={ContentRef}>
                             <div className="flex h-full w-full flex-col justify-center item-center ">
                                 <div className="z-10 w-full max-w-md rounded-lg border border-transparent">
-                                    <Form 
+                                    <FormInline
                                         form={form}
+                                        isBrandingEnabled={false} // product.linkFormBranding
                                         isRedirectDisabled={true}
                                         getSetQuestionId={(f: (value: string) => void) => {
                                             setQuestionId = f;
                                         }}
-                                        questionId={questionId}
                                     />
                                 </div>
                             </div>
@@ -208,10 +208,11 @@ export const FormPreview = ({
                             isEditorView
                         >
                             <div className="z-0 w-full max-w-md rounded-lg border-transparent">
-                                <Form 
+                                <FormInline
                                     form={form}
+                                    isBrandingEnabled={false} // product.linkFormBranding
                                     isRedirectDisabled={true}
-                                    questionId={questionId}
+                                    // questionId={questionId}
                                     getSetQuestionId={(f: (value: string) => void) => {
                                         setQuestionId = f;
                                     }}                                
