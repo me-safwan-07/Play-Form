@@ -27,9 +27,9 @@ export const EditWelcomeCard = ({
     // const [firstReander, setFirstReander] = useState(true);
     // const path = useLocation().pathname;
 
-    let open = activeQuestionId == "start";
+    const open = activeQuestionId == "start";
 
-    const setOpen = (e: any) => {
+    const setOpen = (e: boolean) => {
         if (e) {
             setActiveQuestionId("start");
             // setFirstReander(true);
@@ -134,7 +134,7 @@ export const EditWelcomeCard = ({
                                 </div>
                             </div>
                         </div>
-                        <div className="mt-6 flex  items-center">
+                        {/* <div className="mt-6 flex  items-center">
                             <div className="mr-2">
                                 <Switch 
                                     id="showResponseCount"
@@ -149,7 +149,7 @@ export const EditWelcomeCard = ({
                                     Display number of responses for survey
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </form>
                 </Collapsible.CollapsibleContent>
             </Collapsible.Root>
