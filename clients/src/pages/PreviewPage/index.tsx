@@ -6,6 +6,7 @@ import { ExpandIcon, MonitorIcon, ShrinkIcon, SmartphoneIcon } from "lucide-reac
 import { ResetProgressButton } from "@/components/ui/ResetProgressButton";
 import { MediaBackground } from "@/components/ui/MediaBackground";
 import Form from "./components/general/Form";
+import { FormInline } from "./components/general/FormInline";
 
 interface FormPreviewProps {
     form: TForm,
@@ -153,7 +154,7 @@ export const FormPreview = ({
                         <MediaBackground isMobilePreview ContentRef={ContentRef}>
                             <div className="flex h-full w-full flex-col justify-center item-center ">
                                 <div className="z-10 w-full max-w-md rounded-lg border border-transparent">
-                                    <Form 
+                                    <FormInline
                                         form={form}
                                         isRedirectDisabled={true}
                                         getSetQuestionId={(f: (value: string) => void) => {
@@ -208,7 +209,7 @@ export const FormPreview = ({
                             isEditorView
                         >
                             <div className="z-0 w-full max-w-md rounded-lg border-transparent">
-                                <Form 
+                                <FormInline
                                     form={form}
                                     isRedirectDisabled={true}
                                     questionId={questionId}
