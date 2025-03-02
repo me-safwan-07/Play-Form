@@ -1,15 +1,22 @@
 import z from 'zod';
 import { ZBaseStyling } from './styling';
 
+
+export const ZString = z.record(z.string()).refine((obj) => "default" in obj, {
+  message: "Object must have a 'default' key",
+});
+
+export type TString = z.infer<typeof ZString>;
+
 // Form Editor Tabs Enum
 export type TFormEditorTabs = "questions" | "settings" | "styling";
 
 // Thank You Card Schema
 export const ZFormThankYouCard = z.object({
   enabled: z.boolean(),
-  headline: z.string().optional(),
-  subheader: z.string().optional(),
-  buttonLabel: z.string().optional(),
+  headline: ZString.optional(),
+  subheader: ZString.optional(),
+  buttonLabel: ZString.optional(),
   buttonLink: z.string().optional(),
   imageUrl: z.string().optional(),
 });
@@ -41,11 +48,12 @@ export enum TFormQuestionTypeEnum {
 export const ZFormWelcomeCard = z
 .object({
   enabled: z.boolean(),
-  headline: z.string().optional(),
+  headline: ZString.optional(),
+  html: ZString.optional(),
   fileUrl: z.string().optional(),
-  html: z.string().optional(),
+  buttonLabel: ZString.optional(),
 })
-.refine((schema: { enabled: boolean; headline?: string }) => !(schema.enabled && !schema.headline), {
+.refine((schema) => !(schema.enabled && !schema.headline), {
   message: 'Welcome card must have a headline',
 });
 
@@ -79,8 +87,8 @@ export interface FormResponse {
   export const ZFormQuestionBase = z.object({
     id: z.string(),
     type: z.string(),
-    headline: z.string(),
-    subheader: z.string().optional(),
+    headline: ZString.optional(),
+    subheader: ZString.optional(),
     imageUrl: z.string().optional(),
     required: z.boolean(),
     pattern: z.string().optional(),
@@ -97,7 +105,7 @@ export interface FormResponse {
   
   export const ZFormOpenTextQuestion = ZFormQuestionBase.extend({
     type: z.literal(TFormQuestionTypeEnum.OpenText),
-    placeholder: z.string().optional(),
+    placeholder: ZString.optional(),
     longAnswer: z.boolean().optional(),
     inputType: ZFormOpenTextQuestionInputType.optional().default('text'),
   });
@@ -129,10 +137,23 @@ export const ZFormQuestions = z.array(ZFormQuestion);
 // Form Input Schema
 export const ZFormInput = z.object({
   name: z.string(),
+  createdBy: z.string().cuid().nullish(),
   status: ZFormStatus.optional(),
   welcomeCard: ZFormWelcomeCard,
   thankYouCard: ZFormThankYouCard,
   questions: ZFormQuestions,
+  environmentId: z.string(),
+  autoClose: z.number().nullable(),
+  redirectUrl: z.string().url().nullable(),
+  displayLimit: z.number().nullable(),
+  delay: z.number(),
+  autoComplete: z.number().nullable(),
+  runOnDate: z.date().nullable(),
+  closeOnDate: z.date().nullable(),
+  styling: ZFormStyling.nullable(),
+  verifyEmail: ZFormVerifyEmail.optional(),
+  resultShareKey: z.string().nullable(),
+  displayPercentage: z.number().nullish(),
 });
 
 export type TFormInput = z.infer<typeof ZFormInput>;
