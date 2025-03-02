@@ -1,12 +1,102 @@
-import { TFormQuestion } from "@/types/forms"
+import { TFormOpenTextQuestion, TFormQuestion, TFormQuestionTypeEnum, TFormThankYouCard, TFormWelcomeCard } from "@/types/forms"
 import { TProduct } from "@/types/products"
 import { structuredClone } from "./pollyfills/structuredClone";
 import { TTemplate } from "@/types/templates";
+import { createId } from "@paralleldrive/cuid2";
 
-export const customForm = {
-    name: "Start from scratch",
-    description: "Create a form without template."
+
+export const thankYouCardDefault: TFormThankYouCard = {
+  enabled: true,
+  headline: { default: "Thank you!" },
+  subheader: { default: "We appreciate your feedback." },
+  buttonLabel: { default: "Create your own form" },
+  buttonLink: "http://localhost:5173/signup"
+};
+
+const welcomeCardDefault: TFormWelcomeCard = {
+  enabled: false,
+  headline: { default: "Welcome!" },
+  html: { default: "Thanks for providing feedback - let's go!" },
+};
+
+const formDefault: TTemplate['preset'] = {
+  name: "New Form",
+  welcomeCard: welcomeCardDefault,
+  thankYouCard: thankYouCardDefault,
+  questions: [],
 }
+
+export const template: TTemplate[] = [
+  {
+    name: "Creaket premium league",
+    description: "Understand the reasons behind cart abandonment in your web shop",
+    preset: {
+      ...formDefault,
+      name: "Enter the player name",
+      questions: [
+        {
+          id: createId(),
+          type: TFormQuestionTypeEnum.OpenText,
+          headline: {
+            default: "Please elaborate on your reason for not completing the purchase:",
+          },
+          required: false,
+          inputType: "text",
+        },
+        {
+          id: createId(),
+          type: TFormQuestionTypeEnum.OpenText,
+          headline: {
+            default: "Please elaborate on your reason for not completing the purchase:",
+          },
+          required: false,
+          inputType: "text",
+        },
+      ]
+    }
+  },
+  {
+    name: "Site Abandonment Survey",
+    description: "Understand the reasons behind site abandonment in your web shop.",
+    preset: {
+      ...formDefault,
+      name: "Site Abandonment Survey",
+      questions: [
+        {
+          id: createId(),
+          type: TFormQuestionTypeEnum.OpenText,
+          headline: {
+            default: "Please elaborate on your reason for leaving the site:",
+          },
+          required: false,
+          inputType: "text",
+        },
+      ]
+    }
+  }
+]
+
+
+export const customForm: TTemplate = {
+    name: "Start from scratch",
+    description: "Create a form without template.",
+    preset: {
+      ...formDefault,
+      name: "New Form",
+      questions: [
+        {
+          id: createId(),
+          type: TFormQuestionTypeEnum.OpenText,
+          headline: { default: "What would you like to know?" },
+          subheader: { default: "This is an example survey." },
+          placeholder: { default: "Type your answer here..." },
+          required: true,
+          inputType: "text",
+        } as TFormOpenTextQuestion,
+      ],
+    }
+  }
+
 
 export const replaceQuestionPresetPlaceholders = (
   question: TFormQuestion,
