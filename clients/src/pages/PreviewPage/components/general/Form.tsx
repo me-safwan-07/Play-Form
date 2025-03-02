@@ -6,6 +6,7 @@ import { WelcomeCard } from './WelcomeCard';
 import { QuestionConditional } from './QuestionConditional';
 import StackedCardContainer from '../wrappers/StackedCardContainer';
 import { ResponseErrorComponent } from './ResponseErrorComponent';
+import { PlayFormBranding } from './PlayFormBranding';
 
 // fb-bg-survey-bg: white
 // survey-shadow: form-shadow (index.css)
@@ -15,23 +16,21 @@ interface FormProps {
     onDisplay?: () => void;
     getSetIsError?: (getSetError: (value: boolean) => void) => void;
     getSetIsResponseSendingFinished?: (getSetIsResponseSendingFinished: (value: boolean) => void) => void;
-    getSetQuestionId?: string | null,
+    getSetQuestionId?: ((setState: (value: string) => void) => void) | null,
 }
 
 function Form({
     form,
     getSetQuestionId,
-    autoFocus = false,
+    // autoFocus = false,
     onDisplay = () => {},
     getSetIsError,
     getSetIsResponseSendingFinished
 }: FormProps) {
-    const autoFocusEnabled = autoFocus !== undefined ? autoFocus : window.self === window.top;
+    // const autoFocusEnabled = autoFocus !== undefined ? autoFocus : window.self === window.top;
 
     const [questionId, setQuestionId] = useState(() => {
-        if (getSetQuestionId) {
-            return getSetQuestionId;
-        } else if (form.welcomeCard.enabled) {
+        if (form.welcomeCard.enabled) {
             return "start";
         } else {
             return form.questions[0]?.id;
@@ -39,9 +38,9 @@ function Form({
     });
     const [showError, setShowError] = useState(false);
     // flag state to store whether response processing has been completed or not, we ignore  this check for form editor preview and link form preview where getSetIsResponseSendingFinished is undefined
-    const [isResponseSendingFinished, setIsResponseSendingFinished] = useState(
-        getSetIsResponseSendingFinished ? false : true
-    );
+    // const [isResponseSendingFinished, setIsResponseSendingFinished] = useState(
+    //     getSetIsResponseSendingFinished ? false : true
+    // );
     const [loadingElement, setLoadingElement] = useState(false);
     const [history, setHistory] = useState<string[]>([]);
     const [responseData, setResponseData] = useState<TResponseData>({});
@@ -93,28 +92,22 @@ function Form({
 
     useEffect(() => {
         if (getSetIsResponseSendingFinished) {
-        getSetIsResponseSendingFinished((value: boolean) => {
-            setIsResponseSendingFinished(value);
-        });
+            getSetIsResponseSendingFinished((value: boolean) => {
+                setIsResponseSendingFinished(value);
+            });
         }
     }, [getSetIsResponseSendingFinished]);
 
     const currIdxTemp = currentQuestionIndex;
     const currQuesTemp = currentQuestion;
 
-    const getNextQuestionId = (data: TResponseData): string => {
+    const getNextQuestionId = (): string => {
         const questions = form.questions;
-        // const responseValue = data[questionId];
-    
+        
         if (questionId === "start") return questions[0]?.id || "end";
-
+    
         if (currIdxTemp === -1) throw new Error("Question not found");
-        // if(currentQuestion) {
-        //     setResponseData({ ...responseData, responseValue });
-        // }
-
-        // if (currQuesTemp?)
-
+    
         return questions[currIdxTemp + 1]?.id || 'end';
     };
 
@@ -124,41 +117,65 @@ function Form({
     }
 
     const onSubmit = () => {
-        const questionId = getNextQuestionId;
-        setLoadingElement(true);
         const nextQuestionId = getNextQuestionId();
-        const finished = nextQuestionId === 'end';
+        setLoadingElement(true);
+    
+        // Save the response data before moving to the next question
         onChange(responseData);
-        // if (finished) {
-        //     window.parent.postMessage("playformcompleted", "*");
-        // }
-        setQuestionId(nextQuestionId);
-        setHistory([...history, questionId]);
+    
+        if (nextQuestionId === "end") {
+            // Show a confirmation popup before leaving
+            const userConfirmed = window.confirm("You have reached the end of the form. Do you want to submit?");
+            if (!userConfirmed) {
+                setLoadingElement(false);
+                return;
+            }
+            window.parent.postMessage("playformcompleted", "*");
+        } else {
+            // Move to the next question
+            setHistory([...history, questionId]); // Track history
+            setQuestionId(nextQuestionId);
+        }
+    
         setLoadingElement(false);
     };
 
     const onBack = (): void => {
-        let prevQuestionId;
-        // use history if available
-        if(history?.length > 0) {
-            const newHistory = [...history];
-            prevQuestionId = newHistory.pop();
-            setHistory(newHistory);
-        } else {
-            prevQuestionId = form.questions[currIdxTemp - 1]?.id;
+        if (history.length === 0) {
+            alert("You are at the first question.");
+            return;
         }
-        if (!prevQuestionId) throw new Error("Question not found");
-        setQuestionId(prevQuestionId);
+    
+        const newHistory = [...history];
+        const prevQuestionId = newHistory.pop();
+        setHistory(newHistory);
+        setQuestionId(prevQuestionId || form.questions[0]?.id);
     };
 
+    // useEffect(() => {
+    //     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+    //         event.preventDefault();
+    //         event.returnValue = "Are you sure you want to leave? Your progress will be lost.";
+    //     };
+        
+    //     window.addEventListener("beforeunload", handleBeforeUnload);
+        
+    //     return () => {
+    //         window.removeEventListener("beforeunload", handleBeforeUnload);
+    //     };
+    // }, []);
     
     const getCardContent = (questionIdx: number, offset: number): JSX.Element | undefined => {
         if (showError) {
             return (
-                // not completed yet
-                <ResponseErrorComponent />
+                <ResponseErrorComponent 
+                    responseData={responseData}
+                    question={form.questions}
+                    onRetry={() => {}} // TODO - add the onRetry props or functions
+                />
             )
         }
+        
         const content = () => {
             if (questionIdx === -1) {
                 return (
@@ -196,7 +213,7 @@ function Form({
                 <div
                     className={cn(
                         "no-scrollbar md:rounded-lg bg-white flex h-full w-full flex-col justify-between overflow-hidden transition-all duration-1000 ease-in-out form-shadow ",
-                        cardArrangement === "simple" ? "form-shadow" : "",
+                        cardArrangement === "simple" ? "pf-form-shadow" : "",
                         offset === 0 ? "opacity-100" : "opacity-0"
                     )}
                     >
@@ -204,11 +221,13 @@ function Form({
                         ref={contentRef}
                         className={cn(
                             loadingElement ? 'animate-pulse opacity-60' : ''
+                            ,"my-auto"
                         )}
                         >
                         {content()}
                     </div>
                     <div className="mx-6 mb-10 mt-2 space-y-3 md:mb-6 md:mt-6">
+                        <PlayFormBranding />
                         {/* <ProgressBar form={form} questionId={questionId} /> */}
                     </div>
                 </div>

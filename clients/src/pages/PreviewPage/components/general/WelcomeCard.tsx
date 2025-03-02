@@ -4,6 +4,7 @@ import { ScrollableContainer } from "../wrappers/ScrollableContainer";
 import { Headline } from "./Headline";
 import { SubmitButton } from "../buttons/SubmitButton";
 import { TResponseData } from "@/types/responses";
+import { HtmlBody } from "./HtmlBody";
 
 interface WelcomeCardProps {
     headline?: string;
@@ -44,10 +45,17 @@ export const WelcomeCard = ({
     return (
         <div>
             <ScrollableContainer>
-                <Headline 
-                    headline={headline}
-                    questionId="welcomeCard"
-                />
+                <div>
+                    <Headline 
+                        headline={headline}
+                        questionId="welcomeCard"
+                    />
+
+                    <HtmlBody 
+                        htmlString="welcome to badhriya premium leage gangolli"
+                        questionId="welcomeCard"
+                    />
+                </div>
             </ScrollableContainer>
 
             <div className="mx-6 mt-4 flex gap-4 py-4">

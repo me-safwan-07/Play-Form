@@ -1,6 +1,6 @@
 interface BackButtonProps {
-    onClick: () => void;
-    tabIndex: number;
+    onClick?: () => void;
+    tabIndex?: number;
 }
 
 export const BackButton = ({ onClick, tabIndex }: BackButtonProps) => {
