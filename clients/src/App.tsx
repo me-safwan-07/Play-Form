@@ -5,6 +5,8 @@ import { Toaster } from "react-hot-toast";
 import {FormEditorPage} from './pages/FormEditorPage';
 import { FormHome } from './pages/FormPage';
 import Analysis from './pages/analysis';
+import Templates from './pages/templates';
+// import "./App.css";
 
 const App = () => {
   return (
@@ -16,6 +18,8 @@ const App = () => {
         <Route path='/environments/:environmentId/forms' element={<FormHome />} />
         <Route path='/environments/:environmentId/forms/:formId/edit' element={<FormEditorPage />} />
         <Route path='/environments/:environmentId/forms/:formId/*' element={<Analysis />} />
+        <Route path='/environments/:environmentId/forms/templates' element={<Templates />} />
+        
       </Routes>
     </>
   );
