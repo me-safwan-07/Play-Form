@@ -1,19 +1,19 @@
 import { StartFromScratchTemplate } from "./components/StartFromScratchTemplate"
 import { TTemplate } from "@/types/templates";
 import { TFormInput } from "@/types/forms";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 
 
 interface TemplateListProps {
-    environmentId?: string;
+    environmentId: string;
     templateSearch?: string;
     onTemplateClick?: (template: TTemplate) => void;
 }
 export const TemplateList = ({
     environmentId,
-    templateSearch,
+    // templateSearch,
     onTemplateClick = () => {},
 }: TemplateListProps) => {
     const navigate = useNavigate();
@@ -21,14 +21,20 @@ export const TemplateList = ({
     const [loading, setLoading] = useState(false);
     // const [selectedFilter, setSelectedFilter] = useState<
 
+    if(!environmentId) {
+        throw new Error("Environment not found")
+    }
+
     const createForms = async (activeTemplate: TTemplate) => {
         setLoading(true);
         const augmentedTemplate: TFormInput = {
             ...activeTemplate.preset,
             createdBy: environmentId,
         };
+        console.log("ActiveTemplate:", activeTemplate);
+        console.log("augmentedTemplate", augmentedTemplate);
         try {
-            const reponse = await axios.post("http://localhost:3000/api/form",
+            const reponse = await axios.post("http://localhost:3000/api/forms",
                 augmentedTemplate,
                 {
                     headers: {
@@ -42,7 +48,7 @@ export const TemplateList = ({
                 console.log(reponse)
                 throw new Error(`create form error ${reponse}`)
             } 
-            navigate(`/environments/${environmentId}/forms/${reponse.id}/edit`);
+            // navigate(`/environments/${environmentId}/forms/${reponse.id}/edit`);
 
         } catch (err) {
             console.error("Error creating form:", err)

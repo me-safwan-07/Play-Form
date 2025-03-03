@@ -67,7 +67,7 @@ export function FormHome() {
                 You&apos;re all set! Time to create your first survey.
             </h1>
             <TemplateList 
-              environment={environmentId || ''} 
+              environmentId={environmentId} 
             />
         </>
       )}

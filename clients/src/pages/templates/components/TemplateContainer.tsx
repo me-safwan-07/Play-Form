@@ -1,6 +1,6 @@
 import { customForm } from "@/lib/templates";
 import { TTemplate } from "@/types/templates";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MenuBar } from "./MenuBar";
 import { SearchBox } from "@/components/ui/SearchBox";
 import { TemplateList } from "@/components/ui/TemplateList";
@@ -12,6 +12,16 @@ type TemplateContainerWithPreviewProps = {
 export const TemplateContainerWithPreview = ({
     environmentId,
 }: TemplateContainerWithPreviewProps) => {
+
+    if (!environmentId) {
+        throw new Error("Environment NOt found")
+    } else {
+        console.log("EnvironmentID", environmentId)
+    }
+
+    useEffect(() => {
+        console.log("TemplateContainerWithPreviewProps-environmentId", environmentId)
+    }) 
     const initialTemplate = customForm;
     const [activeTemaplate, setActiveTemplate] = useState<TTemplate>({
         name: initialTemplate.name,

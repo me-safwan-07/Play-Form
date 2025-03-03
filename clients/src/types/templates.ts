@@ -9,7 +9,7 @@ export const ZTemplate = z.object({
     description: z.string(),
     icon: z.any().optional(),
     role: ZTemplateRole.optional(),
-    industries: z.array(z.enum(["eCommerce", "saas", "other"])).optional(),
+    // industries: z.array(z.enum(["eCommerce", "saas", "other"])).optional(),
     // objectives: z.array()
     preset: z.object({
         name: z.string(),
