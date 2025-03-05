@@ -1,23 +1,23 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { TemplateContainerWithPreview } from "./components/TemplateContainer";
-import { useEffect } from "react";
 
 const Templates = () => {
     const { environmentId } = useParams();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        console.log("Templates-environmentId", environmentId);
-    }, [environmentId]); // Dependency array added
+    // check if the evnironmenid correct using api (getEnvironmentId)
+
 
     if (!environmentId) {
         console.error("Environment not found in parent components");
-        // navigate('/auth/login'); // Uncomment this if you want to redirect instead of throwing an error
+        navigate('/auth/login');
         throw new Error("Environment not found in parent components");
     }
 
     return (
-        <TemplateContainerWithPreview environmentId={environmentId} />
+        <TemplateContainerWithPreview 
+            environmentId={environmentId} 
+        />
     );
 };
 

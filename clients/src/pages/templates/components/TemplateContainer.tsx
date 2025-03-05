@@ -1,9 +1,11 @@
 import { customForm } from "@/lib/templates";
 import { TTemplate } from "@/types/templates";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MenuBar } from "./MenuBar";
 import { SearchBox } from "@/components/ui/SearchBox";
 import { TemplateList } from "@/components/ui/TemplateList";
+import { FormPreview } from "@/pages/PreviewPage";
+import { minimalForm } from "@/lib/minimalForm";
 
 type TemplateContainerWithPreviewProps = {
     environmentId: string;
@@ -12,25 +14,8 @@ type TemplateContainerWithPreviewProps = {
 export const TemplateContainerWithPreview = ({
     environmentId,
 }: TemplateContainerWithPreviewProps) => {
-
-    if (!environmentId) {
-        throw new Error("Environment NOt found")
-    } else {
-        console.log("EnvironmentID", environmentId)
-    }
-
-    useEffect(() => {
-        console.log("TemplateContainerWithPreviewProps-environmentId", environmentId)
-    }) 
     const initialTemplate = customForm;
-    const [activeTemaplate, setActiveTemplate] = useState<TTemplate>({
-        name: initialTemplate.name,
-        description: initialTemplate.description,
-        preset: {
-            ...initialTemplate.preset,
-            questions: initialTemplate.preset.questions[0] || {}
-        }
-    });
+    const [activeTemaplate, setActiveTemplate] = useState<TTemplate>(initialTemplate);
     const [activeQuestionId, setActiveQuestionId] = useState<string>(initialTemplate.preset.questions[0].id);
     const [templatesSearch, setTemplateSearch] = useState<string | null>(null);
 
@@ -63,6 +48,16 @@ export const TemplateContainerWithPreview = ({
                         environmentId={environmentId}
                     />
                 </div>
+                {/* <aside className="">
+                    {activeTemaplate && (
+                        <div className="">
+                            <FormPreview 
+                                form={{ ...minimalForm, ...activeTemaplate.preset}}
+                                questionId={activeQuestionId}
+                            />
+                        </div>
+                    )}
+                </aside> */}
             </div>
         </div>
     )
