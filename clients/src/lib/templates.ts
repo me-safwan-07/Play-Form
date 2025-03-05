@@ -78,29 +78,29 @@ export const template: TTemplate[] = [
 
 
 export const customForm: TTemplate = {
-    name: "Start from scratch",
-    description: "Create a form without template.",
-    preset: {
-      ...formDefault,
-      name: "New Form",
-      questions: [
-        {
-          id: createId(),
-          type: TFormQuestionTypeEnum.OpenText,
-          headline: { default: "What would you like to know?" },
-          subheader: { default: "This is an example survey." },
-          placeholder: { default: "Type your answer here..." },
-          required: true,
-          inputType: "text",
-        } as TFormOpenTextQuestion,
-      ],
-    }
+  name: "Start from scratch",
+  description: "Create a form without template.",
+  preset: {
+    ...formDefault,
+    name: "New Form",
+    questions: [
+      {
+        id: createId(),
+        type: TFormQuestionTypeEnum.OpenText,
+        headline: { default: "What would you like to know?" },
+        subheader: { default: "This is an example survey." },
+        placeholder: { default: "Type your answer here..." },
+        required: true,
+        inputType: "text",
+      } as TFormOpenTextQuestion,
+    ],
   }
+};
 
 
 export const replaceQuestionPresetPlaceholders = (
   question: TFormQuestion,
-  product: TProduct
+  product?: TProduct
 ): TFormQuestion => {
   if (!product) return question;
   const newQuestion = structuredClone(question);
@@ -119,15 +119,13 @@ export const replaceQuestionPresetPlaceholders = (
 };
 
 // Replace all occurrences of productName with the actual product name in the current template
-export const replacePresetPlaceholders = (template: TTemplate, product: TProduct) => {
+export const replacePresetPlaceholders = (template: TTemplate) => {
   const preset = structuredClone(template.preset);
-
   // Replace placeholders in the preset name
-  preset.name = preset.name.replace("{{productName}}", product.name);
 
   // Replace placeholders in each question
   preset.questions = preset.questions.map((question) => {
-    return replaceQuestionPresetPlaceholders(question, product);
+    return replaceQuestionPresetPlaceholders(question);
   });
 
   return { ...template, preset };
