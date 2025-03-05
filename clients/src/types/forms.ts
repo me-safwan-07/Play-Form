@@ -77,6 +77,52 @@ export interface FormResponse {
     welcomeCard: object;
     thankYouCard: object;
   }
+
+export const ZFormLogicCondition = z.enum([
+  "accepted",
+  "clicked",
+  "submitted",
+  "skipped",
+  "equals",
+  "notEquals",
+  "lessThan",
+  "lessEqual",
+  "greaterThan",
+  "greaterEqual",
+  "includesAll",
+  "includesOne",
+  "uploaded",
+  "notUploaded",
+  "booked",
+  "isCompletelySubmitted",
+  "isPartiallySubmitted",
+]);
+
+export type TFormLogicCondition = z.infer<typeof ZFormLogicCondition>;
+
+
+export const ZFormLogicBase = z.object({
+  condition: ZFormLogicCondition.optional(),
+  value: z.union([z.string(), z.array(z.string())]).optional(),
+  destinatioin: z.union([z.string(), z.literal('end')]).optional(),
+});
+
+export const ZFormOpenTextLogic = ZFormLogicBase.extend({
+  condition: z.enum(["submitted", "skipped"]).optional(),
+  value: z.undefined(),
+});
+
+export const ZFormConsentLogic = ZFormLogicBase.extend({
+  condition: z.enum(['skipped', 'accepted']).optional(),
+  value: z.undefined(),
+})
+
+
+export const ZFormLogic = z.union([
+  ZFormOpenTextLogic,
+  ZFormConsentLogic
+])
+
   
   // Form Update Input
   
@@ -96,6 +142,7 @@ export interface FormResponse {
     // backButtonLabel: z.string().optional(),
     // scale: z.enum(['number', 'smiley', 'star']).optional(),
     // range: z.union([z.literal(5), z.literal(3), z.literal(4), z.literal(7), z.literal(10)]).optional(),
+    logic: z.array(ZFormLogic).optional(),
     isDraft: z.boolean().optional(),
   });
   
@@ -107,6 +154,7 @@ export interface FormResponse {
     type: z.literal(TFormQuestionTypeEnum.OpenText),
     placeholder: ZString.optional(),
     longAnswer: z.boolean().optional(),
+    logic: z.array(ZFormOpenTextLogic).optional(),
     inputType: ZFormOpenTextQuestionInputType.optional().default('text'),
   });
   
@@ -124,6 +172,7 @@ export interface FormResponse {
   export const ZFormQuestion = z.union([ZFormOpenTextQuestion, ZFormFileUploadQuestion]);
   
   export type TFormQuestion = z.infer<typeof ZFormQuestion>;
+
   export type TFormQuestions = z.infer<typeof ZFormQuestions>;
 
 // Question Type Enum
