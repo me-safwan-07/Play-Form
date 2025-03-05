@@ -1,5 +1,5 @@
 import z from 'zod';
-import { ZFormQuestion, ZFormThankYouCard, ZFormWelcomeCard } from './forms';
+import { ZFormQuestions, ZFormThankYouCard, ZFormWelcomeCard } from './forms';
 
 export const ZTemplateRole = z.enum(["productManager", "customerSuccess", "marketing", "sales"]);
 export type TTemplateRole = z.infer<typeof ZTemplateRole>;
@@ -14,7 +14,7 @@ export const ZTemplate = z.object({
     preset: z.object({
         name: z.string(),
         welcomeCard: ZFormWelcomeCard,
-        questions: ZFormQuestion,
+        questions: ZFormQuestions,
         thankYouCard: ZFormThankYouCard
     }),
 });
