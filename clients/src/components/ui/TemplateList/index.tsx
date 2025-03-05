@@ -1,7 +1,7 @@
 import { StartFromScratchTemplate } from "./components/StartFromScratchTemplate"
 import { TTemplate } from "@/types/templates";
 import { TFormInput } from "@/types/forms";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 
@@ -21,20 +21,27 @@ export const TemplateList = ({
     const [loading, setLoading] = useState(false);
     // const [selectedFilter, setSelectedFilter] = useState<
 
-    if(!environmentId) {
-        throw new Error("Environment not found")
-    }
-
     const createForms = async (activeTemplate: TTemplate) => {
         setLoading(true);
         const augmentedTemplate: TFormInput = {
             ...activeTemplate.preset,
-            createdBy: environmentId,
+            // createdBy: environmentId,
+            // autoClose: null,
+            // redirectUrl: null,
+            // displayLimit: null,
+            // autoComplete: null,
+            // runOnDate: null,
+            // closeOnDate: null,
+            // styling: null,
+            // resultShareKey: null
         };
+    
         console.log("ActiveTemplate:", activeTemplate);
-        console.log("augmentedTemplate", augmentedTemplate);
+        console.log("AugmentedTemplate:", augmentedTemplate);
+    
         try {
-            const reponse = await axios.post("http://localhost:3000/api/forms",
+            const response = await axios.post(
+                "http://localhost:3000/api/forms",
                 augmentedTemplate,
                 {
                     headers: {
@@ -43,23 +50,27 @@ export const TemplateList = ({
                     },
                 }
             );
-
-            if (reponse.status !== 201) {
-                console.log(reponse)
-                throw new Error(`create form error ${reponse}`)
-            } 
-            // navigate(`/environments/${environmentId}/forms/${reponse.id}/edit`);
-
+    
+            if (response.status !== 201) {
+                console.error("Create form error:", response.data);
+                throw new Error(`Error creating form: ${JSON.stringify(response.data)}`);
+            }
+    
+            console.log("Form created successfully:", response.data);
+            navigate(`/environments/${environmentId}/forms/${response.data.id}/edit`);
+    
         } catch (err) {
-            console.error("Error creating form:", err)
+            console.error("Error creating form:", err);
+        } finally {
+            setLoading(false);
         }
-        
-    }  
+    };
+      
     return (
         <main className="">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <StartFromScratchTemplate 
-                    activeTemplate={activeTemplate}
+                    activeTemaplate={activeTemplate}
                     setActiveTemplate={setActiveTemplate}
                     onTemplateClick={onTemplateClick}
                     createForm={createForms}
