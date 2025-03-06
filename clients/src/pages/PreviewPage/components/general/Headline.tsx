@@ -19,7 +19,7 @@ interface HeadlineProps {
           className={`flex items-center ${alignTextCenter ? "justify-center" : "justify-between"}`}
           dir="auto">
           {headline}
-          {required === false && (
+          {!required && (
             <span
               className="text-slate-900 mx-2 self-start text-sm font-normal leading-7 opacity-60"
               tabIndex={-1}>
