@@ -11,10 +11,12 @@ export const FormEditorPage = () => {
   const [form, setForm] = useState<TForm| null>(null);
   const responseCount = 0;
 
-  if (!formId || !environmentId) {
-    return <ErrorComponent />;
+  if (!environmentId) {
+    throw new Error("No environment ID")
   }
+
   useEffect(() => {
+    if (!formId || !environmentId) return;
     const fetchForm = async () => {
       const res = await axios.get(`http://localhost:3000/api/form/${formId}`,
         {
@@ -33,13 +35,7 @@ export const FormEditorPage = () => {
     };
 
     fetchForm();
-  }, [formId]);
-
-
-  useEffect(() => {
-    console.log("form");
-    console.log(form);
-  }, [form]);
+  }, [formId, environmentId]);
 
   if (!form) {
     return <ErrorComponent />;

@@ -41,13 +41,8 @@ export const QuestionsView = ({
         }, {} as { [key: string]: string });
     }, [localForm.questions]);
 
-    useEffect(() => {
-        console.log("localForm");
-        console.log(localForm);
-    }, [localForm]);
-
     const updateQuestion = (questionIdx: number, updatedAttributes: any) => {
-        let updatedForm = { ...localForm };
+        const updatedForm = { ...localForm };
         if ("id" in updatedAttributes) {
             // if the form whose id is to be changed is linked to logic of any other form then changing it
             const initialQuestionId = updatedForm.questions[questionIdx].id;
@@ -73,7 +68,7 @@ export const QuestionsView = ({
     const deleteQuestion = (questionIdx: number) => {
         const questionId = localForm.questions[questionIdx].id;
         const activeQuestionIdTemp = activeQuestionId ?? localForm.questions[0].id;
-        let updatedForm: TForm = { ...localForm };
+        const updatedForm: TForm = { ...localForm }; // change to let
 
         // // check if we are recalling from this question
         // updatedForm.questions.forEach((question) => {
@@ -143,11 +138,10 @@ export const QuestionsView = ({
     };
 
 
-
     useEffect(() => {
         if(invalidQuestions === null) return;
 
-        const updateInvalidQuestions = (card: any, cardId: string, currentInvalidQuestions: string[]) => {
+        const updateInvalidQuestions = (card: { enabled: boolean }, cardId: string, currentInvalidQuestions: string[]) => { // TODO check the card type 
             if (card.enabled && !isCardValid(card, cardId as "start" | "end")) {
                 return currentInvalidQuestions.includes(cardId)
                     ? currentInvalidQuestions
@@ -164,6 +158,7 @@ export const QuestionsView = ({
         );
         
         setInvalidQuestions(updatedQuestionEnd);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [localForm.welcomeCard, localForm.thankYouCard]);
 
     const sensors = useSensors(

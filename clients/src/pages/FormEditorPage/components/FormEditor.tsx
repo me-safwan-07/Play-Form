@@ -38,6 +38,8 @@ export const FormEditor =({
         if(localForm?.questions?.length && localForm.questions.length > 0) {
             setActiveQuestionId(localForm.questions[0].id);
         }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [form?.questions]);
 
 
@@ -50,6 +52,7 @@ export const FormEditor =({
     return (
         <>
             <div className="scroll-hidden flex h-full w-full flex-col">
+
                 <FormMenuBar
                     localForm={localForm}
                     setLocalForm={setLocalForm}
@@ -84,10 +87,10 @@ export const FormEditor =({
                     </main>
 
                     <aside className="group hidden flex-1 flex-shrink-0 items-center justify-center overflow-hidden border-l border  border-slate-100 bg-slate-50 py-6 md:flex md:flex-col">
-                        <FormPreview 
+                        {/* <FormPreview 
                             form={localForm}
                             questionId={activeQuestionId}
-                        />
+                        /> */}
                     </aside>
                 </div>
             </div>
