@@ -219,7 +219,7 @@ export const createForm = async (req: CustomRequest, res: Response, next: NextFu
       },
       select: selectForm,
     });
-
+    console.log(form)
     res.status(200).json({ form });
     next();
   } catch (err) {

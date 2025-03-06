@@ -202,6 +202,7 @@ const createForm = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
             data: Object.assign({}, formBody),
             select: exports.selectForm,
         });
+        console.log(form);
         res.status(200).json({ form });
         next();
     }
