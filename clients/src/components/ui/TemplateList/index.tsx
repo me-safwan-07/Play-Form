@@ -51,13 +51,15 @@ export const TemplateList = ({
                 }
             );
     
-            if (response.status !== 201) {
-                console.error("Create form error:", response.data);
+            if (response.status !== 200) {
+                console.error("Create form error:", response);
                 throw new Error(`Error creating form: ${JSON.stringify(response.data)}`);
             }
-    
-            console.log("Form created successfully:", response.data);
-            navigate(`/environments/${environmentId}/forms/${response.data.id}/edit`);
+            
+            if (response.status === 200) {
+                console.log("Form created successfully:", response.data.form.id);
+            }
+            navigate(`/environments/${environmentId}/forms/${response.data.form.id}/edit`);
     
         } catch (err) {
             console.error("Error creating form:", err);
