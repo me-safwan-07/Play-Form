@@ -207,13 +207,14 @@ export const QuestionsView = ({
                     internalQuestionIdMap={internalQuestionIdMap}
                 />
             </DndContext>
-
-            <AddQuestionButton addQuestion={addQuestion}/>
-            <div className="mt-5 flex flex-col gap-5">
+            <div className="mt-2 flex flex-col gap-5">
+                <AddQuestionButton addQuestion={addQuestion}/>
+            </div>
+            {/* <div className="mt-5 flex flex-col gap-5">
                 <EditThankYouCard 
                     localForm={localForm}
                 />
-            </div>
+            </div> */}
         </div>
     )
 };

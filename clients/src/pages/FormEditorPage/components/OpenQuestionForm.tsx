@@ -44,7 +44,7 @@ export const OpenQuestionForm = ({
         <form>
             <QuestionFormInput 
                 id="headline"
-                value={question.headline}
+                value={question.headline?.default ?? question.headline ?? ''}
                 localForm={localForm}
                 questionIdx={questionIdx}
                 isInvalid={isInvalid}
@@ -58,7 +58,7 @@ export const OpenQuestionForm = ({
                         <div className="w-full">
                             <QuestionFormInput
                                 id="subheader"
-                                value={question.subheader}
+                                value={question.subheader?.default ?? question.headline ?? ''}
                                 localForm={localForm}
                                 questionIdx={questionIdx}
                                 isInvalid={isInvalid}
@@ -90,7 +90,7 @@ export const OpenQuestionForm = ({
                 {/* add the toggle button for add description */}
             </div>
             <div className="mt-2">
-                <QuestionFormInput 
+                {/* <QuestionFormInput 
                     id="placeholder"
                     label={"Placeholder"}
                     isInvalid={isInvalid}
@@ -98,7 +98,7 @@ export const OpenQuestionForm = ({
                     localForm={localForm}
                     questionIdx={questionIdx}
                     updateQuestion={updateQuestion}
-                />
+                /> */}
             </div>
 
             <div className="mt-3">

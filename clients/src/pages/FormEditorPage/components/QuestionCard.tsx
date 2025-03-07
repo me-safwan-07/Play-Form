@@ -108,7 +108,11 @@ export const QuestionCard = ({
                             </div>
                             <div className="grow" dir="auto">
                                 <p className="text-sm font-semibold">
-                                    {question.headline ? String(question.headline) : getTFormQuestionTypeEnumName(question.type)}
+                                    {question.headline 
+                                        ? (typeof question.headline === 'object' && question.headline.default 
+                                            ? question.headline.default 
+                                            : String(question.headline))
+                                        : getTFormQuestionTypeEnumName(question.type)}
                                 </p>
                                 {!open && question?. required && (
                                     <p className="mt-1 truncate text-xs text-slate-500">{question?.required && "Required"}</p>
