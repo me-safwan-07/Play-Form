@@ -10,7 +10,7 @@ import { Input } from "../input";
 
 interface QuestionFormInputProps {
     id: string;
-    value: string | undefined;
+    value: string[] | string | undefined;
     localForm: TForm;
     questionIdx: number;
     updateQuestion?: (questionIdx: number, data: Partial<TFormQuestion>) => void;

@@ -45,3 +45,5 @@ export const ZBaseStyling = z.object({
     cardArrangement: ZCardArrangementOptions.nullish(),
     background: ZFormStylingBackground.nullish(),
 })
+
+export type TBaseStyling = z.infer<typeof ZBaseStyling>;
