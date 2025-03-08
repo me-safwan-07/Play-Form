@@ -22,11 +22,11 @@ const verifyToken = (req, res, next) => {
     try {
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
         console.log('Decoded token:', decoded);
-        if (!decoded.id) {
-            res.status(401).json({ message: 'Invalid token' });
-            return;
-        }
-        req.userId = decoded.id;
+        // if (!decoded.id) {
+        //   res.status(401).json({ message: 'Invalid token' });
+        //   return;
+        // }
+        req.userId = decoded.userId;
         next();
     }
     catch (error) {
