@@ -123,7 +123,7 @@ exports.ZFormUpdateInput = ZForms.omit({ createdAt: true, updatedAt: true }).and
 exports.ZFormFilterCriteria = zod_1.default.object({
     name: zod_1.default.string().optional(),
     status: zod_1.default.array(exports.ZFormStatus).optional(),
-    sortBy: zod_1.default.enum(['createdAt', 'updatedAt', 'name']).optional(),
+    sortBy: zod_1.default.enum(['createdAt', 'updatedAt', 'name']).optional()
 });
 exports.ZFormFilters = zod_1.default.object({
     name: zod_1.default.string(),

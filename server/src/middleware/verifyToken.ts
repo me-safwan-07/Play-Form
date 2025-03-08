@@ -28,13 +28,13 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction): vo
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string };
     console.log('Decoded token:', decoded);
-    if (!decoded.id) {
-      res.status(401).json({ message: 'Invalid token' });
-      return;
-    }
-    req.userId = decoded.id;
+    // if (!decoded.id) {
+    //   res.status(401).json({ message: 'Invalid token' });
+    //   return;
+    // }
+    req.userId = decoded.userId;
     next();
   } catch (error) {
     console.log('Token verification error:', error);

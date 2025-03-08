@@ -1,78 +1,56 @@
-// import { Form } from "@prisma/client";
-// import { TFormInput, TFormUpdateInput } from "../types/forms";
-// import { prisma } from "../database";
-// import { NotFoundError } from "../utils/errors";
+import { prisma } from "../database"
 
-// export class FormService {
-//   static async createdForm(data: TFormInput): Promise<Form> {
-//     return prisma.form.create({
+export const selectForm = {
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  name: true,
+  environmentId: true,
+  createdBy: true,
+  status: true,
+  welcomeCard: true,
+  questions: true,
+  thankYouCard: true,
+  displayOptions: true,
+  recontactDays: true,
+  displayLimit: true,
+  autoClose: true,
+  runOnDate: true,
+  closeOnDate: true,
+  delay: true,
+  displayPercentage: true,
+  autoComplete: true,
+  verifyEmail: true,
+  redirectUrl: true,
+  productOverwrites: true,
+  styling: true,
+  surveyClosedMessage: true,
+  singleUse: true,
+  pin: true,
+  resultShareKey: true,
+  segment: {
+    include: {
+      forms: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  },
+};
 
-//       data: {
-//         name: data.name,
-//         // createdBy: data.createdBy,
-//         status: data.status || 'draft',
-//         welcomeCard: data.welcomeCard,
-//         questions: data.questions, 
-//         thankYouCard: data.thankYouCard,
-//       },
-//     });
-//   }
+export const getForm = async(formId: string, userId: string = "") => {
+    if (!formId || !userId) {
+        throw new Error("All fields as required")
+    }
 
-//   static async getAllForms(): Promise<Form[]> {
-//     return prisma.form.findMany({
-//       orderBy: {
-//         createdAt: 'desc',
-//       },
-//     });
-//   }
+    const form = await prisma.form.findUnique({
+        where: {
+            id: formId,
+            createdBy: userId,
+        },
+        select: selectForm
+    });
 
-//   static async getFormById(id: string): Promise<Form> {
-//     const form = await prisma.form.findUnique({
-//       where: { id },
-//     });
-
-//     if (!form) {
-//       throw new NotFoundError('Form not found');
-//     }
-
-//     return form;
-//   }
-
-//   static async updateForm(id: string, data: TFormUpdateInput): Promise<Form> {
-//     const form = await prisma.form.findUnique({
-//       where: { id },
-//     });
-
-//     if (!form) {
-//       throw new NotFoundError('Form not found');
-//     }
-
-//     return prisma.form.update({
-//       where: { id },
-//       data,
-//     });
-//   }
-
-//   static async deleteForm(id: string): Promise<Form> {
-//     const form = await prisma.form.findUnique({
-//       where: { id },
-//     });
-
-//     if (!form) {
-//       throw new NotFoundError('Form not found');
-//     }
-
-//     return prisma.form.delete({
-//       where: { id },
-//     });
-//   }
-
-//   static async getFormsByUser(id: string): Promise<Form[]> {
-//     return prisma.form.findMany({
-//       where: { id },
-//       orderBy: {
-//         createdAt: 'desc',
-//       },
-//     });
-//   }
-// }
+    return form;
+};

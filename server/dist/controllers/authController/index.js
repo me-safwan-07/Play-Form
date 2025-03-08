@@ -47,6 +47,7 @@ const getUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
             res.status(404).send({ message: 'User not found' });
             return;
         }
+        user.notificationSettings = user.notificationSettings;
         res.status(200).json({ user });
         next();
     }
@@ -212,9 +213,16 @@ const googleAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
                 name: userRes.data.name,
                 email: userRes.data.email,
                 imageUrl: userRes.data.picture,
+                identityProvider: 'google',
+                notificationSettings: {
+                    alert: { newsletter: true },
+                    weeklySummary: { updates: true },
+                }
             }
         });
     }
-    createSendToken(user, 201, res);
+    // Create a properly typed user object
+    const typedUser = Object.assign(Object.assign({}, user), { notificationSettings: user.notificationSettings });
+    createSendToken(typedUser, 201, res);
 });
 exports.googleAuth = googleAuth;

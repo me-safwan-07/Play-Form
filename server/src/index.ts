@@ -26,8 +26,8 @@ const routePrefix = BASE_URL.startsWith("/") ? BASE_URL : `/${BASE_URL}`;
 app.use(routePrefix, routes);
 
 // Add this before your protected routes
-app.use('/api/forms', verifyToken);
-app.use('/api/responses', verifyToken);
+// app.use('/api/forms', verifyToken);
+// app.use('/api/responses', verifyToken);
 
 // Server listening on a specified port
 const port = process.env.PORT || 3000;

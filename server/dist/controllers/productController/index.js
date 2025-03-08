@@ -9,25 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProduct = exports.updateProduct = exports.createProduct = exports.getProducts = void 0;
+exports.deleteProduct = exports.updateProduct = exports.createProduct = void 0;
 const database_1 = require("../../database");
-const getProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const formId = req.params.formId;
-    try {
-        const products = yield database_1.prisma.product.findMany({
-            where: { formId },
-            include: {
-                environments: true
-            }
-        });
-        res.status(200).json({ products });
-    }
-    catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-});
-exports.getProducts = getProducts;
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const formId = req.params.formId;
     const productData = req.body;

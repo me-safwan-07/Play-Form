@@ -9,9 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updateUserById = exports.getUserById = exports.createUserController = void 0;
-const userService_1 = require("../../services/userService");
+exports.deleteUser = exports.updateUserById = exports.createUserController = exports.getUserById = void 0;
 const database_1 = require("../../database");
+const cache_1 = require("../../config/cache");
+const client_1 = require("@prisma/client");
+const cache_2 = require("./cache");
 const responseSelection = {
     id: true,
     name: true,
@@ -22,13 +24,43 @@ const responseSelection = {
     updatedAt: true,
     identityProvider: true,
 };
+// function to retrive basic information about a user's user
+const getUserById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    return (0, cache_1.cache)(() => __awaiter(void 0, void 0, void 0, function* () {
+        const id = req.body.id;
+        try {
+            const user = yield database_1.prisma.user.findUnique({
+                where: {
+                    id,
+                },
+                select: responseSelection
+            });
+            if (!user) {
+                return null;
+            }
+            res.status(200).json(user);
+        }
+        catch (error) {
+            if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+                res.status(400).json({ error: `Database Error: ${error.message}` });
+            }
+            else {
+                res.status(500).json({ error: "Internal server error" });
+            }
+            next(error);
+        }
+    }), `getUser-${req.body.id}`, {
+        tag: [cache_2.userCache.tag.byId(req.body.id)],
+    })();
+});
+exports.getUserById = getUserById;
 const createUserController = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userData = req.body;
-        const user = yield (0, userService_1.CreateUser)(userData);
+        // const user = await CreateUser(userData);
         res.status(200).json({
             success: true,
-            data: user,
+            data: userData,
         });
     }
     catch (error) {
@@ -36,27 +68,24 @@ const createUserController = (req, res, next) => __awaiter(void 0, void 0, void 
     }
 });
 exports.createUserController = createUserController;
-const getUserById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { id } = req.params;
-        const user = yield database_1.prisma.user.findUnique({
-            where: { id },
-            select: responseSelection
-        });
-        if (!user) {
-            res.status(404).json({ success: false, message: 'User not found' });
-            return;
-        }
-        ;
-        res.json(user);
-        next();
-    }
-    catch (error) {
-        res.status(404).json({ error: 'Failed to get user' });
-        next(error);
-    }
-});
-exports.getUserById = getUserById;
+// export const getUserById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+//   try {
+//     const { id } = req.params;
+//     const user = await prisma.user.findUnique({
+//       where: { id },
+//       select: responseSelection
+//     });
+//     if (!user) {
+//       res.status(404).json({ success: false, message: 'User not found' });
+//       return 
+//     };
+//     res.json(user);
+//     next();
+//   } catch (error) {
+//     res.status(404).json({ error: 'Failed to get user' });
+//     next(error);
+//   }
+// };
 const updateUserById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
