@@ -86,7 +86,7 @@ model TagsOnResponses {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   responseId String   @db.ObjectId
   response   Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
-  tagId      String
+  tagId      String   @db.ObjectId
   tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@unique([responseId, tagId])
