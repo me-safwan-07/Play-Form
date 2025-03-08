@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import express, { Router, Request, Response, NextFunction } from "express";
 import { 
     createUserController, 
     deleteUser, 
@@ -10,7 +10,9 @@ const router: Router = express.Router();
 
 router.post('/create', createUserController);
 
-router.get('/:id', getUserById);
+router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+    await getUserById(req, res, next);
+});
 
 router.put('/:id', updateUserById);
 
