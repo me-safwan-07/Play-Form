@@ -1,23 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../database";
 
-export const getProducts = async (req: Request, res: Response): Promise<void> => {
-  const formId = req.params.formId;
-
-  try {
-    const products = await prisma.product.findMany({
-      where: { formId },
-      include: {
-        environments: true
-      }
-    });
-
-    res.status(200).json({ products });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
 
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
   const formId = req.params.formId;

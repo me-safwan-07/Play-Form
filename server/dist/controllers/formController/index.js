@@ -1,5 +1,4 @@
 "use strict";
-// getformcount
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -22,89 +21,128 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.duplicateForm = exports.getFormCount = exports.createForm = exports.deleteForm = exports.updateForm = exports.getForms = exports.getForm = exports.selectForm = void 0;
-// import mongoose from "mongoose";
 const database_1 = require("../../database");
 const client_1 = require("@prisma/client");
 const formsUtils_1 = require("../../utils/formsUtils");
+const structuredClone_1 = require("../../utils/pollyfills/structuredClone");
+const validate_1 = require("../../utils/validate");
+const environment_1 = require("../../types/environment");
+const cache_1 = require("../../config/cache");
+const cache_2 = require("./cache");
 exports.selectForm = {
     id: true,
     createdAt: true,
     updatedAt: true,
     name: true,
-    // type: true,
-    // environmentId: true,
+    environmentId: true,
+    createdBy: true,
     status: true,
     welcomeCard: true,
     questions: true,
     thankYouCard: true,
-    // displayLimit: true,
-    // autoClose: true,
-    // runOnDate: true,
-    // closeOnDate: true,
+    displayOptions: true,
+    recontactDays: true,
+    displayLimit: true,
+    autoClose: true,
+    runOnDate: true,
+    closeOnDate: true,
     delay: true,
     displayPercentage: true,
-    // autoComplete: true,
+    autoComplete: true,
     verifyEmail: true,
     redirectUrl: true,
+    productOverwrites: true,
     styling: true,
-    // surveyClosedMessage: true,
+    surveyClosedMessage: true,
+    singleUse: true,
+    pin: true,
     resultShareKey: true,
+    segment: {
+        include: {
+            forms: {
+                select: {
+                    id: true,
+                },
+            },
+        },
+    },
 };
 const getForm = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.user;
     const formId = req.params.formId;
-    if (!formId) {
-        console.log("No formId");
-        res.status(404).json({ error: "Form not found" });
-        return;
-    }
-    try {
-        const form = yield database_1.prisma.form.findUnique({
-            where: {
-                id: formId,
-                createdBy: userId
-            },
-            select: exports.selectForm,
-        });
-        if (!form) {
-            res.status(404).json({ error: "Form not found" });
-            return;
+    const userId = req.user;
+    (0, cache_1.cache)(() => __awaiter(void 0, void 0, void 0, function* () {
+        (0, validate_1.validateInputs)([formId, environment_1.ZId]);
+        let formPrisma;
+        try {
+            formPrisma = yield database_1.prisma.form.findUnique({
+                where: {
+                    id: formId,
+                    createdAt: userId
+                },
+                select: exports.selectForm,
+            });
+            if (!database_1.prisma) {
+                res.status(404).json({ message: "Form not found" });
+            }
+            const form = (0, formsUtils_1.transformPrismaSurvey)(formPrisma);
+            res.status(200).json({ form });
         }
-        res.status(200).json({ form, userId });
-    }
-    catch (error) {
-        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
-            console.error(error.message);
-            res.status(404).json({ error: "Form not found" });
+        catch (error) {
+            if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+                console.error(error.message);
+                res.status(404).json({ error: "Form not found" });
+                next(error);
+            }
+            console.error(error);
+            res.status(500).json({ error: "Internal Server Error" });
             next(error);
         }
-        console.error(error);
-        res.status(500).json({ error: "Internal Server Error" });
-        next(error);
-    }
+    }), `getForm-${formId}`, {
+        tag: [cache_2.formCache.tag.byId(formId)]
+    })();
 });
 exports.getForm = getForm;
 const getForms = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.userId;
+    const { limit, offset, filterCriteria } = req.query;
     if (!userId) {
         res.status(401).json({ error: "Unauthorized" });
         return;
     }
-    const { limit, offset, filterCriteria } = req.query;
+    let formsPrisma;
     try {
         const filters = typeof filterCriteria === 'string' ? JSON.parse(filterCriteria) : {};
-        const forms = yield database_1.prisma.form.findMany({
-            where: Object.assign({ createdBy: userId }, (0, formsUtils_1.buildWhereClause)(filters)),
-            select: exports.selectForm,
-            orderBy: (0, formsUtils_1.buildOrderByClause)(filters.sortBy),
-            take: limit ? Number(limit) : undefined,
-            skip: offset ? Number(offset) : undefined
-        });
-        res.status(200).json({ forms });
+        // ✅ Correct way to use cache with async/await
+        formsPrisma = yield (0, cache_1.cache)(() => __awaiter(void 0, void 0, void 0, function* () {
+            return yield database_1.prisma.form.findMany({
+                where: Object.assign({ createdBy: userId }, (0, formsUtils_1.buildWhereClause)(filters)),
+                select: exports.selectForm,
+                orderBy: (0, formsUtils_1.buildOrderByClause)(filters === null || filters === void 0 ? void 0 : filters.sortBy),
+                take: limit ? Number(limit) : undefined,
+                skip: offset ? Number(offset) : undefined,
+            });
+        }), `getForms-${limit}-${offset}-${JSON.stringify(filterCriteria)}`, {
+            tag: [cache_2.formCache.tag.byEnvironementId(userId)],
+        })();
+        if (!formsPrisma) {
+            res.status(404).json({ error: "No forms found" });
+            return;
+        }
+        const form = [];
+        for (const formPrisma of formsPrisma) {
+            const transformedForm = (0, formsUtils_1.transformPrismaSurvey)(formPrisma);
+            form.push(transformedForm);
+        }
+        res.status(200).json(form);
     }
     catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal Server Error" });
+        console.error("Error fetching forms:", error);
+        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+            res.status(500).json({ error: "Database error occurred" });
+        }
+        else {
+            res.status(500).json({ error: "Internal Server Error" });
+        }
     }
 });
 exports.getForms = getForms;
@@ -239,8 +277,10 @@ const getFormCount = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
 });
 exports.getFormCount = getFormCount;
 const duplicateForm = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const formId = req.params.formId;
+    const environmentId = req.params.environmentId;
+    const formId = req.body.formId;
     const userId = req.userId;
+    (0, validate_1.validateInputs)([environmentId, environment_1.ZId], [formId, environment_1.ZId]);
     try {
         const existingForm = yield database_1.prisma.form.findUnique({
             where: { id: formId }
@@ -250,13 +290,28 @@ const duplicateForm = (req, res, next) => __awaiter(void 0, void 0, void 0, func
             res.status(404).json({ error: "Form not found" });
             return;
         }
+        const { id, createdBy, environmentId, segmentId } = existingForm, formDataToCopy = __rest(existingForm, ["id", "createdBy", "environmentId", "segmentId"]);
         const duplicateForm = yield database_1.prisma.form.create({
-            data: Object.assign(Object.assign({}, existingForm), { id: undefined, createdBy: undefined, createdAt: currentDate, updatedAt: currentDate, name: `${existingForm.name} (Copy)`, status: "draft", questions: existingForm.questions, creator: {
+            data: Object.assign(Object.assign({}, formDataToCopy), { createdAt: currentDate, updatedAt: currentDate, name: `${existingForm.name} (Copy)`, status: "draft", questions: existingForm.questions, welcomeCard: existingForm.welcomeCard, thankYouCard: existingForm.thankYouCard, environment: {
+                    connect: {
+                        id: environmentId
+                    },
+                }, creator: {
                     connect: {
                         id: userId
                     }
-                }, welcomeCard: existingForm.welcomeCard, thankYouCard: existingForm.thankYouCard, styling: existingForm.styling ? existingForm.styling : null })
+                }, formClosedMessage: existingForm.formClosedMessage
+                    ? (0, structuredClone_1.structuredClone)(existingForm.formClosedMessage)
+                    : undefined, singleUse: existingForm.singleUse ? (0, structuredClone_1.structuredClone)(existingForm.singleUse) : undefined, productOverwrites: existingForm.productOverwrites
+                    ? (0, structuredClone_1.structuredClone)(existingForm.productOverwrites)
+                    : undefined, styling: existingForm.styling ? (0, structuredClone_1.structuredClone)(existingForm.styling) : undefined, verifyEmail: existingForm.verifyEmail
+                    ? (0, structuredClone_1.structuredClone)(existingForm.verifyEmail)
+                    : undefined, 
+                // we'll update the segment later
+                segment: undefined }),
         });
+        // if the existing form has an inline segment, we copy the filters and create a new inline segment and connect it to the new form
+        // if (existingForm.)
         res.status(200).json({ form: duplicateForm });
     }
     catch (error) {
