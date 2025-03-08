@@ -173,7 +173,7 @@ export const ZFormUpdateInput = ZForms.omit({ createdAt: true, updatedAt: true }
 export const ZFormFilterCriteria = z.object({
   name: z.string().optional(),
   status: z.array(ZFormStatus).optional(),
-  sortBy: z.enum(['createdAt', 'updatedAt', 'name']).optional(),
+  sortBy: z.enum(['createdAt', 'updatedAt', 'name']).optional()
 });
 
 export type TFormFilterCriteria = z.infer<typeof ZFormFilterCriteria>;
