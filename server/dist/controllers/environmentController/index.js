@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.environmentController = void 0;
 const database_1 = require("../../database");
 const environmentController = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.user;
+    const userId = req.userId;
     try {
         const checkUser = yield database_1.prisma.user.findUnique({
             where: {
