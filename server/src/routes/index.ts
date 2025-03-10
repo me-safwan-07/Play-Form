@@ -6,6 +6,8 @@ import * as productController from '../controllers/productController';
 import { environmentController } from "../controllers/environmentController";
 import { getDisplay } from "../controllers/displayController";
 
+import environmentRouter from '../routes/environmentRoutes';
+
 const app: Express = express();
 
 // app.use("/display", displayRoutes);
@@ -42,9 +44,12 @@ router.post('/forms/:formId/products', verifyToken, productController.createProd
 // router.delete('/products/:productId', verifyToken, productController.deleteProduct);
 
 // Environment routes
-router.get('/environment', verifyToken, environmentController);
+// router.get('/environment', verifyToken, environmentController);
 
 router.get("/display/:displayId", getDisplay)
+
+router.use('/environment', environmentRouter);
+
 export default router;
 
 
