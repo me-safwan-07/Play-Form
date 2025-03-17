@@ -38,6 +38,11 @@ export const getUser = async(req: Request, res: Response, next: NextFunction): P
             return;
         }
 
+        user.notificationSettings = user.notificationSettings as {
+            alert: Record<string, boolean>;
+            weeklySummary: Record<string, boolean>;
+        }
+
         res.status(200).json({ user });
 
         next();
@@ -232,9 +237,23 @@ export const googleAuth = async (req: Request, res: Response, next: NextFunction
                 name: userRes.data.name,
                 email: userRes.data.email,
                 imageUrl: userRes.data.picture,
+                identityProvider: 'google',
+                notificationSettings: {
+                    alert: { newsletter: true },
+                    weeklySummary: { updates: true },
+                }
             }
         });
     }
 
-    createSendToken(user, 201, res);
+    // Create a properly typed user object
+    const typedUser: TUser = {
+        ...user,
+        notificationSettings: user.notificationSettings as {
+            alert: Record<string, boolean>;
+            weeklySummary: Record<string, boolean>;
+        }
+    };
+
+    createSendToken(typedUser, 201, res);
 }

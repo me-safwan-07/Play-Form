@@ -41,7 +41,8 @@ const verifyToken_1 = require("../middleware/verifyToken");
 const authController = __importStar(require("../controllers/authController"));
 const formController = __importStar(require("../controllers/formController"));
 const productController = __importStar(require("../controllers/productController"));
-const environmentController_1 = require("../controllers/environmentController");
+const displayController_1 = require("../controllers/displayController");
+const environmentRoutes_1 = __importDefault(require("../routes/environmentRoutes"));
 const app = (0, express_1.default)();
 // app.use("/display", displayRoutes);
 // app.use("/forms", formRoutes);
@@ -56,7 +57,7 @@ router.post('/auth/login', authController.login);
 router.get('/auth/google', authController.googleAuth);
 // Form routes
 router.get('/forms/count', verifyToken_1.verifyToken, formController.getFormCount);
-router.get('/forms', verifyToken_1.verifyToken, formController.getForms);
+router.get('/forms/', verifyToken_1.verifyToken, formController.getForms);
 router.get('/form/:formId', verifyToken_1.verifyToken, formController.getForm);
 router.post('/forms', verifyToken_1.verifyToken, formController.createForm);
 router.put('/forms/:formId', verifyToken_1.verifyToken, formController.updateForm);
@@ -67,10 +68,11 @@ router.get("/forms/:formId/duplicate", verifyToken_1.verifyToken, formController
 // router.post('/forms/:formId/responses'   , responseController.createResponse);
 // router.put('/responses/:responseId', verification, responseController.updateResponse);
 // Product routes
-router.get('/forms/:formId/products', verifyToken_1.verifyToken, productController.getProducts);
 router.post('/forms/:formId/products', verifyToken_1.verifyToken, productController.createProduct);
-router.put('/products/:productId', verifyToken_1.verifyToken, productController.updateProduct);
-router.delete('/products/:productId', verifyToken_1.verifyToken, productController.deleteProduct);
+// router.put('/products/:productId', verifyToken, productController.updateProduct);
+// router.delete('/products/:productId', verifyToken, productController.deleteProduct);
 // Environment routes
-router.get('/environment', verifyToken_1.verifyToken, environmentController_1.environmentController);
+// router.get('/environment', verifyToken, environmentController);
+router.get("/display/:displayId", displayController_1.getDisplay);
+router.use('/environment', environmentRoutes_1.default);
 exports.default = router;

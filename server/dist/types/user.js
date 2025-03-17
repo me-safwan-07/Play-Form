@@ -8,7 +8,6 @@ const zod_1 = __importDefault(require("zod"));
 exports.ZUserNotificationSettings = zod_1.default.object({
     alert: zod_1.default.record(zod_1.default.boolean()),
     weeklySummary: zod_1.default.record(zod_1.default.boolean()),
-    unsubscribedOrganizationIds: zod_1.default.array(zod_1.default.string()).optional(),
 });
 exports.ZUser = zod_1.default.object({
     id: zod_1.default.string(),
@@ -19,13 +18,10 @@ exports.ZUser = zod_1.default.object({
     email: zod_1.default.string().email(),
     emailVerified: zod_1.default.date().nullable(),
     imageUrl: zod_1.default.string().url().nullable(),
-    // twoFactorEnabled: z.boolean(),
-    identityProvider: zod_1.default.enum(["email", "google", "github", "azuread", "openid"]),
+    identityProvider: zod_1.default.enum(["email", "google", "facebook"]),
     createdAt: zod_1.default.date(),
     updatedAt: zod_1.default.date(),
-    // role: ZRole.nullable(),
-    // objective: ZUserObjective.nullable(),
-    // notificationSettings: ZUserNotificationSettings,
+    notificationSettings: exports.ZUserNotificationSettings,
 });
 exports.ZUserCreateInput = zod_1.default.object({
     name: zod_1.default
@@ -34,8 +30,6 @@ exports.ZUserCreateInput = zod_1.default.object({
         .min(1, { message: "Name should be at least 1 character long" }),
     email: zod_1.default.string().email(),
     emailVerified: zod_1.default.date().optional(),
-    // role: ZRole.optional(),
-    // objective: ZUserObjective.nullish(),
     identityProvider: zod_1.default.enum(["email", "google", "github", "azuread", "openid"]).optional(),
     identityProviderAccountId: zod_1.default.string().optional(),
 });

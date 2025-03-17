@@ -2,7 +2,7 @@ import e, { NextFunction, Request, Response } from "express";
 import { prisma } from "../../database";
 
 export const environmentController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const userId = req.user;
+    const userId = req.userId;
 
     try {
         const checkUser = await prisma.user.findUnique({

@@ -86,7 +86,7 @@ model TagsOnResponses {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   responseId String   @db.ObjectId
   response   Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
-  tagId      String
+  tagId      String   @db.ObjectId
   tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@unique([responseId, tagId])
@@ -210,6 +210,8 @@ model Product {
   createdAt             DateTime          @default(now()) @map(name: "created_at")
   updatedAt             DateTime          @updatedAt @map(name: "updated_at")
   name                  String
+  organization         Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId       String             @db.ObjectId
   environments          Environment[] 
   brandColor            String? // deprecated; use styling.brandColor instead
   highlightBorderColor  String? // deprecated
@@ -234,6 +236,14 @@ enum IdentityProvider {
   email
   google
   facebook
+}
+
+model Organization {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime     @default(now()) @map(name: "created_at")
+  updatedAt   DateTime     @updatedAt @map(name: "updated_at")
+  name        String
+  products    Product[]
 }
 
 model Account {

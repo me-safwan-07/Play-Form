@@ -4,6 +4,9 @@ import * as authController from '../controllers/authController';
 import * as formController from '../controllers/formController';
 import * as productController from '../controllers/productController';
 import { environmentController } from "../controllers/environmentController";
+import { getDisplay } from "../controllers/displayController";
+
+import environmentRouter from '../routes/environmentRoutes';
 
 const app: Express = express();
 
@@ -23,7 +26,7 @@ router.get('/auth/google', authController.googleAuth);
 
 // Form routes
 router.get('/forms/count', verifyToken, formController.getFormCount);
-router.get('/forms', verifyToken, formController.getForms);
+router.get('/forms/', verifyToken, formController.getForms);
 router.get('/form/:formId', verifyToken, formController.getForm);   
 router.post('/forms', verifyToken, formController.createForm);
 router.put('/forms/:formId', verifyToken, formController.updateForm);
@@ -36,13 +39,16 @@ router.get("/forms/:formId/duplicate", verifyToken, formController.duplicateForm
 // router.put('/responses/:responseId', verification, responseController.updateResponse);
 
 // Product routes
-router.get('/forms/:formId/products', verifyToken, productController.getProducts);
 router.post('/forms/:formId/products', verifyToken, productController.createProduct);
-router.put('/products/:productId', verifyToken, productController.updateProduct);
-router.delete('/products/:productId', verifyToken, productController.deleteProduct);
+// router.put('/products/:productId', verifyToken, productController.updateProduct);
+// router.delete('/products/:productId', verifyToken, productController.deleteProduct);
 
 // Environment routes
-router.get('/environment', verifyToken, environmentController);
+// router.get('/environment', verifyToken, environmentController);
+
+router.get("/display/:displayId", getDisplay)
+
+router.use('/environment', environmentRouter);
 
 export default router;
 
