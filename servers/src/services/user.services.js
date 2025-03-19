@@ -1,8 +1,12 @@
 import prisma from '../../prisma/index.js';
-import { cache, revalidateCache } from '../utils/cacheWrapper.js';
+import { cache } from '../utils/cacheWrapper.js';
 import { userCache } from '../caches/user.cache.js';
-import redisClient from '../utils/redisClient.js';
 import { Prisma } from '@prisma/client';
+import { validateInputs } from '../utils/validate.js';
+import { DatabaseError, ResourceNotFoundError } from '../validations/error.validations.js';
+import Joi from 'joi';
+import { JId } from '../validations/environment.validations.js';
+import { JUserCreateInput, JUserUpdateInput } from '../validations/user.validation.js';
 
 const responseSelection = {
   id: true,
@@ -16,50 +20,56 @@ const responseSelection = {
   notificationSettings: true,
 };
 
-/**
- * Fetch user by ID with caching.
- * @param {string} id - User ID.
- * @returns {Promise} - Resolves with the user data.
- */
+
 export const getUser = async (id) => {
   const cacheKey = userCache.tag.byId(id);
 
   return cache(cacheKey, async () => {
+    validateInputs([id, JId]);
     try {
       const user = await prisma.user.findUnique({
         where: { id },
         select: responseSelection,
       });
+
       return user || null;
     } catch (error) {
-      console.error('Database Error in getUser:', error);
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        throw new DatabaseError(error.message);
+      }
+
       throw error;
     }
   });
 };
 
-/**
- * Fetch user by email with caching.
- * @param {string} email - User email.
- * @returns {Promise} - Resolves with the user data.
- */
 export const getUserByEmail = async (email) => {
   const cacheKey = userCache.tag.byEmail(email);
+
   return cache(cacheKey, async () => {
+    validateInputs([email, Joi.string().email().required()]);
+
     try {
-      const users = await prisma.user.findMany({
-        where: { email },
+      const users = await prisma.user.findFirst({
+        where: { 
+          email 
+        },
         select: responseSelection,
       });
-      return users[0] || null; // Return the first user or null
+      return users;
     } catch (error) {
-      console.error('Database Error in getUserByEmail:', error);
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        throw new DatabaseError(error.message);
+      }
+
       throw error;
     }
   });
 };
 
 export const updateUser = async (personId, data) => {
+  validateInputs([personId, JId], [data, JUserCreateInput]);
+
   try {
     const updatedUser = await prisma.user.update({
       where: {
@@ -69,12 +79,15 @@ export const updateUser = async (personId, data) => {
       select: responseSelection
     });
 
-    userCache.revalidate(updatedUser.id, updatedUser.email);
+    userCache.revalidate(
+      updatedUser.id, 
+      updatedUser.email
+    );
 
     return updatedUser;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2016") {
-      throw new Error("Resource Not Found")
+      throw new ResourceNotFoundError("User", personId);
     }
 
     throw error
@@ -82,6 +95,7 @@ export const updateUser = async (personId, data) => {
 }
 
 export const deleteUserById = async (id) => {
+  validateInputs([id, JId]);
 
   try {
     const user = await prisma.user.delete({
@@ -105,16 +119,12 @@ export const deleteUserById = async (id) => {
 
     throw error;
   }
-}
+};
 
-/**
- * Create a new user and revalidate relevant cache keys.
- * @param {object} data - User data.
- * @returns {Promise} - Resolves with the created user.
- */
 export const createUser = async (data) => {
-  try {
+  validateInputs([data, JUserCreateInput]);
 
+  try {
     const existingUser = await prisma.user.findFirst({
       where: {
         email: data.email,
@@ -130,18 +140,24 @@ export const createUser = async (data) => {
       select: responseSelection,
     });
 
-    // // Revalidate cache for the new user
-    // await revalidateCache(userCache.tag.byId(user.id));
-    // await revalidateCache(userCache.tag.byEmail(user.email));
-
     userCache.revalidate(
       user.email,
       user.id,
       true,
-    )
+    );
+
+    // TODO: Send welcome email
+
     return user;
   } catch (error) {
-    console.error('Database Error in createUser:', error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      throw new DatabaseError("User with this email already exists");
+    }
+
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      throw new DatabaseError(error.message);
+    }
+
     throw error;
   }
 };
