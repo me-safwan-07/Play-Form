@@ -1,7 +1,12 @@
+import { validationResult } from 'express-validator';
 import { getUser, getUserByEmail, createUser, deleteUserById, updateUser } from '../services/user.services.js';
-import { ZUserCreateInput } from '../validations/user.validation.js';
 
 export const getUserController = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const { id } = req.params;
 
   try {
@@ -16,6 +21,11 @@ export const getUserController = async (req, res, next) => {
 };
 
 export const getUserByEmailController = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const { email } = req.params;
 
   try {
@@ -30,8 +40,14 @@ export const getUserByEmailController = async (req, res, next) => {
 };
 
 export const updateUserController = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const { personId } = req.params;
   const  data = req.body;
+
 
   try {
     const updatedUser = await updateUser(personId, data);
@@ -47,6 +63,11 @@ export const updateUserController = async (req, res, next) => {
 };
 
 export const deleteUserByIdController = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const { id } = req.params;
 
   try {
@@ -67,18 +88,16 @@ export const deleteUserByIdController = async (req, res, next) => {
 }
 
 export const createUserController = async (req, res, next) => {
-  try {
-    // Validate request body
-    const { error, value } = ZUserCreateInput.validate(req.body);
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        message: error.details?.map(err => err.message).join(', ') || 'Invalid input',
-      });
-    }
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
+  const data = req.body;
+
+  try {
     // Create user
-    const user = await createUser(value);
+    const user = await createUser(data);
 
     // Return success response
     res.status(201).json({
