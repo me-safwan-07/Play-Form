@@ -1,12 +1,12 @@
 import Joi from 'joi';
 
 // Define notification settings schema
-const ZUserNotificationSettings = Joi.object({
+const JUserNotificationSettings = Joi.object({
     alert: Joi.object().pattern(Joi.string(), Joi.boolean()).required(),
     weeklySummary: Joi.object().pattern(Joi.string(), Joi.boolean()).required(),
 });
 
-const ZUser  = Joi.object({
+const JUser  = Joi.object({
     id: Joi.string().required(),
     name: Joi.string()
         .trim()
@@ -23,20 +23,20 @@ const ZUser  = Joi.object({
         .required(),
     createdAt: Joi.date().required(),
     updatedAt: Joi.date().required(),
-    notificationSettings: ZUserNotificationSettings.required(),
+    notificationSettings: JUserNotificationSettings.required(),
 });
 
 // Define the user update input schema
-const ZUserUpdateInput = Joi.object({
+const JUserUpdateInput = Joi.object({
   name: Joi.string().optional(),
   email: Joi.string().email().optional(),
   emailVerified: Joi.date().allow(null),
   imageUrl: Joi.string().uri().allow(null),
-  notificationSettings: ZUserNotificationSettings.optional(),
+  notificationSettings: JUserNotificationSettings.optional(),
 });
 
 // Define the user create input schema
-const ZUserCreateInput = Joi.object({
+const JUserCreateInput = Joi.object({
   name: Joi.string()
     .trim()
     .min(1)
@@ -54,8 +54,8 @@ const ZUserCreateInput = Joi.object({
 });
 
 export {
-  ZUserNotificationSettings,
-  ZUser,
-  ZUserUpdateInput,
-  ZUserCreateInput,
+  JUserNotificationSettings,
+  JUser,
+  JUserUpdateInput,
+  JUserCreateInput,
 };
