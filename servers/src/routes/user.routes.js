@@ -6,7 +6,7 @@ const router = express.Router();
 
 // Create a new User
 router.get(
-    '/users/:id', 
+    '/:id', 
     [
         param('id').isString().withMessage('ID must be a string'),
     ],
@@ -14,7 +14,7 @@ router.get(
 );
 
 router.get(
-    '/users/email/:email',
+    '/email/:email',
     [
         param('email').isEmail().withMessage('Email must be a valid email address'),
     ],
@@ -22,7 +22,7 @@ router.get(
 );
 
 router.put(
-    '/users/:personId', 
+    '/:personId', 
     [
         param('personId').isString().withMessage('Person ID must be a string'),
         body('name').optional().isString().withMessage('Name must be a string'),
@@ -35,7 +35,7 @@ router.put(
 );
 
 router.post(
-    '/users', 
+    '/', 
     [
         body('name').isString().withMessage('Name must be a string').notEmpty().withMessage('Name is required'),
         body('email').isEmail().withMessage('Must be a valid email'),
@@ -45,7 +45,7 @@ router.post(
     ],
     createUserController);
 router.delete(
-    '/users/:id', 
+    '/:id', 
     [
         param('id').isString().withMessage('ID must be a string'),
     ], 
