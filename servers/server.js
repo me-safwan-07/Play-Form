@@ -1,18 +1,19 @@
 import express from 'express';
-import userRouter from './src/routes/user.routes.js'
+import passport from './src/config/passport.js';
 import { errorHandler } from './src/utils/errorHandler.js';
-
+import router from './src/routes/index.js';
 const app = express();
 
 // Middleware
 app.use(express.json());
 
+app.use(passport.initialize());
+
 // Routes
-app.use('/api', userRouter);
+app.use('/api', router);
 
 // Error handler middleware
 app.use(errorHandler);
-
 // start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
