@@ -93,12 +93,18 @@ export const createUserController = async (req, res, next) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const data = req.body;
+  let user = req.body;
 
   try {
-    // Create user
-    const user = await createUser(data);
 
+    user = {
+      ...user,
+      ...{ email: user.email.toLowerCase() },
+    }
+
+    // Create user
+    user = await createUser(data);
+    
     // Return success response
     res.status(201).json({
       success: true,
