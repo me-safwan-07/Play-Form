@@ -12,9 +12,9 @@ interface WelcomeCardProps {
 
 export const WelcomeCard = ({
     headline,
-    onSubmit,
-    form,
-    isCurrent
+    // onSubmit,
+    // form,
+    // isCurrent
 }: WelcomeCardProps) => {
     return (
         <div className="">

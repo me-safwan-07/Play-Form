@@ -1,7 +1,7 @@
 import { customForm, replacePresetPlaceholders } from "@/lib/templates";
 import { cn } from "@/lib/utils";
 import { PlusCircleIcon } from "lucide-react";
-import Button from "../../Button";
+import { Button } from "../../Button";
 import { TTemplate } from "@/types/templates";
 
 

@@ -1,4 +1,4 @@
-import { TQuestion } from "@/lib/questions";
+// import { TQuestion } from "@/lib/questions";
 import { TFormQuestion, TFormQuestionTypeEnum } from "@/types/forms";
 import { OpenTextQuestion } from "../questions/OpenTextQuestion";
 import { TResponseData } from "@/types/responses";

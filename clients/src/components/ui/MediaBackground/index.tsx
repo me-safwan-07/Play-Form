@@ -17,7 +17,7 @@ export const MediaBackground: React.FC<MediaBackgroundProps> = ({
     isMobilePreview = false,
     isEditorView = false,
 }) => {
-    const [backgroundLoaded, setBackgroundLoaded] = useState(false);
+    // const [backgroundLoaded, setBackgroundLoaded] = useState(false);
 
     const baseClasses = "absolute inset-0 h-full w-full transition-opacity duration-500";
     // const loadedClass = backgroundLoaded ? "opacity-100" : "opacity-0";

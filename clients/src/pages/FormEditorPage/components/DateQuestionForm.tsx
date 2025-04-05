@@ -1,4 +1,4 @@
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
 import { QuestionFormInput } from "@/components/ui/QuestionFormInput";
 import { OptionsSwitcher } from "@/components/ui/QuestionTypeSelector";

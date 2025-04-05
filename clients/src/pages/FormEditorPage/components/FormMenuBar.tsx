@@ -1,5 +1,5 @@
 import { AlertDialog } from "@/components/ui/AlertDialog";
-import Button from "@/components/ui/Button/"
+import { Button } from "@/components/ui/Button/"
 import { Input } from "@/components/ui/input"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/Tooltip";
 import { TForm, TFormEditorTabs } from "@/types/forms";

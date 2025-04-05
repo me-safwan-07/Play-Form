@@ -10,7 +10,7 @@ import { createId } from "@paralleldrive/cuid2";
 import React, { SetStateAction, useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import { AddQuestionButton } from "./AddQuestionButton";
-import { EditThankYouCard } from "./EditThankYouCard";
+// import { EditThankYouCard } from "./EditThankYouCard";
 import { EditWelcomeCard } from "./EditWelcomeCard";
 import { QuestionsDroppable } from "./QuestionsDroppable";
 import { TForm } from "@/types/forms";

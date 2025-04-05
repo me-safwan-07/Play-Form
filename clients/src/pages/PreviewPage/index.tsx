@@ -5,7 +5,7 @@ import { TabOption } from "@/components/ui/TabOption";
 import { ExpandIcon, MonitorIcon, ShrinkIcon, SmartphoneIcon } from "lucide-react";
 import { ResetProgressButton } from "@/components/ui/ResetProgressButton";
 import { MediaBackground } from "@/components/ui/MediaBackground";
-import Form from "./components/general/Form";
+// import Form from "./components/general/Form";
 import { FormInline } from "./components/general/FormInline";
 
 interface FormPreviewProps {

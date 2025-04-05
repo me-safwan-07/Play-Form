@@ -1,4 +1,4 @@
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
 import { QuestionFormInput } from "@/components/ui/QuestionFormInput";
 import { OptionsSwitcher } from "@/components/ui/QuestionTypeSelector";
@@ -28,7 +28,7 @@ export const OpenQuestionForm = ({
     isInvalid,
     localForm,
 }: OpenQuestionFormProps) => {
-    const defaultPlaceholder = getPlaceholderByInputType(question.inputType ?? "text");
+    // const defaultPlaceholder = getPlaceholderByInputType(question.inputType ?? "text");
     
     const handleInputChange = (value: string) => {
         const inputType = value as TFormOpenTextQuestionInputType;

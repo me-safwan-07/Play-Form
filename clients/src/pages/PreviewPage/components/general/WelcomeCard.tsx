@@ -16,7 +16,7 @@ interface WelcomeCardProps {
 export const WelcomeCard = ({
     headline,
     onSubmit,
-    form,
+    // form,
     isCurrent,
 }: WelcomeCardProps) => {
     const handleSubmit = () => {

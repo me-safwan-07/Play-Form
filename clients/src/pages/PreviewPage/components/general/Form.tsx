@@ -56,7 +56,7 @@ function Form({
        }
     }, [questionId, form, history]);
     const contentRef = useRef<HTMLDivElement | null>(null);
-    const currentQuestionId = questionId;
+    // const currentQuestionId = questionId;
     // const showProgressBar = !styling.hideProgressBar;
 
     useEffect(() => {
@@ -93,13 +93,13 @@ function Form({
     useEffect(() => {
         if (getSetIsResponseSendingFinished) {
             getSetIsResponseSendingFinished((value: boolean) => {
-                setIsResponseSendingFinished(value);
+                // setIsResponseSendingFinished(value);
             });
         }
     }, [getSetIsResponseSendingFinished]);
 
     const currIdxTemp = currentQuestionIndex;
-    const currQuesTemp = currentQuestion;
+    // const currQuesTemp = currentQuestion;
 
     const getNextQuestionId = (): string => {
         const questions = form.questions;
