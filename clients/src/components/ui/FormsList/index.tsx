@@ -4,7 +4,7 @@ import { TForm, TFormFilters } from "@/types/forms";
 import { FormCard } from "./components/FormCard";
 import { getFormattedFilters } from "@/utils/formattedFilters";
 import axios from "axios";
-import Button from "../Button";
+import { Button } from "../Button";
 
 interface FormsListProps {
   environment: string;

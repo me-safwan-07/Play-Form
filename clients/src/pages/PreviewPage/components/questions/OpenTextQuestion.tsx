@@ -25,10 +25,10 @@ export const OpenTextQuestion: React.FC<OpenTextQuestionProps> = ({
     question,
     isFirstQuestion,
     isLastQuestion,
-    formId,
-    value,
-    onChange,
-    onSubmit,
+    // formId,
+    // value,
+    // onChange,
+    // onSubmit,
     onBack,
 }) => {
 

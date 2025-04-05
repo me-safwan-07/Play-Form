@@ -4,8 +4,8 @@ import { useState } from "react";
 import { MenuBar } from "./MenuBar";
 import { SearchBox } from "@/components/ui/SearchBox";
 import { TemplateList } from "@/components/ui/TemplateList";
-import { FormPreview } from "@/pages/PreviewPage";
-import { minimalForm } from "@/lib/minimalForm";
+// import { FormPreview } from "@/pages/PreviewPage";
+// import { minimalForm } from "@/lib/minimalForm";
 
 type TemplateContainerWithPreviewProps = {
     environmentId: string;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { getFirstEnvironmentByUserId } from '@/hooks/environmentHooks';
-import Button from '@/components/ui/Button';
+import {Button} from '@/components/ui/Button';
 
 const HomePage = () => {
     const [isEnvironment, setIsEnvironment] = useState<boolean>(false);

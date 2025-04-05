@@ -1,6 +1,7 @@
-import React, { forwardRef, Ref, AnchorHTMLAttributes, ButtonHTMLAttributes } from "react";
+import React, { forwardRef, AnchorHTMLAttributes, ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../Tooltip";
+import { Link } from "react-router-dom";
 
 type SVGComponent = React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
 
@@ -10,9 +11,9 @@ export type ButtonBaseProps = {
   loading?: boolean;
   disabled?: boolean;
   onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
-  StartIcon?: SVGComponent;
+  StartIcon?: SVGComponent | React.ComponentType<React.ComponentProps<"svg">>;
   startIconClassName?: string;
-  EndIcon?: SVGComponent;
+  EndIcon?: SVGComponent | React.ComponentType<React.ComponentProps<"svg">>;
   endIconClassName?: string;
   shallow?: boolean;
   tooltip?: string;
@@ -20,63 +21,114 @@ export type ButtonBaseProps = {
   tooltipOffset?: number;
 };
 
-type ButtonProps = ButtonBaseProps &
+type ButtonBasePropsWithTarget = ButtonBaseProps & { target?: string };
+
+type ButtonProps = ButtonBasePropsWithTarget &
   (
     | (Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "onClick"> & { href: string })
     | (Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> & { href?: never })
   );
 
-const Button = forwardRef<HTMLAnchorElement | HTMLButtonElement, ButtonProps>(
-  (props, ref) => {
+export const Button = forwardRef<HTMLAnchorElement | HTMLButtonElement, ButtonProps>(
+  (props: ButtonProps, forwardRef) => {
     const {
       href,
+      loading = false,
       variant = "primary",
       size = "base",
       StartIcon,
       startIconClassName,
-      EndIcon,
       endIconClassName,
-      loading = false,
-      tooltip,
+      EndIcon,
       tooltipSide = "top",
       tooltipOffset = 4,
-      disabled,
-      className,
-      onClick,
-      children,
-      ...rest
+      // attributes propaganted from `HTMLAnchorProps` or `HTMLButtonProps`
+      ...passThroughProps
     } = props;
+    // Button are **always** disabled if we're in a `loading` state
+    const disabled = props.disabled || loading;
 
+    // If pass an `href` -attr is passed it's `<a>`, otherwise it's a `<button />`
     const isLink = typeof href !== "undefined";
-
-    const element = isLink ? (
-      <a
-        {...(rest as AnchorHTMLAttributes<HTMLAnchorElement>)}
-        ref={ref as Ref<HTMLAnchorElement>}
-        href={href}
-        onClick={!disabled && !loading ? onClick : undefined}
-        className={cn(
+    
+    // If pass an `href` -attr is passed it's `<a>`, otherwise it's a `<button />`
+    const elementType = isLink ? "span" : "button";
+    
+    const element = React.createElement(
+      elementType,
+      {
+        ...passThroughProps,
+        disabled,
+        ref: forwardRef,
+        className: cn(
+          // base styles independent what type of button it is
           "inline-flex items-center appearance-none",
+          // different styles depending on size
           size === "sm" && "px-3 py-2 text-sm leading-4 font-medium rounded-md",
           size === "base" && "px-6 py-3 text-sm font-medium rounded-md",
           size === "lg" && "px-8 py-4 text-base font-medium rounded-md",
-          size === "icon" && "w-10 h-10 justify-center group p-2 rounded-lg",
-          variant === "primary" && "text-white bg-blue-500 hover:bg-blue-600",
-          variant === "secondary" && "text-gray-700 bg-gray-200 hover:bg-gray-300",
-          loading && "cursor-wait",
-          disabled && "cursor-not-allowed",
-          className
-        )}>
+          size === "icon" &&
+            "w-10 h-10 justify-center group p-2 border rounded-lg border-transparent text-neutral-400 hover:border-slate-200 transition",
+          // turn button into a floating action button (fab)
+          size === "fab" ? "fixed" : "relative",
+          size === "fab" && "justify-center bottom-20 right-8 rounded-full p-4 w-14 h-14",
+  
+          // different styles depending on variant
+          variant === "highlight" &&
+            (disabled
+              ? "border border-transparent bg-slate-400 text-white"
+              : "text-white bg-brand-dark focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-slate-900 transition ease-in-out delay-50 hover:scale-105"),
+          variant === "primary" &&
+            (disabled
+              ? "border border-transparent bg-slate-400 text-white"
+              : "text-white bg-brand-dark hover:bg-brand focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-slate-900"),
+  
+          variant === "minimal" &&
+            (disabled
+              ? "border border-slate-200 text-slate-400"
+              : "hover:text-slate-600 text-slate-700 border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-neutral-900 dark:text-slate-700 dark:hover:text-slate-500"),
+          variant === "alert" &&
+            (disabled
+              ? "border border-transparent bg-slate-400 text-white"
+              : "border border-transparent dark:text-darkmodebrandcontrast text-brandcontrast bg-red-600 dark:bg-darkmodebrand hover:bg-opacity-90 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-neutral-900"),
+          variant === "secondary" &&
+            (disabled
+              ? "text-slate-400 dark:text-slate-500 bg-slate-200 dark:bg-slate-800"
+              : "text-slate-600 hover:text-slate-500 bg-slate-200 hover:bg-slate-100 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-1  focus:bg-slate-300 focus:ring-neutral-500"),
+          variant === "warn" &&
+            (disabled
+              ? "text-slate-400 bg-transparent"
+              : "hover:bg-red-200 text-red-700 bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:bg-red-50 focus:ring-red-500"),
+          variant === "darkCTA" &&
+            (disabled
+              ? "text-slate-400 dark:text-slate-500 bg-slate-200 dark:bg-slate-800"
+              : "text-slate-100 hover:text-slate-50 bg-gradient-to-br from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-1  focus:bg-slate-700 focus:ring-neutral-500"),
+  
+          // set not-allowed cursor if disabled
+          loading ? "cursor-wait" : disabled ? "cursor-not-allowed" : "",
+          props.className
+        ),
+        // if we click a disabled button, we prevent going throught the click handler
+        onClick: disabled
+          ? (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+              e.preventDefault();
+            }
+          : props.onClick,
+      },
+      <>
         {StartIcon && (
           <StartIcon
             className={cn("flex", size === "icon" ? "h-4 w-4" : "-ml-1 mr-1 h-3 w-3", startIconClassName || "")}
           />
         )}
-        {children}
+        {props.children}
         {loading && (
-          <span className="ml-2">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
             <svg
-              className="animate-spin h-5 w-5 text-current"
+              className={cn(
+                "mx-4 h-5 w-5 animate-spin",
+                variant === "primary" ? "text-white dark:text-slate-900" : "text-slate-900"
+              )}
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24">
@@ -87,69 +139,54 @@ const Button = forwardRef<HTMLAnchorElement | HTMLButtonElement, ButtonProps>(
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-          </span>
+          </div>
         )}
-        {EndIcon && <EndIcon className={cn("ml-2 h-5 w-5", endIconClassName || "")} />}
-      </a>
-    ) : (
-      <button
-        {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}
-        ref={ref as Ref<HTMLButtonElement>}
-        disabled={disabled || loading}
-        onClick={!disabled && !loading ? onClick : undefined}
-        className={cn(
-          "inline-flex items-center appearance-none",
-          size === "sm" && "px-3 py-2 text-sm leading-4 font-medium rounded-md",
-          size === "base" && "px-6 py-3 text-sm font-medium rounded-md",
-          size === "lg" && "px-8 py-4 text-base font-medium rounded-md",
-          size === "icon" && "w-10 h-10 justify-center group p-2 rounded-lg",
-          variant === "primary" && "text-white bg-blue-500 hover:bg-blue-600",
-          variant === "secondary" && "text-gray-700 bg-gray-200 hover:bg-gray-300",
-          loading && "cursor-wait",
-          disabled && "cursor-not-allowed",
-          className
-        )}>
-        {StartIcon && (
-          <StartIcon
-            className={cn("flex", size === "icon" ? "h-4 w-4" : "-ml-1 mr-1 h-3 w-3", startIconClassName || "")}
-          />
-        )}
-        {children}
-        {loading && (
-          <span className="ml-2">
-            <svg
-              className="animate-spin h-5 w-5 text-current"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
-          </span>
-        )}
-        {EndIcon && <EndIcon className={cn("ml-2 h-5 w-5", endIconClassName || "")} />}
-      </button>
+        {EndIcon && <EndIcon className={cn("-mr-1 ml-2 inline h-5 w-5 rtl:mr-2", endIconClassName || "")} />}
+      </>
     );
-
-    return tooltip ? (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>{element}</TooltipTrigger>
-          <TooltipContent side={tooltipSide} sideOffset={tooltipOffset}>
-            {tooltip}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+    return props.href ? (
+      <Link to={props.href} target={props.target || "_self"}>
+        {element}
+      </Link>
     ) : (
-      element
-    );
+      <Wrapper
+        data-testid="wrapper"
+        tooltip={props.tooltip}
+        tooltipSide={tooltipSide}
+        tooltipOffset={tooltipOffset}
+      >
+        {element}
+      </Wrapper>
+    )
   }
 );
 
-Button.displayName = "Button";
 
-export default Button;
+const Wrapper = ({
+  children,
+  tooltip,
+  tooltipSide = "top",
+  tooltipOffset = 0,
+}: {
+  tooltip?: string;
+  children: React.ReactNode;
+  tooltipSide?: "top" | "right" | "bottom" | "left";
+  tooltipOffset?: number;
+}) => {
+  if (!tooltip) {
+    return <>{children}</>;
+  }
+
+  return (
+    <TooltipProvider delayDuration={0}>
+      <Tooltip>
+        <TooltipTrigger asChild>{children}</TooltipTrigger>
+        <TooltipContent side={tooltipSide} sideOffset={tooltipOffset}>
+          {tooltip}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
+
+Button.displayName = "Button";

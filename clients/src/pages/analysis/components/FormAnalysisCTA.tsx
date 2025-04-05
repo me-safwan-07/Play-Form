@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/Badge"
 import { TForm } from "@/types/forms"
 import { FormStatusDropdown } from "./FormStatusDropdown"
-import Button from "@/components/ui/Button/index"
+import { Button } from "@/components/ui/Button/index"
 import { ShareIcon, SquarePenIcon } from "lucide-react"
 
 interface FormAnalysisCTAProps {

@@ -6,10 +6,9 @@ import type { TFilterOption, TFormFilters, TSortOption } from "@/types/forms";
 import { ChevronDownIcon, Grid2X2, List, Search, PlusIcon, X, Equal } from "lucide-react";
 import { SortOption } from "./SortOption";
 import { Input } from "@/components/ui/input";
-import { Form, useNavigate, useParams } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import { useNavigate, useParams } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/DropdownMenu";
-import Button from "../../Button";
+import { Button } from "../../Button";
 import { TooltipRenderer } from "../../Tooltip";
 
 interface FormFilterProps {

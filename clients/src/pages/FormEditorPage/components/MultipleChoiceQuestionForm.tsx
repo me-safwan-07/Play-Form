@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/Label";
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { QuestionFormInput } from "@/components/ui/QuestionFormInput";
 import { TForm } from "@/types/forms";
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 
 interface MultipleChoiceQuestionFormProps {
   localForm: TForm;

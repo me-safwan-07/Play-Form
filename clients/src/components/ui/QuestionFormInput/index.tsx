@@ -4,7 +4,7 @@ import { ImagePlusIcon, TrashIcon } from "lucide-react";
 // import { FileInput } from "../FileInput";
 import { Label } from "../Label";
 import { TForm, TFormQuestion } from "@/types/forms";
-import { RefObject, useMemo, useRef, useState } from "react";
+import { RefObject, useMemo, useRef } from "react";
 import { Input } from "../input";
 // import { useMemo } from "react";
 

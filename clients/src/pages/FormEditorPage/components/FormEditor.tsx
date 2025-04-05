@@ -4,7 +4,7 @@ import { TForm, TFormEditorTabs } from "@/types/forms";
 import { useEffect, useRef, useState } from "react";
 import { structuredClone } from "@/lib/pollyfills/structuredClone";
 import { LoadingSkeleton } from "./LoadingSkeleton";
-import { FormPreview } from "@/pages/PreviewPage";
+// import { FormPreview } from "@/pages/PreviewPage";
 
 interface FormEditorProps {
     form: TForm;

@@ -1,12 +1,11 @@
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { login } from '@/hooks/authHooks';
 import { PasswordInput } from '@/components/ui/PasswordInput';
-import { GoogleButton } from '@/components/ui/SignupOptions/components/GoogleButton';
-import Button from '@/components/ui/Button';
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleButton } from '../../components/GoogleButton';
 
 interface TSignInFormState {
   email: string;
@@ -16,10 +15,7 @@ interface TSignInFormState {
 export const SigninForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const emailRef = useRef<HTMLInputElement>(null);
   const formMethods = useForm<TSignInFormState>();
-
-  const fromLabel = 'Login to your account';
 
   const onSubmit = async(data: TSignInFormState) => {
     setLoggingIn(true);
@@ -38,7 +34,6 @@ export const SigninForm = () => {
   }
 
   const [loggingIn, setLoggingIn] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   // const [totpLogin, setTotpLogin] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -47,10 +42,9 @@ export const SigninForm = () => {
     <div>
       <FormProvider {...formMethods}>
         <div className="text-center">
-          <h1 className="mb-4 text-slate-700">{fromLabel}</h1>
+          <h1 className="mb-4 text-slate-700">Login to your account</h1>
           <div className="space-y-2">
-            <form onSubmit={formMethods.handleSubmit(onSubmit)}>
-              {showLogin && (
+            <form onSubmit={formMethods.handleSubmit(onSubmit)} className='space-y-2 text-slate-800'>
                 <div>
                 <div className="mb-2 transition-all duration-500 ease-in-out">
                 <label htmlFor="email" className='sr-only'>Email</label>
@@ -61,7 +55,7 @@ export const SigninForm = () => {
                   required
                   placeholder="example@email.com"
                   defaultValue={searchParams?.get("email") || ""}
-                  className="p-2 focus:border-blue-300 focus:ring-brand block w-full rounded-md border-slate-300 shadow-sm sm:text-sm"
+                  className="p-2 focus:border-brand focus:ring-brand block w-full rounded-md border border-slate-300 shadow-sm sm:text-sm outline-none"
                   {...formMethods.register("email", {
                     required: true,
                     pattern: /\S+@\S+\.\S+/,
@@ -101,22 +95,15 @@ export const SigninForm = () => {
                 </div>
               )}
               </div>
-            )}
-
               <Button
                 onClick={() => {
-                  if (!showLogin) {
-                      setShowLogin(true);
-                      setTimeout(() => emailRef.current?.focus(), 100);
-                    } else if (formRef.current){
-                      formRef.current.requestSubmit();
-                    }
-                  }}
-                  variant='darkCTA'
-                  className='w-full justify-center'
-                  loading={loggingIn}
-                >
-                  Login with Email
+                    formRef.current?.requestSubmit();
+                }}
+                variant="darkCTA"
+                className="w-full justify-center"
+                loading={loggingIn}
+              >
+                Login with Email
               </Button>
             </form>
             <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>

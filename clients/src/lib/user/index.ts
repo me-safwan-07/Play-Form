@@ -1,6 +1,3 @@
-import { signInWithPopup } from "firebase/auth";
-// import { hashPassword } from "@/lib/auth"; // Adjust the path according to your project structure
-import { auth, googleProvider } from "@/lib/firebase-config";
 
 export const createUser = async (
   name: string,
@@ -116,26 +113,26 @@ export const deleteUser = async (): Promise<void> => {
   }
 };
 
-export const handleGoogleSignIn = async () => {
-  try {
-    const result = await signInWithPopup(auth, googleProvider);
-    const token = await result.user.getIdToken();
+// export const handleGoogleSignIn = async () => {
+//   try {
+//     const result = await signInWithPopup(auth, googleProvider);
+//     const token = await result.user.getIdToken();
 
-    const response = await fetch("http://localhost:3000/api/user/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token,
-      },
-    });
+//     const response = await fetch("http://localhost:3000/api/user/create", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: token,
+//       },
+//     });
 
-    const userData = await response.json();
-    return userData;
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error("Error during sign-in:", error.message);
-    } else {
-      console.error("Unknown error during sign-in");
-    }
-  }
-};
+//     const userData = await response.json();
+//     return userData;
+//   } catch (error: unknown) {
+//     if (error instanceof Error) {
+//       console.error("Error during sign-in:", error.message);
+//     } else {
+//       console.error("Unknown error during sign-in");
+//     }
+//   }
+// };

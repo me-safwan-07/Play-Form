@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Link, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";

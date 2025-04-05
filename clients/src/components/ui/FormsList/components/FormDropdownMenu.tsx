@@ -6,7 +6,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/DropdownMenu"
-import { TForm, TFormFilters } from "@/types/forms";
+import { TForm } from "@/types/forms";
 import axios from "axios";
 // import { TFormFilters } from "@/types/forms";
 // import axios from "axios";
@@ -41,7 +41,6 @@ export const FormDropdownMenu = ({
   form,
   environment,
   isFormCreationDeletionDisabled,
-  duplicateForm,
   deleteForm,
 }: FormDropdownMenuProps) => {
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -83,7 +82,7 @@ export const FormDropdownMenu = ({
   const duplicateFormAndRefresh = async (formId: string) => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:3000/api/forms/${form.id}/duplicate`, {
+      const res = await axios.get(`http://localhost:3000/api/forms/${formId}/duplicate`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`

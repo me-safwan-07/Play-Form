@@ -1,4 +1,3 @@
-import { axiosInstance } from "@/config/axios";
 import axios from "axios";
 
 export const login = async (data: {
